@@ -7,28 +7,37 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 [![Release](https://img.shields.io/github/v/release/drizztdourden08/jex?include_prereleases&sort=semver)](https://github.com/drizztdourden08/jex/releases)
 
-A **local desktop app** (Electron) that mirrors your Steam library — installed
-*and* not-installed games, with full metadata, screenshots, and trailers — and
-lets you **filter, randomize, and AI-query** it through a glass ("Aurora") UI. It
-runs entirely on your machine: local Steam files + your own Steam Web API key, with
-a small local AI model. No server, no cloud account.
+## The context
+Frustrated by steam library being what it is, and my huge 1500+ games in it, I was never really satisfied with the functionalities that steam itself had. I often go in my own library to "shop" for games instead of buying, having so many games that I never played anyway. However, that also meant using the bad search features and filtering, and constantly going in the store page to see the details of a game and the videos or image. I wanted something faster and I decided, a few years ago, to build one for myself quickly.
 
-> 🚧 In active development. Engineering standards live in
-> [docs/contributing/coding-standards.md](docs/contributing/coding-standards.md).
+I made it evolve with my own needs for years, adding little by little to it, either for fun or for actual needs and ended up in the current state. 
 
+I recently decided that it might be worth it to other people as well and to share it publicly.
+
+## What you need
+- **[Steam Web API key](https://steamcommunity.com/dev/apikey)**
+
+The above is the only actual requirement for most functionalities. It takes seconds to get one with any valid steam account.
+  
 ## What it does
 
-- **Setup-free start** — auto-detects your Steam install (registry + library
+- **Setup-free start**: auto-detects your Steam install (registry + library
   folders) and shows your *installed* games with cover art, with no key and no
   network.
-- **Full library mirror** — with your Steam Web API key, pulls your complete owned
-  library (incl. not-installed games), playtime, and rich metadata + media from the
-  Steam Web/Store APIs into a local SQLite store.
-- **AI search** — a local model (no key, no account) you set up from Settings turns
-  "a random roguelite with base building I haven't played" into a query over your
-  library, from a command bar at the top of the window.
-- **Randomizer + filtering** — roll a pick across any metadata; browse, filter, and
-  open a game for screenshots and trailers.
+- **Full library mirror**: pulls your complete owned library.
+- **Rich metadata**: Pulling from Steam and a few other places (metacritics for example), you get a rich assets of metadata to use filters with.
+- **Search & Filter**: 3 mode for searching. 
+    - Basic: just text
+    - Normal: Additive UI friendly filtering with tags, features, genre, and categories, scores, and text. Probably good for most users.
+    - Advanced: A fully advanced query system that can do negation on any metadata available.
+- Multiple tabs:
+    - Store: Just browse steam website, simply.
+    - Search: Search accross Steam huge library with the same UI as the rest and with slightly better filtering capabilities. (Never been a fan of steam integrated search)
+    - Wishlist: I always wanted to have multiple wishlist and this was one of the first feature I developed years ago.
+    - Library: Just everything you own, including installed one. You can install from here or play a game. Will simply ask steam to do it.
+    - Randomizer: Want to play a random game in your library, wishlist or even in the store. Use that to find one. 
+    - Settings: Just the settings page for the various things in the app
+- **AI Assistant**: The most recent thing I did to play with these tool was add this feature. It's completly optional and not even in the base software. If you want to play with it, go in setting, and install the plugin for your CPU and GPU. Then you'll get access to download a model of your choice. Those models are all open source and local, so it cost you nothing except some local resources on your computer. You can ask the assitant to navigate through the app to help you, and it will learn your teste as you use it. You can have him recommend you games based on your overall taste and what you played accross your library or to use advanced filters for you. It knows how the steam website is laid out so it can bring you to the right page if you're searching for something.
 
 ## Download
 
@@ -39,55 +48,13 @@ Grab the latest **Windows** build from the
 - **Installer (.exe)** — standard setup with a desktop shortcut.
 
 ## Requirements
+Only tested on Windows. Theorically can run on Linux or MacOS but not tested. If there is interest, I might make it compatible so ask for it in an issue if that's the case.
 
 - **Windows 10/11.**
-- **Steam** installed (for setup-free detection of installed games).
-- A free **[Steam Web API key](https://steamcommunity.com/dev/apikey)** to mirror
-  your full owned library (optional — installed games work without one).
-- ~2 GB free space for the AI: the engine (installed from **Settings → AI engine**,
-  ~25 MB for CPU+Vulkan) plus a model you download from the model picker there.
+- **Steam** installed
 
-## Run it (development)
-
-A [pnpm](https://pnpm.io) monorepo — the app is `apps/desktop`, with shared packages
-and the AI plugins. Run scripts from the repo root:
-
-```bash
-pnpm install
-pnpm dev             # launches the app with hot reload
-pnpm dev:nofocus     # same, but the window opens inactive (won't steal focus)
-```
-
-Then open **Settings** to paste your Steam Web API key (put `localhost` as the
-domain) and to install the AI engine. SteamID is auto-detected.
-
-## Build & package
-
-```bash
-pnpm build           # electron-vite build → apps/desktop/out/
-pnpm package:win     # Windows installer + portable → apps/desktop/release/
-pnpm verify          # typecheck + lint + css/structure policies + build (all packages)
-pnpm --filter @jex/plugins build   # build the signed AI plugins → plugins/dist/
-```
-
-To cut a release, add `release-notes/vX.Y.Z.md`, then `pnpm release -- X.Y.Z`
-(see [the release flow](.github/workflows/release.yml)). CI builds + signs the AI
-plugins and attaches them to the release; the app fetches them on first use.
-
-## Privacy & storage
-
-Everything lives on your machine under the OS app-data directory: the library
-mirror (SQLite), settings (`electron-store`), and **encrypted** secrets (Electron
-`safeStorage`). Your Steam key is sent only to Steam; nothing is uploaded anywhere.
-
-## Tech
-
-pnpm monorepo · Electron · electron-vite · React 18 + TypeScript (strict) · `sql.js`
-(WASM SQLite) · electron-store + safeStorage · `@node-steam/vdf` + `winreg` (detection).
-The AI ships as a **downloadable, Ed25519-signed plugin** (`node-llama-cpp` engine +
-native backend), kept out of the app so the download stays small. See
-[CLAUDE.md](CLAUDE.md) and the [engineering skill](.claude/skills/jex/SKILL.md).
-
+AI Assistant:
+- Depends on the model chosen mainly. Specs and requirement are lister in the settings of the app directly.
 ## License
 
 [MIT](LICENSE).
