@@ -1,0 +1,193 @@
+name: Release
+run-name: Release ${{ inputs.version }}${{ inputs.set_latest == true && ' (latest)' || ' (draft)' }}
+
+# One way in: trigger this workflow with a version (e.g. 0.1.0), either from the
+# GitHub UI (Run workflow) or locally with `pnpm release -- 0.1.0 [--latest]`.
+# Both routes pass the SAME params. If release-notes/v0.1.0.md exists and the tag
+# does not, this bumps apps/desktop/package.json, commits "release: v0.1.0" to main,
+# tags it, and runs the Windows build — as a draft, or published-as-latest when set_latest is on.
+#
+# Builds the desktop app AND the signed AI-plugin matrix (ai-win-x64 / ai-win-arm64 /
+# ai-win-x64-cuda) + manifest.json, attaching all to the release. The app fetches the
+# manifest + plugins from the latest release on first use.
+# REQUIRED SECRET: JEX_PLUGIN_PRIVATE_KEY — Ed25519 private key (PKCS8 DER, base64)
+# matching the public key embedded in ai-host/signing-key.ts. Without it, plugins build
+# unsigned and the app refuses to load them.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version to release, e.g. 0.1.0 (or v0.1.0). release-notes/<tag>.md must already exist on main and the tag must not exist yet.'
+        required: true
+        type: string
+      set_latest:
+        description: 'Publish immediately and mark as the latest release (instead of a draft).'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve & validate target version
+        id: resolve
+        run: |
+          RAW="${{ inputs.version }}"
+          TAG="v${RAW#v}"            # accept 0.1.0 or v0.1.0 → v0.1.0
+          if [ ! -f "release-notes/$TAG.md" ]; then
+            echo "::error::Missing release-notes/$TAG.md on main. Commit the notes first — they are the source of truth for the release body."
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists. Pick a new version."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Quality gate (typecheck, lint, CSS tokens, structure)
+        run: pnpm -r run check
+
+      - name: Cut release commit & tag
+        # The gate above has passed, so it is safe to bump, commit, and tag now.
+        run: |
+          TAG="${{ steps.resolve.outputs.tag }}"
+          ( cd apps/desktop && npm version "${TAG#v}" --no-git-tag-version --allow-same-version )
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/desktop/package.json
+          # Re-releasing a version that's already bumped (e.g. recovering a failed
+          # run) leaves nothing to commit — that's fine, skip the commit and just tag.
+          if git diff --cached --quiet; then
+            echo "apps/desktop already at $TAG — skipping the release commit."
+          else
+            git commit -m "release: $TAG"
+            git push origin HEAD:main
+          fi
+          git tag "$TAG"
+          git push origin "$TAG"
+
+  build:
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build & package (Windows installer + portable)
+        working-directory: apps/desktop
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pnpm stage-assets
+          pnpm exec electron-vite build
+          pnpm exec electron-builder --win --publish never
+          node scripts/build/clean-release.mjs
+
+      - name: Build AI plugins (signed) + manifest
+        shell: bash
+        env:
+          # Ed25519 private key (PKCS8 DER, base64) matching the public key embedded in
+          # apps/desktop/.../ai-host/signing-key.ts. The app verifies every plugin against it.
+          JEX_PLUGIN_PRIVATE_KEY: ${{ secrets.JEX_PLUGIN_PRIVATE_KEY }}
+        run: pnpm --filter @jex/plugins run build
+
+      - name: Upload app artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-win
+          path: apps/desktop/release/*
+
+      - name: Upload plugin artifacts (zips + manifest)
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-plugins
+          path: plugins/dist/*
+
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.tag }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: false
+
+      - name: Generate release body
+        run: |
+          TAG="${{ needs.prepare.outputs.tag }}"
+          BASE="https://github.com/drizztdourden08/jex/releases/download/${TAG}"
+          NOTES="release-notes/${TAG}.md"
+          {
+            # Per-version notes (the source of truth in release-notes/) lead, when present.
+            if [ -f "$NOTES" ]; then
+              cat "$NOTES"
+              echo ""
+              echo ""
+            fi
+            echo "## Downloads"
+            echo ""
+            echo "**Windows**"
+            echo "- [Portable (.exe)](${BASE}/jex-windows-portable.exe) — no installation needed"
+            echo "- [Installer (.exe)](${BASE}/jex-windows-setup.exe)"
+            echo ""
+            echo "> The local AI engine installs on first use from this release's signed"
+            echo "> plugin assets — no manual download needed."
+          } > release-body.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          # Default (manual run) stays a draft. A run with set_latest=true publishes
+          # immediately and marks it the latest release.
+          draft: ${{ inputs.set_latest != true }}
+          make_latest: ${{ inputs.set_latest == true }}
+          generate_release_notes: false
+          body_path: release-body.md
+          files: |
+            artifacts/release-win/*
+            artifacts/release-plugins/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

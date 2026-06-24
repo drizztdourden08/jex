@@ -1,0 +1,29 @@
+{
+  "name": "jex-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Jex monorepo — the Electron desktop app (apps/desktop), shared packages, and downloadable AI plugins.",
+  "license": "MIT",
+  "packageManager": "pnpm@10.17.0",
+  "scripts": {
+    "dev": "node scripts/dev/refresh-engine.mjs --auto && pnpm --filter @jex/desktop run dev",
+    "dev:nofocus": "node scripts/dev/refresh-engine.mjs --auto && pnpm --filter @jex/desktop run dev:nofocus",
+    "build": "pnpm --filter @jex/desktop run build",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint",
+    "check": "pnpm -r run check",
+    "verify": "pnpm -r run verify",
+    "package:win": "pnpm --filter @jex/desktop run package:win",
+    "plugins:build": "pnpm --filter @jex/plugins run build",
+    "engine:refresh": "node scripts/dev/refresh-engine.mjs",
+    "release": "node scripts/release.mjs",
+    "release:last": "node scripts/release.mjs --last --latest"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild",
+      "node-llama-cpp"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Glass pill (the old .pill): translucent surface + hairline + blur. */
+.ds-badge--neutral {
+  color: var(--text-1);
+  background: var(--glass-2-bg);
+  backdrop-filter: blur(var(--glass-2-blur));
+  border-color: var(--hairline);
+}
+
+/* Filled accent (the old .badge). */
+.ds-badge--accent {
+  color: var(--text-on-accent);
+  background: var(--accent);
+}
+
+.ds-badge--success {
+  color: var(--success);
+}
+
+.ds-badge--warning {
+  color: var(--warning);
+}
+
+.ds-badge--danger {
+  color: var(--danger);
+}

@@ -1,0 +1,6 @@
+/* Normal-filter layout: a name search, then a wrapping grid of uniform labeled fields
+   (Status, scores, facet pickers). Everything wraps; nothing stretches. */
+.nf-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 14px; }
+.nf-name { flex: 1 1 220px; max-width: 360px; }
+
+.nf-facets { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: flex-start; }

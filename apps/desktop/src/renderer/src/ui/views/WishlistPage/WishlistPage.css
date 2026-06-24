@@ -1,0 +1,120 @@
+/* ── Wishlist tab ─────────────────────────────────────────────────────────── */
+.wl-layout { display: grid; grid-template-columns: 232px 1fr; gap: 18px; align-items: start; }
+
+.wl-rail {
+  position: sticky; top: 0; display: flex; flex-direction: column; gap: 4px;
+  background: var(--glass-1-bg); backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 10px;
+}
+
+.wl-rail-head {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-3); padding: 2px 4px 6px;
+}
+
+/* Large dashed "add" affordance under the list. */
+.wl-rail-create {
+  margin-top: 8px; width: 100%; padding: 10px; text-align: center;
+  background: transparent; color: var(--text-2);
+  border: 1px dashed var(--hairline-strong); border-radius: var(--r-md);
+}
+.wl-rail-create:hover { color: var(--text-1); border-color: var(--accent); }
+
+/* No accent fill on ANY rail button hover (the global button:hover leaks otherwise);
+   selection is shown by the glow ring, which is a box-shadow and survives hover. */
+.wl-rail button:hover:not(:disabled) { background: none; }
+
+/* All rail rows share one size; no hover fill. Selection = blue border + glow
+   (matching the segmented control), never a solid fill. */
+.wl-rail-item {
+  display: flex; align-items: center; gap: 6px; width: 100%; height: 34px;
+  border-radius: var(--r-md); padding: 0 8px; color: var(--text-2);
+  background: none; border: 1px solid transparent;
+}
+
+.wl-rail-item.active {
+  color: var(--text-1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Subtle dashed divider between the main wishlist and the sub-wishlists — its own
+   line, not the item's bottom edge (which would round at the corners). */
+.wl-rail-divider { height: 0; margin: 5px 4px; border-top: 1px dashed var(--hairline-strong); }
+
+.wl-rail-item > .wl-rail-name {
+  flex: 1; min-width: 0; height: 100%; text-align: left; background: none; border: none; padding: 0;
+  color: inherit; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 4px;
+}
+.wl-rail-item > .wl-rail-name:hover { background: none; }
+.wl-rail-smart { font-size: 11px; opacity: 0.8; }
+.wl-rail-count { font-size: 12px; color: var(--text-3); flex: none; }
+
+/* Always visible (no hover reveal), kept quiet until pointed at. */
+.wl-rail-actions { display: flex; gap: 2px; flex: none; }
+.wl-rail-actions button { padding: 0 5px; background: none; border: none; color: var(--text-3); cursor: pointer; opacity: 0.55; }
+.wl-rail-actions button:hover { color: var(--text-1); background: none; opacity: 1; }
+
+/* Inline rename row — same footprint as a rail item, with ✓/✕ inside the field. */
+.wl-rename { position: relative; display: flex; align-items: center; }
+.wl-rename input { width: 100%; height: 34px; padding: 0 50px 0 8px; }
+
+.wl-rename button {
+  position: absolute; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; padding: 0;
+  display: grid; place-items: center; background: none; border: none; cursor: pointer; line-height: 1; font-size: 12px;
+}
+.wl-rename-ok { right: 26px; color: var(--success); }
+.wl-rename-cancel { right: 4px; color: var(--text-3); }
+.wl-rename button:hover { background: none; }
+.wl-rename-cancel:hover { color: var(--danger); }
+
+.wl-main { min-width: 0; }
+
+.wl-add { position: relative; }
+
+/* Compact icon launcher over cover art — a documented exception to the standard glass
+   box (scrim keeps the "+" legible on bright art). Scoped onto .ds-select-trigger so it
+   wins over the base .ds-select-box regardless of stylesheet order. */
+.ds-select-trigger.wl-add-btn {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--r-sm);
+  background: var(--scrim-65); backdrop-filter: blur(6px); box-shadow: none;
+  border: 1px solid var(--hairline); color: var(--text-1); cursor: pointer;
+  padding: 0; font-size: 16px; line-height: 1; font-weight: 600;
+}
+
+/* No accent fill on hover — border + glow only (matches the segmented control). */
+.ds-select-trigger.wl-add-btn:hover:not(:disabled), .ds-select-trigger.wl-add-btn[data-on] {
+  background: var(--scrim-65); border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* CONTENT only — the base Select surface owns the glass box, border and shadow. */
+.wl-add-menu {
+  min-width: 176px; display: flex; flex-direction: column; gap: 2px; padding: 6px;
+}
+
+/* Uniform rows, no hover state at all; selected = border + glow. */
+.wl-add-menu button {
+  display: flex; align-items: center; gap: 6px; width: 100%; height: 32px; text-align: left;
+  background: none; border: 1px solid transparent; color: var(--text-2);
+  padding: 0 8px; border-radius: var(--r-sm); cursor: pointer;
+}
+.wl-add-menu button:hover { background: none; color: var(--text-2); }
+
+.wl-add-menu button[data-on] {
+  color: var(--text-1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.wl-add-check { width: 12px; flex: none; color: var(--accent); }
+.wl-add-empty { padding: 6px 8px; }
+
+/* "Items still syncing" warning bar (wishlist gates display on enrichment). */
+.wl-syncbar { border-color: var(--accent); }
+
+@media (width <= 900px) {
+  .wl-layout { grid-template-columns: 1fr; }
+  .wl-rail { position: static; }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@jex/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure, isomorphic domain logic shared by the desktop app and the AI plugins (filter, query, search, library, agent, ai, wishlist). No electron/node/DOM/React.",
+  "exports": {
+    "./*": [
+      "./src/*.ts",
+      "./src/*/index.ts"
+    ]
+  }
+}

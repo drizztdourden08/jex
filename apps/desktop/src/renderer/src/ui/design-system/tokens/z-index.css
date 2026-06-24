@@ -1,0 +1,5 @@
+/* Z-index scale — named layers. Magic z-indexes get extracted here as named tokens
+   during Phase 5 CSS colocation. */
+:root {
+  /* (no shared z-index tokens yet) */
+}

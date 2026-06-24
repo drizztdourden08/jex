@@ -1,0 +1,11 @@
+.ds-divider {
+  height: 1px;
+  background: var(--hairline);
+  border: 0;
+}
+
+.ds-divider--v {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+}

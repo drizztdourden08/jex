@@ -1,0 +1,23 @@
+{
+  "name": "@jex/ai-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The AI engine — agent loop, tools, NL→FilterSpec, and the node-llama-cpp glue. Shared by all backend plugins; reaches the app only through @jex/ai-contract's HostServices.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@jex/ai-contract": "workspace:*",
+    "@jex/shared": "workspace:*",
+    "node-llama-cpp": "^3.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.21",
+    "electron": "^33.4.11",
+    "typescript": "^5.6.3"
+  }
+}

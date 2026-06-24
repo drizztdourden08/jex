@@ -1,0 +1,36 @@
+/* Color tokens. The brand palette is the single source of truth; every accent/AI
+   color aliases it — there are no ad-hoc variants. Status colors are their own
+   semantic set (not brand). Raw values live here (tokens/ is exempt from R13). */
+:root {
+  /* ── Brand palette — the ONLY brand colors. Do not introduce variants. ── */
+  --brand-blue: #417cfe;
+  --brand-purple: #795fec;
+  --brand-dark-slate: #262e45;
+  --brand-slate: #3f4a65;
+
+  /* ── Text ── */
+  --text-1: rgba(236, 243, 250, 0.96);
+  --text-2: rgba(236, 243, 250, 0.66);
+  --text-3: rgba(236, 243, 250, 0.42);
+  --text-on-accent: #07101c;
+
+  /* ── Accent / AI — alias the brand palette (single source). ── */
+  --accent: var(--brand-blue);
+  --accent-press: color-mix(in srgb, var(--brand-blue) 85%, #000);
+
+  /* Secondary accent — the brand purple, used for secondary emphasis (e.g. the
+     selected-item glyph in dropdowns). Aliases the palette; not a new color. */
+  --secondary: var(--brand-purple);
+  --ai-1: var(--brand-purple);
+  --ai-2: var(--brand-blue);
+  --ai-gradient: linear-gradient(100deg, var(--ai-1) 0%, var(--ai-2) 100%);
+  --ai-spark: #b9a9ff;
+
+  /* ── Status (semantic, not brand) ── */
+  --success: #5bd6a0;
+  --warning: #f5c451;
+  --danger: #ff6b6b;
+  --danger-press: color-mix(in srgb, var(--danger) 85%, #000);
+  --installed: var(--success);
+  --owned-only: #8f9bb0;
+}

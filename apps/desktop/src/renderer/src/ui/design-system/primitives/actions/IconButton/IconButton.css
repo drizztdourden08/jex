@@ -1,0 +1,61 @@
+.ds-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  line-height: 1;
+  color: var(--text-1);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  transition: background var(--dur-fast);
+}
+
+.ds-iconbtn:hover:not(:disabled) {
+  background: var(--glass-2-bg);
+}
+
+/* Toggled/active state (consumer sets data-on) — blue border + soft glow ring. */
+.ds-iconbtn[data-on] {
+  color: var(--text-1);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.ds-iconbtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ds-iconbtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ds-iconbtn--md {
+  width: var(--sp-8);
+  height: var(--sp-8);
+}
+
+.ds-iconbtn--sm {
+  width: var(--sp-6);
+  height: var(--sp-6);
+}
+
+/* Large — a perfect 40px square; the glyph is centered by the flex rules above and the
+   zero padding + line-height:1 inherited from .ds-iconbtn, so nothing offsets it. */
+.ds-iconbtn--lg {
+  width: var(--sp-10);
+  height: var(--sp-10);
+  padding: 0;
+  font-size: 20px;
+}
+
+/* No fixed dimensions — the consumer's className sizes it (image/thumbnail buttons). */
+.ds-iconbtn--fit { width: auto; height: auto; }
+
+/* Bare clickable — strip all chrome so the className fully owns the look. */
+.ds-iconbtn--plain { border: none; background: none; border-radius: 0; padding: 0; }
+.ds-iconbtn--plain:hover:not(:disabled) { background: none; }

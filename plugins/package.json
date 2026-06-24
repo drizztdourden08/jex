@@ -1,0 +1,14 @@
+{
+  "name": "@jex/plugins",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Builds the downloadable AI plugins: bundles @jex/ai-core's entry and assembles each plugin's own node_modules with the right node-llama-cpp backend, then zips them + writes the manifest.",
+  "scripts": {
+    "build": "node build-plugins.mjs"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "esbuild": "^0.25.0"
+  }
+}

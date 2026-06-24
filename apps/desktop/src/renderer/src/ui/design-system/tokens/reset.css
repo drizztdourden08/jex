@@ -1,0 +1,8 @@
+/* Minimal reset. The fuller element base (scrollbars, body, links, default control
+   styling) lives in @ui/global.css; this file owns only the universal, token-independent
+   reset, loaded first. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

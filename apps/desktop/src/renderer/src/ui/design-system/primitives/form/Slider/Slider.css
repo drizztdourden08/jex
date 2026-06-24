@@ -1,0 +1,73 @@
+/* Slider — standardized number editor. Two identical large step buttons flank one unified
+   value│unit combo; a track-fill slider with end labels sits below. App colors only. */
+
+/* No surface of its own — it lives inside the dropdown surface (one box), just layout. */
+.nsl {
+  display: flex; flex-direction: column; gap: 16px; width: auto; min-width: 250px; max-width: 380px; padding: 12px;
+}
+.nsl-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+
+/* Identical round step buttons (the large IconButton, made circular with a glass fill). */
+.nsl-step.ds-iconbtn {
+  flex: none; border-radius: 999px;
+  background: var(--glass-2-bg); border: 1px solid var(--hairline-strong);
+  box-shadow: inset 0 1px 0 var(--top-highlight); transition: transform 140ms ease, background var(--dur-fast);
+}
+.nsl-step.ds-iconbtn:hover:not(:disabled) { background: var(--glass-3-bg); }
+.nsl-step.ds-iconbtn:active:not(:disabled) { transform: scale(0.95); }
+
+/* Unified value│unit field — ONE bordered box; the number and the unit each size to their
+   own content (not less, not more), split by a short vertical bar. */
+.nsl-combo {
+  display: inline-flex; align-items: stretch; width: max-content; height: 40px; overflow: hidden;
+  border: 1px solid var(--hairline-strong); border-radius: var(--r-md); background: var(--glass-1-bg);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.nsl-combo:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+
+/* Width is set inline (ch, from the integer digit count + a fixed ".5" reserve) so the
+   field only resizes at digit boundaries, never when toggling x ⇄ x.5. */
+.nsl-num {
+  box-sizing: content-box; height: 100%;
+  border: none; background: transparent; box-shadow: none; backdrop-filter: none; padding: 0 12px; text-align: center;
+  font-size: 17px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--text-1);
+}
+.nsl-num:focus { outline: none; }
+.nsl-num::-webkit-outer-spin-button, .nsl-num::-webkit-inner-spin-button { appearance: none; margin: 0; }
+
+/* Short, centered vertical separator — doesn't touch the box top/bottom. */
+.nsl-div { flex: none; align-self: center; width: 1px; height: 18px; background: var(--hairline-strong); }
+
+/* Unit slot — either a chromeless (triggerBare) Select for min⇄hours, or static text.
+   Sized to content; the combo box owns the border, so the unit carries no chrome. */
+.nsl-unit { display: inline-flex; align-items: center; }
+.nsl-unit .ds-select-trigger { height: 100%; padding: 0 10px 0 8px; color: var(--text-2); font-size: 13px; font-weight: 600; }
+
+.nsl-unit-static {
+  display: inline-flex; align-items: center; padding: 0 12px 0 8px;
+  color: var(--text-2); font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+
+.nsl-area { display: flex; flex-direction: column; }
+.nsl-shell { position: relative; height: 24px; display: flex; align-items: center; }
+
+.nsl-shell::before {
+  content: ''; position: absolute; left: 0; right: 0; height: 7px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent) 0 var(--value, 0%), var(--track, var(--hairline-strong)) var(--value, 0%) 100%);
+}
+
+/* Reset the global input border/background/padding — the track is the shell ::before. */
+.nsl-range {
+  position: relative; z-index: 2; width: 100%; height: 24px; margin: 0; padding: 0;
+  appearance: none; background: transparent; border: none; box-shadow: none; backdrop-filter: none; cursor: pointer;
+}
+.nsl-range:focus { outline: none; }
+.nsl-range::-webkit-slider-runnable-track { height: 7px; background: transparent; }
+
+.nsl-range::-webkit-slider-thumb {
+  appearance: none; width: 18px; height: 18px; margin-top: -6px;
+  border: 1px solid var(--hairline-strong); border-radius: 999px;
+  background: radial-gradient(circle at 35% 28%, var(--on-media), color-mix(in srgb, var(--on-media) 94%, var(--owned-only)) 70%);
+  box-shadow: 0 2px 7px var(--scrim-45), inset 0 1px 0 color-mix(in srgb, var(--on-media) 90%, transparent);
+}
+.nsl-scale { display: flex; justify-content: space-between; margin-top: 12px; color: var(--text-3); font-size: 13px; font-variant-numeric: tabular-nums; }

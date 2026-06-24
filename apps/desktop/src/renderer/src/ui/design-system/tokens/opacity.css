@@ -1,0 +1,5 @@
+/* Opacity scale — shared alpha steps (e.g. disabled state). Tokens land here as
+   recurring opacity values are extracted during Phase 5/6. */
+:root {
+  /* (no shared opacity tokens yet) */
+}

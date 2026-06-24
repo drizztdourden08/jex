@@ -1,0 +1,8 @@
+export { FilterPanel } from './FilterPanel'
+export type { FilterPanelProps } from './FilterPanel.type'
+export { SEARCH_THRESHOLD } from './FilterPanel.constants'
+export { Chip } from './sub-components/Chip'
+export { ValChip } from './sub-components/ValChip'
+export { Collapsible } from './sub-components/Collapsible'
+export { FacetSection } from './sub-components/FacetSection'
+export { ResetOverlay } from './sub-components/ResetOverlay'

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 26 408 408" width="408" height="408">
+  <!-- App icon: the Jex mascot, transparent (no backing badge), viewBox cropped
+       snug to the artwork. Rendered to build/icon.png by scripts/render-icon.mjs. -->
+  <defs>
+    <linearGradient id="shell" x1="122" y1="118" x2="376" y2="368" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1f2a44"/>
+      <stop offset="44%" stop-color="#0d1426"/>
+      <stop offset="100%" stop-color="#080c18"/>
+    </linearGradient>
+    <linearGradient id="shellRim" x1="155" y1="108" x2="355" y2="336" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="45%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="finGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#65e4ff"/>
+      <stop offset="50%" stop-color="#5b7cff"/>
+      <stop offset="100%" stop-color="#9d4edd"/>
+    </linearGradient>
+    <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.20  0 0 0 0 0.62  0 0 0 0 1.00  0 0 0 0.75 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-70%" y="-70%" width="240%" height="240%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000814" flood-opacity="0.55"/>
+    </filter>
+    <clipPath id="faceClip"><rect x="164" y="172" width="184" height="114" rx="52"/></clipPath>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <path d="M158 226 C104 218 78 235 62 260 C105 275 144 266 173 239 Z" fill="url(#finGrad)" opacity=".88"/>
+    <path d="M151 285 C107 302 92 328 92 355 C134 352 166 330 180 293 Z" fill="url(#finGrad)" opacity=".78"/>
+    <path d="M348 225 C397 210 424 223 446 246 C407 268 374 263 341 238 Z" fill="url(#finGrad)" opacity=".70"/>
+    <path d="M202 130 C187 93 170 73 145 61 C139 91 151 125 190 155 Z" fill="url(#finGrad)" stroke="#9cc9ff" stroke-opacity=".45" stroke-width="2"/>
+    <path d="M306 124 C318 85 338 66 361 55 C369 89 357 122 319 153 Z" fill="url(#finGrad)" stroke="#9cc9ff" stroke-opacity=".45" stroke-width="2"/>
+    <ellipse cx="256" cy="230" rx="126" ry="118" fill="none" stroke="url(#shellRim)" stroke-width="7" opacity=".82" filter="url(#softGlow)"/>
+    <path d="M256 112 C323 112 377 159 384 224 C391 291 335 348 256 348 C176 348 121 292 128 224 C135 159 190 112 256 112 Z" fill="url(#shell)"/>
+    <path d="M174 164 C204 134 248 126 292 134" fill="none" stroke="#b7e7ff" stroke-width="6" stroke-linecap="round" opacity=".26"/>
+    <path d="M144 234 C145 178 191 137 248 132" fill="none" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round" opacity=".26"/>
+    <rect x="154" y="162" width="204" height="134" rx="61" fill="#050914"/>
+    <rect x="164" y="172" width="184" height="114" rx="52" fill="#07101f" stroke="#214f84" stroke-width="3"/>
+    <g clip-path="url(#faceClip)" opacity=".28"><path d="M177 180 C226 162 284 165 336 190" fill="none" stroke="#7dd3fc" stroke-width="12" stroke-linecap="round"/></g>
+    <g filter="url(#softGlow)">
+      <rect x="204" y="211" width="25" height="55" rx="13" fill="#67e8f9"/>
+      <rect x="283" y="211" width="25" height="55" rx="13" fill="#67e8f9"/>
+    </g>
+    <circle cx="140" cy="249" r="18" fill="#111a31" stroke="#3867ff" stroke-opacity=".5" stroke-width="3"/>
+    <circle cx="372" cy="249" r="18" fill="#111a31" stroke="#8b5cf6" stroke-opacity=".5" stroke-width="3"/>
+    <path d="M206 337 C196 356 201 371 219 374 C237 370 236 350 226 337 Z" fill="#0b1020"/>
+    <path d="M286 337 C276 356 281 371 299 374 C317 370 316 350 306 337 Z" fill="#0b1020"/>
+    <g fill="#60a5fa" filter="url(#softGlow)">
+      <rect x="392" y="178" width="12" height="12" rx="2" opacity=".9"/>
+      <rect x="411" y="217" width="9" height="9" rx="2" opacity=".75"/>
+      <rect x="388" y="289" width="15" height="15" rx="3" opacity=".65"/>
+      <rect x="101" y="192" width="10" height="10" rx="2" opacity=".58"/>
+    </g>
+  </g>
+</svg>

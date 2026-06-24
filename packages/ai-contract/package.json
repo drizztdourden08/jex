@@ -1,0 +1,20 @@
+{
+  "name": "@jex/ai-contract",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The seam between the desktop host and the AI plugins: HostServices (what the host provides), AiPlugin (what a plugin exposes), and the signed PluginManifest.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@jex/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

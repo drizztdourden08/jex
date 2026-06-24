@@ -1,0 +1,5 @@
+/* Size scale — shared width/height/icon sizes. Named tokens land here as Phase 5/6
+   extract recurring magic px out of component CSS. */
+:root {
+  /* (no shared size tokens yet) */
+}

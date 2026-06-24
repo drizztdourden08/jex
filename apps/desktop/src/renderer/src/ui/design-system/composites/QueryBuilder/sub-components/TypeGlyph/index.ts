@@ -1,0 +1,1 @@
+export { TypeGlyph } from './TypeGlyph'

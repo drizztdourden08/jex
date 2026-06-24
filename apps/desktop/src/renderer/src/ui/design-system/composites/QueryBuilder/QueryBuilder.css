@@ -1,0 +1,68 @@
+/* QueryBuilder composite — generic condition-tree editor: groups, rules, value
+   pickers, the grouped field selector, and the boolean toggle. Migrated from
+   styles/sections/filters.css (Phase 5). Tokens only. Shared filter atoms
+   (.chip-btn, .val-chip, .facet-*) live in global.css. */
+
+.qb-group { border: 1px solid var(--hairline); border-radius: var(--r-md); padding: 10px; margin: 6px 0; background: color-mix(in srgb, var(--media-bg) 10%, transparent); }
+.qb-group.droppable { outline: 1px dashed var(--hairline-strong); outline-offset: 2px; }
+.qb-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.qb-comb { display: inline-flex; border: 1px solid var(--hairline); border-radius: var(--r-pill); overflow: hidden; }
+.qb-comb button { background: none; border: none; color: var(--text-2); padding: 4px 12px; cursor: pointer; font-size: 12px; }
+.qb-comb button:hover:not(.on) { background: var(--glass-2-bg); color: var(--text-1); }
+.qb-comb button.on { background: var(--accent); color: var(--on-media); }
+.qb-rules { display: flex; flex-direction: column; gap: 6px; padding-left: 8px; border-left: 2px solid var(--hairline); margin-left: 4px; }
+.qb-empty { font-size: 12px; margin: 4px 0; }
+.qb-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 4px; border-radius: var(--r-sm); }
+.qb-row:hover { background: color-mix(in srgb, var(--on-media) 3%, transparent); }
+.qb-handle { cursor: grab; color: var(--text-3); user-select: none; padding: 0 2px; }
+.qb-row select, .qb-text { width: auto; padding: 5px 8px; }
+.qb-field { max-width: 170px; }
+.qb-text { min-width: 150px; }
+.qb-value-wrap { position: relative; }
+
+/* The number picker trigger is a standard Select box now — this only sets its width. */
+.qb-value { min-width: 90px; }
+.qb-remove { background: none; border: none; color: var(--text-3); cursor: pointer; padding: 2px 6px; }
+.qb-remove:hover { color: var(--danger); background: none; }
+.qb-add { display: flex; gap: 8px; margin-top: 8px; padding-left: 8px; }
+.qb-add button { font-size: 12px; padding: 5px 10px; }
+
+.qb-pop-backdrop { position: fixed; inset: 0; z-index: 60; }
+
+.qb-pop {
+  position: fixed; z-index: 61;
+  background: var(--glass-3-bg); backdrop-filter: blur(var(--glass-3-blur));
+  border: 1px solid var(--hairline-strong); border-radius: var(--r-md);
+  box-shadow: var(--shadow-ambient); padding: 8px;
+}
+.qb-pop input[type='text'], .qb-pop input[type='number'] { width: 200px; }
+
+/* Advanced multi-value assembler: chips wrap inside a bordered box + a distinct + Add. */
+.qb-assembler {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  min-width: 160px; max-width: 460px; max-height: 92px; overflow-y: auto;
+  padding: 5px 6px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: color-mix(in srgb, var(--media-bg) 14%, transparent);
+}
+
+.qb-add-val {
+  background: none; border: 1px dashed var(--hairline-strong); border-radius: var(--r-pill);
+  color: var(--accent); padding: 3px 12px; font-size: 12px; cursor: pointer;
+}
+.qb-add-val:hover { background: var(--glass-2-bg); border-color: var(--accent); }
+
+/* Field picker — the trigger label + its type glyph (the dropdown itself is the base
+   Select; only this content is custom). */
+.fieldsel-cur { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.type-glyph { color: var(--secondary); flex: none; }
+
+/* enum/array value: picker button + removable chosen chips inline */
+.qb-value-multi { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+/* NOTE: the `.facet-box*` searchable-facet styles moved to ui/global.css so they are
+   loaded for BOTH FilterPanel's FacetSection and QueryBuilder's FacetPicker. */
+
+/* Second .qb-add-val rule (inline multi-value context): overrides the base sizing
+   above; kept as a separate block so the cascade order is preserved. */
+/* stylelint-disable-next-line no-duplicate-selectors */
+.qb-add-val { min-width: 0; padding: 5px 10px; }
+

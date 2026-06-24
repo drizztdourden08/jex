@@ -1,0 +1,40 @@
+/* Checkbox is a <button> (not a styled input), so global input rules don't touch it and
+   sizing is reliable. Translucent-slate box, blue glowing border; the white SVG check is
+   only rendered when checked. */
+.ds-checkbox {
+  flex: none;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--brand-slate) 50%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 36%, transparent);
+  color: var(--text-1);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.ds-checkbox-icon {
+  display: block;
+  width: 11px;
+  height: 11px;
+}
+
+.ds-checkbox:hover:not(:disabled) {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 52%, transparent);
+}
+
+.ds-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.ds-checkbox:disabled {
+  border-color: var(--hairline-strong);
+  box-shadow: none;
+  cursor: default;
+}

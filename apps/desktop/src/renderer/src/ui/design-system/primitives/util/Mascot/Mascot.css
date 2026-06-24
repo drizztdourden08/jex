@@ -1,0 +1,188 @@
+.mascot {
+  display: block;
+
+  /* viewBox is cropped snug to the artwork; let the bob/breathe/Zzz spill past it
+     rather than clip against the tight bounds. */
+  overflow: visible;
+}
+
+/* Bob origin is the sprite's center of mass; eye/z scale from their own center. */
+.mascot__body {
+  transform-origin: 256px 236px;
+}
+
+.mascot__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mascot__zzz {
+  opacity: 0;
+}
+
+.mascot__z {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* idle — awake & listening: a slow bob and the occasional blink. */
+.mascot--idle .mascot__body {
+  animation: mascot-bob 3.4s ease-in-out infinite;
+}
+
+.mascot--idle .mascot__eye {
+  animation: mascot-blink 5.2s ease-in-out infinite;
+}
+
+/* working — the AI is busy: brisker bob, quicker blinks, drifting pixels. */
+.mascot--working .mascot__body {
+  animation: mascot-bob 2.2s ease-in-out infinite;
+}
+
+.mascot--working .mascot__eye {
+  animation: mascot-blink 3.4s ease-in-out infinite;
+}
+
+.mascot--working .mascot__pixel--a {
+  animation: mascot-float-a 2.2s ease-in-out infinite;
+}
+
+.mascot--working .mascot__pixel--b {
+  animation: mascot-float-b 2.8s ease-in-out infinite;
+}
+
+.mascot--working .mascot__pixel--c {
+  animation: mascot-float-c 2.5s ease-in-out infinite;
+}
+
+.mascot--working .mascot__pixel--d {
+  animation: mascot-float-a 3.1s ease-in-out infinite reverse;
+}
+
+/* sleeping — nothing to do: closed eyes, slow breathing, drifting Zzz. */
+.mascot--sleeping .mascot__body {
+  animation: mascot-breathe 4.6s ease-in-out infinite;
+}
+
+.mascot--sleeping .mascot__eye {
+  transform: scaleY(0.12);
+}
+
+.mascot--sleeping .mascot__zzz {
+  opacity: 1;
+}
+
+.mascot--sleeping .mascot__z--1 {
+  animation: mascot-zzz 2.7s ease-in-out infinite;
+}
+
+.mascot--sleeping .mascot__z--2 {
+  animation: mascot-zzz 2.7s ease-in-out 0.55s infinite;
+}
+
+.mascot--sleeping .mascot__z--3 {
+  animation: mascot-zzz 2.7s ease-in-out 1.1s infinite;
+}
+
+@keyframes mascot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.012);
+  }
+}
+
+@keyframes mascot-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  95% {
+    transform: scaleY(0.12);
+  }
+}
+
+@keyframes mascot-float-a {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: translate(8px, -9px);
+    opacity: 1;
+  }
+}
+
+@keyframes mascot-float-b {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translate(-10px, -6px);
+    opacity: 0.95;
+  }
+}
+
+@keyframes mascot-float-c {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translate(6px, 10px);
+    opacity: 0.85;
+  }
+}
+
+@keyframes mascot-zzz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+
+  25% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(12px, -28px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot__body,
+  .mascot__eye,
+  .mascot__pixel--a,
+  .mascot__pixel--b,
+  .mascot__pixel--c,
+  .mascot__pixel--d,
+  .mascot__z--1,
+  .mascot__z--2,
+  .mascot__z--3 {
+    animation: none;
+  }
+}

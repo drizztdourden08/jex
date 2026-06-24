@@ -1,0 +1,34 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "no-descending-specificity": null,
+    "custom-property-pattern": null,
+    "selector-class-pattern": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "declaration-block-single-line-max-declarations": null,
+    "value-keyword-case": null
+  },
+  "overrides": [
+    {
+      "comment": "R13 token-policy: ui/ component CSS must use design COLOR tokens only — no raw hex/named colors or rgb()/hsl() functions; reference var(--*) instead. (Raw px for spacing/size is allowed: the app uses off-scale values and has no type scale; color/brand consolidation is the enforced policy.)",
+      "files": ["src/renderer/src/ui/**/*.css"],
+      "rules": {
+        "color-no-hex": true,
+        "color-named": "never",
+        "function-disallowed-list": ["rgb", "rgba", "hsl", "hsla", "hwb"]
+      }
+    },
+    {
+      "comment": "Token definition files are where raw color values are allowed to live.",
+      "files": ["src/renderer/src/ui/design-system/tokens/**/*.css"],
+      "rules": {
+        "color-no-hex": null,
+        "color-named": null,
+        "function-disallowed-list": null
+      }
+    }
+  ],
+  "ignoreFiles": ["**/node_modules/**", "out/**", "release/**", "src/renderer/public/**"]
+}

@@ -1,0 +1,26 @@
+.ds-tag {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+  padding: 3px 10px; border-radius: var(--r-pill); font: inherit; font-size: 12px;
+  color: var(--text-1); background: var(--glass-2-bg); border: 1px solid var(--hairline);
+  white-space: nowrap; vertical-align: middle;
+}
+
+button.ds-tag { cursor: pointer; transition: background var(--dur-fast), border-color var(--dur-fast); }
+button.ds-tag:hover { background: var(--glass-3-bg); border-color: var(--hairline-strong); }
+
+/* Selected/active: blue border + glow (the Aurora signature). */
+.ds-tag.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 10px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Leading glyph reads purple. */
+.ds-tag-icon { display: inline-flex; flex: none; color: var(--secondary); }
+.ds-tag-label { overflow: hidden; text-overflow: ellipsis; }
+
+.ds-tag-x {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: none; color: var(--text-3); cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 0; margin-left: 2px;
+}
+.ds-tag-x:hover { color: var(--danger); }

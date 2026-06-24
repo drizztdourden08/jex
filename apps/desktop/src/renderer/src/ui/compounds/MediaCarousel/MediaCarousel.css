@@ -1,0 +1,49 @@
+/* MediaCarousel — screenshot/trailer carousel: stage, thumbnail strip, and the
+   full-screen lightbox. Migrated from styles/sections/detail.css (Phase 5).
+   Tokens only. */
+.media-carousel { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-width: 100%; }
+
+.media-stage {
+  position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--r-lg);
+  overflow: hidden; background: var(--media-bg); box-shadow: var(--shadow-ambient);
+}
+.media-stage img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.media-empty { display: grid; place-items: center; background: var(--glass-1-bg); }
+.media-shot-btn { padding: 0; background: none; border: none; cursor: zoom-in; width: 100%; height: 100%; }
+
+/* align-items: flex-start keeps each thumb at its own aspect height (no vertical
+   squish); the vertical padding gives the hover lift room so it isn't clipped. */
+.media-thumbs {
+  display: flex; align-items: flex-start; gap: 8px; max-width: 100%;
+  overflow-x: auto; padding: 6px 2px;
+}
+
+.media-thumb {
+  position: relative; flex: 0 0 auto; width: 116px; aspect-ratio: 16 / 9; padding: 0;
+  border-radius: var(--r-md); overflow: hidden; cursor: pointer; background: var(--media-bg);
+  border: 2px solid transparent;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
+}
+.media-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.media-thumb:hover {
+  transform: translateY(-2px); border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.media-thumb.active { border-color: var(--accent); }
+
+.media-thumb-play {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--on-media); font-size: 16px; text-shadow: 0 1px 4px var(--media-bg); background: var(--scrim-25);
+}
+
+.lightbox {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: center;
+  background: var(--scrim-85); animation: ai-fade var(--dur-base) ease; cursor: zoom-out;
+}
+.lightbox img { max-width: 92vw; max-height: 88vh; border-radius: var(--r-md); box-shadow: var(--shadow-ambient); }
+
+.lightbox-close {
+  position: fixed; top: 16px; right: 20px; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--glass-2-bg); border: 1px solid var(--hairline); color: var(--text-1);
+}

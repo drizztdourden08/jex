@@ -1,0 +1,70 @@
+/* VideoPlayer — custom HLS player chrome (theater scrim, stage, big-play, controls,
+   seek/volume sliders, settings menu). Migrated from styles/sections/detail.css
+   (Phase 5). Tokens only. */
+.vp-root { width: 100%; min-width: 0; }
+.vp-scrim { position: fixed; inset: 0; background: var(--scrim-85); z-index: 59; display: none; }
+.vp-scrim.show { display: block; animation: ai-fade var(--dur-base) ease; }
+.vp-root.theater { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 3vh 3vw; }
+.vp-root.theater .vp-stage { width: min(94vw, 166vh); }
+
+.vp-stage {
+  position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--media-bg);
+  border-radius: var(--r-lg); overflow: hidden; isolation: isolate; box-shadow: var(--shadow-ambient);
+}
+
+.vp-stage video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  background: var(--media-bg); border-radius: 0; display: block; cursor: pointer;
+}
+.vp-stage:fullscreen { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; }
+
+.vp-bigplay {
+  position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--on-media); z-index: 1;
+  background: var(--scrim-45); border: 1px solid var(--on-media-25); cursor: pointer;
+  backdrop-filter: blur(4px); transition: background var(--dur-fast), transform var(--dur-fast);
+}
+.vp-bigplay:hover { background: var(--scrim-65); transform: scale(1.05); }
+.vp-bigplay svg { margin-left: 3px; }
+
+.vp-controls {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  padding: 26px 10px 8px; display: flex; flex-direction: column; gap: 4px;
+  background: linear-gradient(to top, var(--scrim-75), transparent);
+  opacity: 0; transition: opacity var(--dur-base);
+}
+.vp-stage:hover .vp-controls, .vp-stage:focus-within .vp-controls { opacity: 1; }
+.vp-bar { display: flex; align-items: center; gap: 8px; }
+
+.vp-bar button {
+  background: none; border: none; color: var(--on-media); padding: 4px 6px; cursor: pointer;
+  display: inline-flex; align-items: center; border-radius: var(--r-sm); font-size: 13px; line-height: 1;
+}
+.vp-bar button:hover { background: var(--on-media-15); }
+.vp-time { color: var(--on-media); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vp-spacer { flex: 1; }
+
+.vp-controls input[type='range'] {
+  appearance: none; height: 4px; border-radius: 999px; padding: 0;
+  background: var(--on-media-30); cursor: pointer;
+}
+.vp-seek { width: 100%; background: linear-gradient(to right, var(--accent) var(--pct, 0%), var(--on-media-30) var(--pct, 0%)); }
+.vp-vol { width: 70px; flex: none; }
+
+/* No focus ring on the player sliders (overrides the global input:focus outline). */
+.vp-seek:focus, .vp-seek:focus-visible, .vp-vol:focus, .vp-vol:focus-visible { outline: none; }
+
+.vp-controls input[type='range']::-webkit-slider-thumb {
+  appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--on-media);
+}
+
+.vp-menu-wrap { position: relative; display: inline-flex; }
+
+.vp-menu {
+  position: absolute; bottom: 100%; right: 0; margin-bottom: 6px; min-width: 84px;
+  background: var(--glass-3-bg); backdrop-filter: blur(var(--glass-3-blur));
+  border: 1px solid var(--hairline-strong); border-radius: var(--r-md);
+  box-shadow: var(--shadow-ambient); padding: 4px; display: flex; flex-direction: column; max-height: 220px; overflow: auto;
+}
+.vp-menu button { justify-content: flex-start; width: 100%; padding: 6px 10px; white-space: nowrap; }
+.vp-menu button.on { color: var(--accent); }

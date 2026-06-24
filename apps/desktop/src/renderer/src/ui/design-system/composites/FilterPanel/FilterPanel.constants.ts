@@ -1,0 +1,3 @@
+const SEARCH_THRESHOLD = 24
+
+export { SEARCH_THRESHOLD }

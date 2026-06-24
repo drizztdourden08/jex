@@ -1,0 +1,17 @@
+/* Parallel-worker mini progress bars (library sync). Colocated from
+   styles/sections/surfaces.css (Phase 5). Tokens only. */
+.worker-row { display: flex; align-items: center; gap: 10px; }
+.wbar { flex: 0 0 120px; height: 6px; border-radius: var(--r-pill); background: var(--glass-1-bg); overflow: hidden; position: relative; }
+.wbar > span { display: block; height: 100%; border-radius: var(--r-pill); }
+.wbar.idle > span { width: 0; }
+.wbar.done > span { width: 100%; background: var(--success); transition: width var(--dur-slow); }
+.wbar.fetching > span { width: 40%; background: var(--ai-gradient); animation: wbar-slide 1.1s ease-in-out infinite; }
+
+@keyframes wbar-slide {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wbar.fetching > span { animation: none; width: 60%; }
+}

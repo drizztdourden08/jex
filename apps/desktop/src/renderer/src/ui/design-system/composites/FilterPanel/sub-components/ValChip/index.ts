@@ -1,0 +1,1 @@
+export { ValChip } from './ValChip'

@@ -1,0 +1,10 @@
+/* Content-aware: never grow to fill the row; cap the width so chips wrap to a new line
+   after ~3 rather than stretching out. */
+.facet-field { display: flex; flex: 0 1 auto; flex-direction: column; gap: 6px; min-width: 0; max-width: 300px; }
+
+.facet-field-head { display: flex; align-items: center; gap: 6px; }
+.facet-field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); }
+.facet-field-count { font-size: 11px; color: var(--secondary); font-variant-numeric: tabular-nums; }
+
+.facet-field-body { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.facet-add { display: inline-flex; }

@@ -1,0 +1,263 @@
+/* Global base — element defaults + app-wide chrome (scrollbars, body, links, default
+   controls). Migrated from styles/sections/base.css (Phase 5). Imported once in
+   main.tsx after the tokens, so component CSS can override via specificity. The
+   universal box-sizing reset lives in @ds/tokens/reset.css. Tokens only. */
+
+/* Ultra-slim, semi-transparent purple, rounded scrollbars (Chromium + Firefox). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--brand-purple) 55%, transparent) transparent;
+}
+
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand-purple) 45%, transparent);
+  border-radius: var(--r-pill);
+}
+
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--brand-purple) 70%, transparent); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+html, body, #root { height: 100%; margin: 0; background: transparent; }
+
+body {
+  background: transparent; /* let the window's acrylic material show through */
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Buttons are styled entirely by the Button / IconButton primitives and component
+   classes (SegmentedControl, Select trigger, …). The global element rule is a bare
+   reset only — NO accent background/hover here, or it leaks onto every primitive
+   (e.g. the segmented control's hover). */
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+input, textarea, select {
+  font: inherit;
+  color: var(--text-1);
+  background: var(--glass-2-bg);
+  backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: 8px 10px;
+  width: 100%;
+}
+
+input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* App layout structure (shared by Layout + FirstRun). */
+
+/* interpolate-size lets width/height transitions animate to/from max-content (the
+   dropdown grow animates width on open, not just close). */
+:root { --sidebar-w: 200px; interpolate-size: allow-keywords; }
+.root-shell { height: 100vh; display: flex; flex-direction: column; }
+.app { flex: 1; min-height: 0; display: grid; grid-template-columns: var(--sidebar-w) 1fr; }
+.content { padding: 22px 26px; overflow: hidden auto; min-width: 0; min-height: 0; }
+.content--bleed { padding: 0; overflow: hidden; } /* full-bleed host for the store webview */
+
+/* Global display headings (app chrome uses the display face; Steam prose keeps body). */
+h1 { font-size: 22px; font-weight: 400; margin: 0 0 12px; font-family: var(--font-display); letter-spacing: 0.01em; }
+h2 { font-family: var(--font-display); letter-spacing: 0.01em; }
+h3 { font-size: 15px; font-weight: 400; margin: 0 0 10px; font-family: var(--font-display); letter-spacing: 0.01em; }
+
+.steam-html h1, .steam-html h2, .steam-html h3 {
+  font-family: var(--font-body); letter-spacing: normal; font-weight: 600;
+}
+
+/* ── Shared surfaces & utilities (from styles/sections/surfaces.css) ───────────
+   Cross-cutting classes used across many components. Phase 6 promotes the card/
+   toggle/badge/pill patterns to primitives; until then they live here. Tokens only. */
+.panel {
+  background: var(--glass-2-bg); backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline); border-radius: var(--r-lg);
+  padding: 16px; margin-bottom: 16px; box-shadow: inset 0 1px 0 var(--top-highlight);
+}
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.field { margin-bottom: 12px; }
+
+.field label {
+  display: block; margin-bottom: 4px; color: var(--text-2);
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.muted { color: var(--text-2); }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 9px 0; }
+.toggle-row + .toggle-row { border-top: 1px solid var(--hairline); }
+.toggle-label { display: block; color: var(--text-1); }
+.toggle-hint { display: block; font-size: 12px; margin-top: 2px; max-width: 60ch; }
+
+.pill {
+  display: inline-block; background: var(--glass-2-bg); backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline); border-radius: var(--r-pill);
+  padding: 2px 10px; font-size: 12px; margin: 0 4px 4px 0; color: var(--text-2);
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+
+.card {
+  background: var(--glass-2-bg); backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline); border-radius: var(--r-lg); overflow: hidden;
+  box-shadow: inset 0 1px 0 var(--top-highlight); transition: transform var(--dur-fast), border-color var(--dur-fast);
+
+  /* Skip layout/paint for off-screen cards — keeps a 1000+ game grid smooth. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 150px;
+}
+
+/* The card is an <a>; never let the global a:hover underline its contents. */
+.card, .card:hover { text-decoration: none; }
+
+.card:hover {
+  transform: translateY(-2px); border-color: var(--accent);
+  box-shadow: inset 0 1px 0 var(--top-highlight), 0 0 0 1px var(--accent), 0 0 16px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.card img { width: 100%; display: block; aspect-ratio: 460 / 215; object-fit: cover; background: var(--solid-2); }
+.card .body { padding: 10px 12px; }
+.card .title { font-weight: 600; color: var(--text-1); margin-bottom: 4px; }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.inst { background: var(--installed); }
+.dot.own { background: transparent; border: 1.5px solid var(--owned-only); }
+
+/* Per-card overlay action (top-left; GameCard renders it when given an `action` prop). */
+.card-action { position: absolute; top: 6px; left: 6px; z-index: 2; }
+
+/* Library-card feature badges (over the art, top-right). */
+.card-art { position: relative; }
+
+/* Broken/missing cover art → dark-slate panel with a faint (~20%) greyscale mascot,
+   centered. Occupies the cover's aspect box so the card keeps its shape. */
+.card-art-fallback {
+  display: grid; place-items: center; width: 100%; aspect-ratio: 460 / 215;
+  background: var(--solid-2);
+}
+.card-art-fallback-mascot { opacity: 0.2; filter: grayscale(1); }
+.card-badges { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; }
+
+.card-badge {
+  display: grid; place-items: center; width: 22px; height: 22px; border-radius: var(--r-sm);
+  background: var(--scrim-65); backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline); color: var(--text-1);
+}
+
+.progress { height: 8px; background: var(--glass-1-bg); border-radius: var(--r-pill); overflow: hidden; }
+.progress > span { display: block; height: 100%; background: var(--ai-gradient); transition: width 400ms var(--ease-standard); }
+
+/* Small pill labels (recommended / tool-ready badges) */
+.badge {
+  display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: var(--r-pill);
+  font-size: 11px; font-weight: 600; vertical-align: middle;
+  background: var(--accent); color: var(--text-on-accent);
+}
+.badge.subtle { background: var(--glass-2-bg); color: var(--text-1); border: 1px solid var(--hairline); }
+
+video { width: 100%; border-radius: var(--r-md); background: var(--media-bg); }
+pre { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; }
+
+/* ── Cross-cutting: ghost buttons + Steam prose (from styles/sections/detail.css) ──
+   Used by multiple components: button.ghost also styles QueryBuilder's GroupEditor;
+   the .steam-html base rules apply wherever Steam-supplied HTML is rendered (game
+   detail description + requirements). Tokens only. */
+button.ghost { background: var(--glass-2-bg); backdrop-filter: blur(var(--glass-2-blur)); border: 1px solid var(--hairline); }
+button.ghost:hover { background: var(--glass-3-bg); }
+
+.steam-html { line-height: 1.6; color: var(--text-1); }
+.steam-html img { max-width: 100%; height: auto; border-radius: var(--r-md); margin: 10px 0; }
+.steam-html h2 { font-size: 16px; margin: 18px 0 8px; }
+.steam-html ul { padding-left: 18px; }
+.steam-html a { color: var(--accent); }
+
+/* ── Shared filter atoms — used by FilterPanel facets, QueryBuilder FacetPicker,
+   and other components (migrated from styles/sections/filters.css, Phase 5). ── */
+.facet-plain { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 0 4px; }
+
+/* Searchable facet box (large facets: a header with a filter input + a live count,
+   over a scrollable chip container). Used by BOTH FilterPanel's FacetSection and
+   QueryBuilder's FacetPicker, so it lives here (global) — not colocated. */
+.facet-box {
+  width: 264px; max-width: 92vw;
+  border: 1px solid var(--hairline); border-radius: var(--r-md); overflow: hidden;
+  background: var(--glass-3-bg); backdrop-filter: blur(var(--glass-3-blur));
+  box-shadow: var(--shadow-ambient);
+}
+
+.facet-box-head {
+  display: flex; align-items: center;
+  border-bottom: 1px solid var(--hairline); background: color-mix(in srgb, var(--media-bg) 22%, transparent);
+}
+
+.facet-box-input {
+  flex: 1; min-width: 0; width: auto;
+  border: none; border-radius: 0; background: transparent; padding: 8px 10px;
+}
+.facet-box-input:focus { outline: none; }
+
+.facet-box-count {
+  flex: none; padding: 0 12px; font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums;
+}
+
+.facet-box-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 10px; max-height: 152px; overflow-y: auto;
+}
+
+/* Facet/feature glyphs in pickers read in the secondary (purple) accent. */
+.facet-box-chips svg { color: var(--secondary); }
+
+/* Chip buttons (facets, features) — subtle hover, accent only when selected. */
+.chip-btn { cursor: pointer; margin: 0; display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); }
+.chip-btn:hover:not([data-on]) { background: var(--glass-3-bg); color: var(--text-1); }
+
+/* Selected = blue border + soft glow (matches the segmented control). The :hover
+   variant keeps the tint so the global accent-fill hover can't override it. */
+.chip-btn[data-on], .chip-btn[data-on]:hover {
+  color: var(--text-1); border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* selected-value chips (removable) — used in normal facets + advanced rows */
+.facet-selected { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+.val-chip {
+  display: inline-flex; align-items: center; gap: 4px; color: var(--text-1); font-size: 12px;
+  background: var(--glass-2-bg); border: 1px solid var(--hairline-strong); border-radius: var(--r-pill);
+  padding: 2px 4px 2px 10px;
+}
+.val-chip button { background: none; border: none; color: var(--text-3); cursor: pointer; padding: 0 4px; font-size: 11px; line-height: 1; }
+.val-chip button:hover { color: var(--danger); background: none; }
+
+/* ── Toolbar sort controls (compact) — SortControls isn't in ui/ yet, so its CSS
+   lives global for now (migrated from styles/sections/filters.css, Phase 5). ── */
+.sort-controls { display: flex; align-items: center; gap: 6px; flex: none; }
+.sort-controls select { width: auto; padding: 6px 8px; }
+.sort-label { font-size: 12px; }
+
+/* Native dropdown list: dark, not the default grey-on-white. */
+select { color-scheme: dark; }
+select option, select optgroup { background-color: var(--solid-2); color: var(--text-1); }
+
+/* ── Skeletons (progressive loading placeholders) — shared by multiple skeleton
+   sub-components (migrated from styles/sections/filters.css, Phase 5). ── */
+@keyframes skeleton-pulse { 0%,100% { opacity: 0.45; } 50% { opacity: 0.85; } }
+
+.skeleton {
+  position: relative; overflow: hidden; border-radius: var(--r-sm);
+  background: var(--glass-2-bg); animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+.skeleton-line { display: inline-block; height: 12px; border-radius: 6px; }
+.skeleton-pill { display: inline-block; height: 22px; border-radius: var(--r-pill); }
+.skeleton-track { height: 8px; border-radius: 999px; margin-top: 6px; }
+.skeleton-block { height: 88px; border-radius: var(--r-md); margin-bottom: 12px; }
+.skeleton-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }

@@ -1,0 +1,13 @@
+/* Search result overlays: discount (top-left) + owned/wishlist status (top-right). */
+.search-badge {
+  position: absolute; top: 6px; z-index: 2; padding: 2px 7px; border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 700; line-height: 1.5; backdrop-filter: blur(6px);
+  border: 1px solid var(--hairline);
+}
+.search-discount { left: 6px; background: color-mix(in srgb, var(--success) 85%, transparent); color: var(--text-on-accent); border-color: transparent; }
+.search-owned { right: 6px; background: var(--scrim-65); color: var(--text-1); }
+
+.search-review { font-weight: 700; }
+.search-review.good { color: var(--success); }
+.search-review.mid { color: var(--warning); }
+.search-review.bad { color: var(--danger); }

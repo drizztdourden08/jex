@@ -1,0 +1,49 @@
+/* FilterPanel composite — generic faceted-filter shell: topbar, body, reset overlay,
+   and collapsible facet sections. Migrated from styles/sections/filters.css (Phase 5).
+   Tokens only. Shared filter atoms (.chip-btn, .val-chip, .facet-*) live in global.css. */
+
+/* ── Filter panel: mode toggle, reset overlay ── */
+.filter-panel { position: relative; }
+.filter-topbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.filter-text { max-width: 360px; flex: 1; }
+
+/* Body holds the (overlay-able) filter content below the always-visible toggle. */
+.filter-body { position: relative; }
+.filter-body.has-overlay { min-height: 96px; }
+
+/* Sort/clear/count cluster in the filter top bar. */
+.filter-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+/* Compact variant: covers just the Basic text input. */
+.filter-text-wrap { position: relative; flex: 1; max-width: 360px; }
+.filter-text-wrap .filter-text { width: 100%; max-width: none; }
+
+.filter-reset-overlay {
+  position: absolute; inset: 0; z-index: 5; cursor: pointer; border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--danger) 16%, transparent); border: 2px solid var(--danger);
+  display: grid; place-items: center; backdrop-filter: blur(1px);
+}
+.filter-reset-msg { text-align: center; max-width: 400px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.filter-reset-msg strong { color: var(--on-media); font-size: 15px; }
+.filter-reset-msg span { color: color-mix(in srgb, var(--on-media) 85%, transparent); font-size: 13px; }
+.filter-reset-overlay.compact { border-width: 1px; border-radius: var(--r-md); color: var(--on-media); font-size: 12px; }
+
+/* ── Collapsible facet sections, responsive columns ── */
+.fsec-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px 18px; align-items: start;
+}
+.fsec { min-width: 0; }
+
+.fsec-head {
+  display: flex; align-items: center; gap: 8px; width: 100%; cursor: pointer;
+  background: none; border: none; padding: 7px 0; color: var(--text-2);
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+/* No accent-blue on the header — just a subtle text/bg shift (the global
+   button:hover sets an accent bg, which we explicitly cancel here). */
+.fsec-head:hover { color: var(--text-1); background: none; }
+.fsec-chevron { width: 12px; font-size: 10px; color: var(--text-3); flex: none; }
+.fsec-count { margin-left: auto; color: var(--text-3); text-transform: none; font-variant-numeric: tabular-nums; }
+.fsec-body { padding-bottom: 6px; }

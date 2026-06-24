@@ -1,0 +1,181 @@
+/* Ai model picker (Settings view). Shares one 6-column grid between the download
+   dropdown and the installed list so sizes line up across both. Tokens only. */
+
+.model-intro { margin-top: 0; }
+.model-error { color: var(--danger); }
+.model-warn { margin: 8px 0 0; font-size: 13px; color: var(--warn, var(--text-1)); }
+
+/* CUDA acceleration callout (NVIDIA + CUDA not yet active). */
+.cuda-callout {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 14px; margin: 10px 0;
+  border-radius: var(--r-md);
+  background: var(--glass-1-bg); border: 1px solid var(--hairline);
+}
+.cuda-callout-text { min-width: 0; flex: 1; }
+.cuda-callout-text strong { display: block; margin-bottom: 2px; }
+.cuda-callout-text p { margin: 0; font-size: 13px; }
+.cuda-install-btn { flex: none; white-space: nowrap; }
+.cuda-done { margin: 4px 0 0; font-size: 13px; color: var(--accent); }
+.cuda-progress { flex: none; display: flex; align-items: center; gap: 10px; max-width: 320px; }
+.cuda-progress .muted { font-size: 13px; }
+
+.cuda-spinner {
+  flex: none; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--hairline-strong); border-top-color: var(--accent);
+  animation: cuda-spin 0.8s linear infinite;
+}
+
+@keyframes cuda-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) { .cuda-spinner { animation: none; } }
+
+/* ── Download bar: compare-dropdown + Download button side by side ─────────── */
+
+/* The model dropdown fills the remaining width with the Download button beside it. */
+.model-download-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.model-select { position: relative; flex: 1 1 auto; min-width: 0; }
+
+.model-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  text-align: left;
+  border-radius: var(--r-md);
+  background: var(--glass-2-bg);
+  backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+
+/* Hover adds only a blue border glow — the glass background never changes. */
+.model-select-trigger:hover:not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.model-select-trigger:disabled { opacity: 0.6; cursor: default; }
+.model-select-current { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.model-select-name { font-weight: 600; }
+.model-select-sub { font-size: 13px; }
+.model-select-caret { flex: none; color: var(--text-2); font-size: 12px; }
+
+.model-download-btn { flex: none; align-self: stretch; white-space: nowrap; }
+
+/* ── Dropdown panel ───────────────────────────────────────────────────────── */
+
+/* The Select surface provides the glass box; the panel is just the scrollable grid body. */
+.model-select-panel {
+  padding: 6px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+/* ── Shared comparison grid ───────────────────────────────────────────────── */
+.model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.6fr 0.8fr 0.7fr 0.7fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.model-row-head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 4px;
+}
+
+.model-row-opt {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+
+/* :not(.active) keeps the specificity above the global `button:hover` accent. */
+.model-row-opt:hover:not(.active) { background: var(--glass-1-bg); border-color: var(--hairline); }
+.model-row-opt.on { border-color: var(--accent); }
+.model-row-opt.active { border-color: var(--accent); background: var(--glass-1-bg); cursor: default; }
+.model-row-opt.active:hover { background: var(--glass-1-bg); }
+.model-row-name { font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+
+/* Custom radio dot (native inputs are forced full-width by a global rule). */
+.model-radio {
+  width: 14px; height: 14px; flex: none; border-radius: 50%;
+  border: 2px solid var(--text-2); box-sizing: border-box; position: relative;
+}
+.model-radio.on { border-color: var(--accent); }
+
+.model-radio.on::after {
+  content: ''; position: absolute; inset: 2px; border-radius: 50%; background: var(--accent);
+}
+
+/* ── Installed list ───────────────────────────────────────────────────────── */
+.model-installed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+.model-installed-title { margin: 0; font-size: 14px; }
+.model-clean-btn { font-size: 13px; padding: 5px 12px; }
+.model-installed { margin-top: 8px; }
+.model-installed-empty { margin-top: 8px; font-size: 13px; }
+
+/* Installed rows add a trailing action column for the Remove button. */
+.model-row-installed {
+  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.6fr 0.8fr 0.7fr 0.7fr auto;
+}
+.model-remove { padding: 4px 12px; font-size: 12px; justify-self: end; }
+.model-remove:hover { color: var(--danger); border-color: var(--danger); }
+
+/* Downloading rows: a dimmed, non-interactive flex row (no radio, no comparison
+   columns) with the progress in a translucent pill right beside the model name —
+   so it doesn't widen a grid column and knock the installed rows out of line. */
+.model-row-downloading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  font-size: 13px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.model-dl-name { font-weight: 600; white-space: nowrap; }
+
+.model-dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: var(--scrim-soft);
+}
+
+.model-dl-bar {
+  width: 90px; height: 6px; border-radius: var(--r-pill); overflow: hidden;
+  background: var(--track-fill);
+}
+
+.model-dl-bar > span {
+  display: block; height: 100%; background: var(--ai-gradient);
+  transition: width 300ms var(--ease-standard);
+}
+.model-dl-pct { font-size: 12px; white-space: nowrap; min-width: 64px; }
+.model-dl-meta { font-size: 12px; margin-left: auto; white-space: nowrap; }

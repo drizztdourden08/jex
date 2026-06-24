@@ -1,0 +1,58 @@
+/* Surface tokens — the Aurora glass system + solid fallbacks. Every dark surface
+   derives from the same brand slate, so there is one surface color used at varying
+   opacities, not several near-duplicates. Glass tints sit on top of the OS acrylic;
+   the acrylic provides the blur/frost, these add depth and legibility. */
+:root {
+  --backdrop-tint: rgba(8, 12, 18, 0.22);
+
+  /* Glass base — the brand slate darkened toward the original Aurora navy so the
+     translucent tints read as clear glass over the acrylic instead of a milky film.
+     Palette-derived (no new color); the three tiers share this base at rising alpha. */
+  --glass-base: color-mix(in srgb, var(--brand-dark-slate) 60%, #000);
+  --glass-1-bg: color-mix(in srgb, var(--glass-base) 28%, transparent);  --glass-1-blur: 14px;
+  --glass-2-bg: color-mix(in srgb, var(--glass-base) 46%, transparent);  --glass-2-blur: 22px;
+  --glass-3-bg: color-mix(in srgb, var(--glass-base) 66%, transparent);  --glass-3-blur: 34px;
+
+  /* Frosted-glass filter params (the #frost-blur SVG filter, electron#39529 alpha-aware blur).
+     FrostFilter pushes these onto its primitives. Tweak live in the dev console: edit a value
+     on :root, then run window.applyFrost(). --frost-sat is plain CSS and applies instantly. */
+  --frost-blur: 10;      /* feGaussianBlur stdDeviation — blur strength (kills text) */
+  --frost-boost: 1.25;   /* step-8 opacity slope — LOWER = backdrop shapes show, less milky */
+  --frost-dilate: 12;    /* alpha dilate radius — LOWER = sharper container outlines */
+  --frost-sat: 1.5;      /* CSS saturate() on the backdrop (live) */
+  --frost-veil: rgb(0 0 0 / 40%);  /* black wash layered over the glass tint on dropdowns */
+
+  /* Solid surfaces — the brand slate darkened to the original deep-navy fill used by
+     dropdown menus, native option lists, and the reduced-transparency fallback. */
+  --solid-2: color-mix(in srgb, var(--brand-dark-slate) 65%, #000);
+  --solid-3: color-mix(in srgb, var(--brand-dark-slate) 82%, #000);
+  --hairline: rgba(255, 255, 255, 0.1);
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --top-highlight: rgba(255, 255, 255, 0.06);
+
+  /* Translucent fills for pills/scrims and progress tracks. */
+  --scrim-soft: rgb(0 0 0 / 28%);
+  --track-fill: rgb(255 255 255 / 12%);
+
+  /* Media overlays — functional neutrals for video/image surfaces (centralized so
+     scrim opacities stay consistent, not re-invented per component). */
+  --media-bg: #000;
+  --on-media: #fff;
+  --scrim-25: rgb(0 0 0 / 25%);
+  --scrim-45: rgb(0 0 0 / 45%);
+  --scrim-65: rgb(0 0 0 / 65%);
+  --scrim-75: rgb(0 0 0 / 75%);
+  --scrim-85: rgb(0 0 0 / 85%);
+  --on-media-15: rgb(255 255 255 / 15%);
+  --on-media-25: rgb(255 255 255 / 25%);
+  --on-media-30: rgb(255 255 255 / 30%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-1-bg: var(--solid-2); --glass-1-blur: 0px;
+    --glass-2-bg: var(--solid-2); --glass-2-blur: 0px;
+    --glass-3-bg: var(--solid-3); --glass-3-blur: 0px;
+    --hairline: rgba(255, 255, 255, 0.16);
+  }
+}

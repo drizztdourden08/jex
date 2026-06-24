@@ -1,0 +1,26 @@
+/* Light, minimal table — hairline row separators, faint uppercase-ish header, roomy
+   cells. Domain-agnostic; colors are tokens only. */
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ds-table-th {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.ds-table-td {
+  padding: 9px 10px;
+  font-size: 13px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+}
+
+.ds-table-tr:last-child .ds-table-td {
+  border-bottom: none;
+}

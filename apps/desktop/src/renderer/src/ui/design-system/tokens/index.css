@@ -1,0 +1,13 @@
+/* Design tokens — the single @import entry. Imported once in main.tsx. Order matters:
+   reset first, then color (brand palette) before surface (which derives from it). */
+@import url('./reset.css');
+@import url('./color.css');
+@import url('./surface.css');
+@import url('./space.css');
+@import url('./size.css');
+@import url('./radius.css');
+@import url('./typography.css');
+@import url('./shadow.css');
+@import url('./motion.css');
+@import url('./z-index.css');
+@import url('./opacity.css');

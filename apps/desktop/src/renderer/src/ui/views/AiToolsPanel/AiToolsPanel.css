@@ -1,0 +1,19 @@
+/* AI tools & permissions list (Settings). Colocated from styles/sections/surfaces.css
+   (Phase 5). Tokens only. */
+.ai-tool-group { margin-top: 14px; }
+
+.ai-tool-cat {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-2); margin-bottom: 6px;
+}
+
+.ai-tool-row {
+  display: grid; grid-template-columns: 1fr 150px; align-items: center; gap: 14px;
+  padding: 10px 0;
+}
+.ai-tool-row + .ai-tool-row { border-top: 1px solid var(--hairline); }
+.ai-tool-info { min-width: 0; }
+.ai-tool-name { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.ai-tool-name code { font-size: 13px; background: var(--glass-1-bg); padding: 1px 6px; border-radius: var(--r-sm); }
+.ai-tool-desc { font-size: 13px; margin-top: 3px; }
+.ai-tool-policy { width: 150px; }
