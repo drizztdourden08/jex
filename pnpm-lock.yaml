@@ -75,7 +75,7 @@ importers:
         specifier: ^7.0.3
         version: 7.0.3
       electron:
-        specifier: ^33.4.11
+        specifier: 33.4.11
         version: 33.4.11
       electron-builder:
         specifier: ^25.1.8
@@ -131,7 +131,7 @@ importers:
         specifier: ^22.19.21
         version: 22.20.0
       electron:
-        specifier: ^33.4.11
+        specifier: 33.4.11
         version: 33.4.11
       typescript:
         specifier: ^5.6.3
