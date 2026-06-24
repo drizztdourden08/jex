@@ -1,4 +1,10 @@
-# 🎮 Jex
+<p align="center">
+  <img src="apps/desktop/assets/icon.png" alt="Jex logo" width="120" />
+</p>
+
+<p align="center">
+  <img src="apps/desktop/assets/wordmark.svg" alt="Jex" width="120" />
+</p>
 
 ![Platform](https://img.shields.io/badge/platform-Windows-0078D6)
 ![Electron](https://img.shields.io/badge/Electron-33-47848F?logo=electron&logoColor=white)
