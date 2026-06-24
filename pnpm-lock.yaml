@@ -10,12 +10,6 @@ importers:
 
   apps/desktop:
     dependencies:
-      '@jex/ai-contract':
-        specifier: workspace:*
-        version: link:../../packages/ai-contract
-      '@jex/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@node-steam/vdf':
         specifier: ^2.2.0
         version: 2.2.0
@@ -53,6 +47,12 @@ importers:
         specifier: ^5.0.2
         version: 5.0.14(@types/react@18.3.31)(react@18.3.1)
     devDependencies:
+      '@jex/ai-contract':
+        specifier: workspace:*
+        version: link:../../packages/ai-contract
+      '@jex/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.2.0
