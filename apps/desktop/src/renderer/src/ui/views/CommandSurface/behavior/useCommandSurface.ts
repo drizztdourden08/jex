@@ -28,7 +28,7 @@ const useCommandSurface = () => {
   const ready = !!active
 
   const refreshModels = async () => {
-    setModels(await window.api.ai.listModels())
+    setModels(await window.api.ai.listModels().catch(() => []))
   }
   const refreshContext = async () => {
     setCtx(await window.api.ai.contextStatus().catch(() => null))
@@ -42,11 +42,12 @@ const useCommandSurface = () => {
     window.api.ai.getPermissionMode().then(setPermMode).catch(() => {})
     void window.api.ai.warmup().catch(() => {})
     stick.current = true
-    setTimeout(() => {
+    const t = setTimeout(() => {
       inputRef.current?.focus()
       const el = scrollRef.current
       if (el) el.scrollTop = el.scrollHeight
     }, 60)
+    return () => clearTimeout(t)
   }, [open])
 
   useEffect(() => {
@@ -81,13 +82,19 @@ const useCommandSurface = () => {
   }, [busy, open, messages.length])
 
   const changeContextLevel = async (level: ContextLevel) => {
+    const prev = ctxLevel
     setCtxLevel(level)
-    await window.api.ai.setContextLevel(level)
+    try {
+      await window.api.ai.setContextLevel(level)
+    } catch {
+      setCtxLevel(prev)
+    }
     await refreshContext()
   }
   const changePermMode = async (mode: PermissionMode) => {
+    const prev = permMode
     setPermMode(mode)
-    await window.api.ai.setPermissionMode(mode)
+    await window.api.ai.setPermissionMode(mode).catch(() => setPermMode(prev))
   }
   const submit = () => {
     if (!prompt.trim() || busy) return
@@ -97,14 +104,21 @@ const useCommandSurface = () => {
     inputRef.current?.focus()
   }
   const copyTranscript = () => {
-    void navigator.clipboard.writeText(transcriptText(messages)).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    })
+    navigator.clipboard
+      .writeText(transcriptText(messages))
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      })
+      .catch(() => {})
   }
   const switchModel = async (id: string) => {
-    await window.api.ai.setModel(id)
-    await window.api.ai.resetChat()
+    try {
+      await window.api.ai.setModel(id)
+      await window.api.ai.resetChat()
+    } catch {
+      // The refreshed list below shows which model is really active.
+    }
     await refreshModels()
   }
 
