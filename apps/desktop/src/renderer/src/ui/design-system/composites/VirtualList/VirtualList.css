@@ -2,8 +2,7 @@
    visible rows are absolutely placed inside it. Domain-agnostic; tokens only. */
 .ds-vlist {
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   min-height: 0;
   outline: none;
   overscroll-behavior: contain;

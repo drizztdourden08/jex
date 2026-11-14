@@ -37,6 +37,7 @@
   /* Media overlays — functional neutrals for video/image surfaces (centralized so
      scrim opacities stay consistent, not re-invented per component). */
   --media-bg: #000;
+
   /* Steam store's own page colour, shown behind the webview while a page loads. */
   --store-bg: #1b2838;
   --on-media: #fff;
