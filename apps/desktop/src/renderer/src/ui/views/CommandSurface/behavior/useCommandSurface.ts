@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { AiModelOption } from '@shared/ai'
 import type { ContextStatus, ContextLevel, PermissionMode } from '@shared/agent'
 import { useAiDrawer } from '@/store/aiDrawer'
 import { useChat } from '@/store/chat'
 import { transcriptText } from '@/lib/chat/transcript'
+import { useModelOptions } from './useModelOptions'
 
 const useCommandSurface = () => {
   const { open, setOpen, toggle } = useAiDrawer()
@@ -13,7 +13,6 @@ const useCommandSurface = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const stick = useRef(true)
   const [prompt, setPrompt] = useState('')
-  const [models, setModels] = useState<AiModelOption[]>([])
   const [elapsed, setElapsed] = useState(0)
   const [ctx, setCtx] = useState<ContextStatus | null>(null)
   const [ctxLevel, setCtxLevel] = useState<ContextLevel>('high')
@@ -21,15 +20,9 @@ const useCommandSurface = () => {
   const [copied, setCopied] = useState(false)
 
   const navigate = useNavigate()
-  const installed = models.filter((m) => m.installed)
-  // "Ready" means the active model is actually downloaded — the saved default may
-  // point at a model the user never fetched, which must NOT read as ready.
-  const active = installed.find((m) => m.active) ?? null
-  const ready = !!active
-
-  const refreshModels = async () => {
-    setModels(await window.api.ai.listModels().catch(() => []))
-  }
+  // "Ready" means the active model is usable: a downloaded local model, or a remote
+  // model whose provider has a key. A stale saved default must NOT read as ready.
+  const { activeModel, modelGroups, ready, refresh: refreshModels, switchModel } = useModelOptions()
   const refreshContext = async () => {
     setCtx(await window.api.ai.contextStatus().catch(() => null))
   }
@@ -112,15 +105,6 @@ const useCommandSurface = () => {
       })
       .catch(() => {})
   }
-  const switchModel = async (id: string) => {
-    try {
-      await window.api.ai.setModel(id)
-      await window.api.ai.resetChat()
-    } catch {
-      // The refreshed list below shows which model is really active.
-    }
-    await refreshModels()
-  }
 
   const working = turn && busy
   const lastPart = turn?.parts[turn.parts.length - 1]
@@ -146,8 +130,8 @@ const useCommandSurface = () => {
     scrollRef,
     prompt,
     setPrompt,
-    installed,
-    active,
+    activeModel,
+    modelGroups,
     ready,
     ctx,
     ctxLevel,

@@ -12,9 +12,9 @@ const NoModelNotice = ({ onOpenSettings }: NoModelNoticeProps) => (
       <Mascot className="chat-intro-mascot" size={92} state="idle" />
       <Box className="cmd-no-model-body">
         <Box as="p" className="muted chat-hint">
-          To use the assistant, download a model first — it runs entirely on your PC.
+          To use the assistant, download a local model (it runs entirely on your PC) or add an API key in Settings to use a remote model.
         </Box>
-        <Button variant="primary" onClick={onOpenSettings}>Open Settings → AI model</Button>
+        <Button variant="primary" onClick={onOpenSettings}>Open Settings</Button>
       </Box>
     </Box>
   </Box>

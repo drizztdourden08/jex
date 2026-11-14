@@ -92,8 +92,8 @@ const AiEngineSection = ({
 
         <Text as="div" tone="muted">
           {status.installed
-            ? 'Your AI engine is installed. You can add any of the items below at any time.'
-            : 'Choose what to install — the recommended engine is pre-selected. The AI model itself is downloaded later from the model picker.'}
+            ? 'Your AI engine is installed. The native base is optional and only needed for local models; remote models run without it.'
+            : 'Install the AI engine (the ai-engine row) to use remote models. The native base is optional and only needed for local models; a local model itself is downloaded later from the model picker.'}
         </Text>
 
         <Table columns={COLUMNS} rows={rows} />
