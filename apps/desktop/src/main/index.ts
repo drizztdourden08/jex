@@ -10,6 +10,7 @@ import { createWindow } from './window/create-window'
 import { setMainWindow, getMainWindow } from './window/window-ref'
 import { scheduleStartupSync } from './app/startup-sync'
 import { runSmokeHarness } from './dev/smoke'
+import { failStartup } from './app/fail-startup'
 
 /**
  * Electron main process — app lifecycle + wiring only. Everything privileged lives
@@ -25,7 +26,7 @@ import { runSmokeHarness } from './dev/smoke'
 // Must be declared before app is ready: the localart:// scheme is privileged.
 registerLocalArtScheme()
 
-app.whenReady().then(async () => {
+const start = async (): Promise<void> => {
   await initDb()
   registerIpc()
   registerArtProtocol()
@@ -46,7 +47,9 @@ app.whenReady().then(async () => {
   const smokeMs = Number(process.env.SMOKE_MS)
   if (smokeMs > 0) runSmokeHarness(smokeMs)
   else scheduleStartupSync()
-})
+}
+
+app.whenReady().then(start).catch(failStartup)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()

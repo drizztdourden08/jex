@@ -1,4 +1,4 @@
-// AI host orchestrator. On startup, loads the base plugin if it's already installed;
+// AI host orchestrator. On startup, loads the base plugin (else the ai-engine) if installed;
 // otherwise the engine stays unset and the renderer shows the setup flow. Exposes the
 // status + install entry points the ai:* IPC handlers call. The UI dispatcher is built
 // once and reused for every (re)load.
@@ -9,7 +9,7 @@ import { loadPluginFrom } from './loader'
 import { installEngine as runInstall } from './install'
 import { isInstalled, installedDir, fetchManifest } from './source'
 import { cpus, totalmem, version } from 'node:os'
-import { basePluginId, cudaPluginId } from './resolve'
+import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { enginePlugins as catalogPlugins, isInstallablePlugin, isManualId } from './catalog'
 import { detectNvidia } from './detect'
 import { isCudaToolkitInstalled, installCudaToolkit } from './cuda-toolkit'
@@ -19,11 +19,11 @@ let sharedUi: UiDispatcher | null = null
 const ui = (): UiDispatcher => (sharedUi ??= createUiDispatcher())
 
 const initEngine = async (): Promise<void> => {
-  const base = basePluginId()
-  if (!isInstalled(base)) return
+  const id = [basePluginId(), ENGINE_PLUGIN_ID].find(isInstalled)
+  if (!id) return
   try {
-    await loadPluginFrom(installedDir(base), ui())
-    console.log(`[ai-host] loaded engine: ${base}`)
+    await loadPluginFrom(installedDir(id), ui())
+    console.log(`[ai-host] loaded engine: ${id}`)
   } catch (e) {
     console.error('[ai-host] failed to load installed engine:', e)
   }
@@ -42,6 +42,7 @@ const engineStatus = async (): Promise<AiEngineStatus> => {
     gpu,
     vramGb: vramMb != null ? Math.round(vramMb / 1024) : null,
     nvidiaGpu: gpu != null,
+    localRuntime: getEngine() != null && isInstalled(basePluginId()),
   }
 }
 

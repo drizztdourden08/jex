@@ -21,7 +21,7 @@ const useModelCatalog = () => {
   const { progress, errors, doneSeq, start } = useDownloads()
 
   const refresh = useCallback(async () => {
-    setModels(await window.api.ai.listModels())
+    setModels(await window.api.ai.listModels().catch(() => []))
   }, [])
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const useModelCatalog = () => {
 
   const select = useCallback(
     async (id: string) => {
-      await window.api.ai.setModel(id)
+      await window.api.ai.setModel(id).catch(() => {})
       await refresh()
     },
     [refresh],
@@ -44,7 +44,7 @@ const useModelCatalog = () => {
 
   const remove = useCallback(
     async (id: string) => {
-      await window.api.ai.deleteModel(id)
+      await window.api.ai.deleteModel(id).catch(() => {})
       await refresh()
     },
     [refresh],
@@ -53,7 +53,7 @@ const useModelCatalog = () => {
   /** Delete every installed model except the active one (the "Clean up" button). */
   const cleanInactive = useCallback(async () => {
     const stale = models.filter((m) => m.installed && !m.active)
-    for (const m of stale) await window.api.ai.deleteModel(m.id)
+    for (const m of stale) await window.api.ai.deleteModel(m.id).catch(() => {})
     await refresh()
   }, [models, refresh])
 

@@ -38,7 +38,7 @@ const AiToolsPanel = () => {
   const [tools, setTools] = useState<ToolInfo[]>([])
 
   useEffect(() => {
-    window.api.ai.listTools().then(setTools)
+    window.api.ai.listTools().then(setTools).catch(() => {})
   }, [])
 
   const grouped = useMemo(() => {
@@ -53,7 +53,12 @@ const AiToolsPanel = () => {
 
   const setPolicy = async (name: string, policy: ToolPolicy) => {
     setTools((ts) => ts.map((t) => (t.name === name ? { ...t, policy, overridden: true } : t)))
-    await window.api.ai.setToolPolicy(name, policy)
+    try {
+      await window.api.ai.setToolPolicy(name, policy)
+    } catch {
+      // Not saved: show what the agent will really use.
+      setTools(await window.api.ai.listTools().catch(() => tools))
+    }
   }
 
   if (tools.length === 0) return null

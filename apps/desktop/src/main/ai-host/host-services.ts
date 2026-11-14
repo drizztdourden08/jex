@@ -9,6 +9,7 @@ import { detectSteam } from '../steam/detect'
 import { searchCatalog } from '../steam/search'
 import { settings } from '../settings'
 import { setSecret } from '../secrets'
+import { createHostLlm } from '../ai-remote'
 
 /**
  * The concrete HostServices the desktop app injects into @jex/ai-core. This is the
@@ -16,6 +17,9 @@ import { setSecret } from '../secrets'
  * modules; the engine itself imports none of them. Wire it once at startup with
  * `setHost(createHostServices())`.
  */
+// Secrets a plugin may write. Provider keys are written by main only (ai:remote:setKey).
+const PLUGIN_WRITABLE_SECRETS: ReadonlySet<string> = new Set(['steamApiKey'])
+
 const createHostServices = (): HostServices => ({
   db: { getAllGames, getGame, getStats, getMeta, setMeta },
   wishlist: { listGroups, getGroup, createGroup, updateGroup, deleteGroup },
@@ -25,7 +29,13 @@ const createHostServices = (): HostServices => ({
     get: <T = unknown>(key: string): T | undefined => settings.get(key) as T | undefined,
     set: (key: string, value: unknown): void => settings.set(key, value as never),
   },
-  secrets: { setSecret },
+  secrets: {
+    setSecret: (name, value) => {
+      if (!PLUGIN_WRITABLE_SECRETS.has(name)) throw new Error('secret not writable')
+      setSecret(name, value)
+    },
+  },
+  llm: createHostLlm(),
   paths: {
     userData: app.getPath('userData'),
     models: join(app.getPath('userData'), 'models'),

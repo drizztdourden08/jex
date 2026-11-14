@@ -6,4 +6,7 @@ const basePluginId = (): string => (process.arch === 'arm64' ? 'ai-win-arm64' : 
 // x64 only — CUDA is layered on the x64 base.
 const cudaPluginId = (): string | undefined => (process.arch === 'arm64' ? undefined : 'ai-win-x64-cuda')
 
-export { basePluginId, cudaPluginId }
+// The JS-only engine (arch 'any'): agent + tools + remote models, no native runtime.
+const ENGINE_PLUGIN_ID = 'ai-engine'
+
+export { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID }

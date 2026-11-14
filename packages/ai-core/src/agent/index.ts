@@ -1,5 +1,6 @@
 export { chatTurn } from './chat-turn'
-export { contextStatus, resetChat, cancelTurn } from './session'
+export { resetChat, cancelTurn } from './session'
+export { contextStatus } from './context-status'
 export { setPermissionMode, getPermissionMode } from './permission'
 export { resolveConfirm } from './confirm'
 export { setUiDispatcher } from './ui-dispatcher'

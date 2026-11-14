@@ -37,7 +37,6 @@ const api = {
     set: (key: string, value: string): Promise<void> =>
       ipcRenderer.invoke('secret:set', key, value),
     has: (key: string): Promise<boolean> => ipcRenderer.invoke('secret:has', key),
-    get: (key: string): Promise<string | null> => ipcRenderer.invoke('secret:get', key),
     clear: (key: string): Promise<void> => ipcRenderer.invoke('secret:clear', key),
   },
   steam: {

@@ -7,3 +7,7 @@
 import { app } from 'electron'
 
 app.setName('Jex')
+
+// Dev/test only: JEX_USER_DATA=<abs dir> runs against a copied profile so a test
+// launch never touches the real AppData\Roaming\Jex.
+if (process.env.JEX_USER_DATA) app.setPath('userData', process.env.JEX_USER_DATA)

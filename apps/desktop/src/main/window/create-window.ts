@@ -8,6 +8,9 @@ import { attachNavKeys, routeNav } from './nav-guards'
  */
 
 const NO_FOCUS = process.env.NO_FOCUS === '1'
+// Dev/test only: JEX_HIDDEN=1 creates the window but never shows it (it still paints,
+// so capturePage / executeJavaScript work) — for invisible automated launches.
+const HIDDEN = process.env.JEX_HIDDEN === '1'
 const isWin = process.platform === 'win32'
 
 // The Jex mascot, rasterized to assets/icon.png (see scripts/render-icon.mjs).
@@ -62,6 +65,10 @@ const createWindow = (): BrowserWindow => {
       } catch {
         /* older Electron/Windows — constructor option still applies */
       }
+    }
+    if (HIDDEN) {
+      console.log('[main] window ready (hidden)')
+      return
     }
     // NO_FOCUS: show without activating so we never steal focus from other apps.
     if (NO_FOCUS) win.showInactive()

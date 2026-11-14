@@ -1,26 +1,20 @@
-import { useMemo } from 'react'
+import './LibraryPage.css'
+import { useCallback, useMemo } from 'react'
 import { useLibrary } from '@/hooks/useLibrary'
 import { useFilterState } from '@/hooks/useFilterState'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
-import { GameCard } from '@ui/compounds/GameCard'
 import { GameFilters } from '@ui/compounds/GameFilters'
-import { LazyGrid } from '@ds/composites/LazyGrid'
+import { LibraryGameList } from '@ui/compounds/LibraryGameList'
 import { SortControls } from '@ui/compounds/SortControls'
+import type { FilterSpec } from '@shared/filter'
 import { useAgentLibraryActions } from './behavior/useAgentLibraryActions'
 import { useLibrarySync } from './behavior/useLibrarySync'
-import { ProgressBar } from './sub-components/ProgressBar'
+import { useLibrarySelection } from './behavior/useLibrarySelection'
+import { useLibraryDetail } from './behavior/useLibraryDetail'
 import { LibraryHeader } from './sub-components/LibraryHeader'
-
-const relTime = (ms: number): string => {
-  const s = Math.max(0, Math.round((Date.now() - ms) / 1000))
-  if (s < 60) return 'just now'
-  const m = Math.round(s / 60)
-  if (m < 60) return `${m}m ago`
-  const h = Math.round(m / 60)
-  if (h < 24) return `${h}h ago`
-  return `${Math.round(h / 24)}d ago`
-}
+import { LibraryNotices } from './sub-components/LibraryNotices'
+import { LibraryDetailPane } from './sub-components/LibraryDetailPane'
 
 const LibraryPage = () => {
   const { games: allGames, loading, scanning, scan, reload } = useLibrary()
@@ -35,11 +29,19 @@ const LibraryPage = () => {
   const filtered = useMemo(() => flt.filterAndSort(games), [games, flt.filterAndSort])
   const installed = useMemo(() => games.filter((g) => g.installed).length, [games])
   const owned = useMemo(() => games.filter((g) => g.owned).length, [games])
+  const { selected, select } = useLibrarySelection(filtered)
+  const detail = useLibraryDetail(selected)
+
+  const { spec, setSpec } = flt
+  const handleSort = useCallback(
+    (patch: Partial<FilterSpec>) => setSpec({ ...spec, ...patch }),
+    [spec, setSpec],
+  )
 
   const busy = scanning || syncing
 
   return (
-    <Box>
+    <Box className="lib-page">
       <LibraryHeader
         total={games.length}
         installed={installed}
@@ -54,33 +56,7 @@ const LibraryPage = () => {
         onCancelSync={cancelSync}
       />
 
-      {stats && stats.total > 0 && (
-        <Box as="p" className="muted" style={{ marginTop: -4, marginBottom: 12, fontSize: 13 }}>
-          {stats.enriched} with full metadata
-          {stats.pending > 0 ? ` · ${stats.pending} pending` : ''}
-          {stats.noStorePage > 0 ? ` · ${stats.noStorePage} no store page` : ''}
-          {stats.lastEnrich ? ` · last synced ${relTime(stats.lastEnrich)}` : ''}
-        </Box>
-      )}
-
-      {!keySet && (
-        <Box className="panel">
-          Showing installed games. Add a Steam Web API key in Settings to pull your full
-          owned library (incl. not-installed) and metadata.
-        </Box>
-      )}
-
-      {scanInfo && !scanInfo.detected.steamPath && (
-        <Box className="panel">Couldn't find a Steam install on this PC.</Box>
-      )}
-
-      {progress && busy && <ProgressBar p={progress} />}
-      {progress?.phase === 'error' && !busy && (
-        <Box className="panel" style={{ color: 'var(--danger)' }}>{progress.message}</Box>
-      )}
-      {progress?.phase === 'paused' && !busy && (
-        <Box className="panel muted">Sync cancelled — click "Sync owned + metadata" to resume where it left off.</Box>
-      )}
+      <LibraryNotices stats={stats} keySet={keySet} scanInfo={scanInfo} progress={progress} busy={busy} />
 
       <GameFilters
         games={games}
@@ -107,10 +83,9 @@ const LibraryPage = () => {
       />
 
       {/* Sort + result count live with the list, separate from filtering. */}
-      <Box className="row" style={{ margin: '12px 0' }}>
-        <Box as="span" className="muted">{filtered.length} shown</Box>
-        <Box as="span" style={{ marginLeft: 'auto' }} />
-        <SortControls value={flt.spec} onChange={(patch) => flt.setSpec({ ...flt.spec, ...patch })} />
+      <Box className="row lib-toolbar">
+        <Box as="span" className="muted lib-count">{filtered.length} shown</Box>
+        <SortControls value={flt.spec} onChange={handleSort} />
       </Box>
 
       {loading || (scanning && games.length === 0) ? (
@@ -118,7 +93,23 @@ const LibraryPage = () => {
       ) : games.length === 0 ? (
         <Box as="p" className="muted">No games found yet — click Rescan local.</Box>
       ) : (
-        <LazyGrid items={filtered} render={(g) => <GameCard key={g.appid} game={g} />} />
+        <Box className="lib-md">
+          <Box className="lib-md-list">
+            {filtered.length > 0 ? (
+              <LibraryGameList games={filtered} selectedAppid={selected?.appid ?? null} onSelect={select} />
+            ) : (
+              <Box as="p" className="muted lib-md-list-empty">No games match these filters.</Box>
+            )}
+          </Box>
+          <LibraryDetailPane
+            game={detail.game}
+            extrasLoading={detail.extrasLoading}
+            sanitized={detail.sanitized}
+            reqs={detail.reqs}
+            autoplay={detail.autoplay}
+            onOpen={detail.open}
+          />
+        </Box>
       )}
     </Box>
   )

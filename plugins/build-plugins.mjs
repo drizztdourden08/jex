@@ -26,7 +26,7 @@ const workRoot = join(here, '.work')
 const distRoot = join(here, 'dist')
 
 const appVersion = JSON.parse(readFileSync(join(repoRoot, 'apps/desktop/package.json'), 'utf8')).version
-const apiVersion = 1
+const apiVersion = 2 // matches AI_PLUGIN_API_VERSION in @jex/ai-contract
 
 // Signing key (PKCS8 DER, base64): from $JEX_PLUGIN_PRIVATE_KEY (CI secret) or the
 // gitignored local plugins/.signing-key.json. Absent → unsigned dev build (sig: '').
@@ -137,12 +137,15 @@ const buildOne = async (plugin) => {
     JSON.stringify({ name: plugin.id, version: appVersion, type: 'module', main: 'index.mjs' }, null, 2),
   )
 
-  copyNlc(join(work, 'node_modules', 'node-llama-cpp'))
-  copyNlcDeps(join(work, 'node_modules'))
-  for (const variant of plugin.variants) {
-    cpSync(join(nodeModules, '@node-llama-cpp', variant), join(work, 'node_modules', '@node-llama-cpp', variant), {
-      recursive: true,
-    })
+  // native:false (the JS-only ai-engine) ships no node_modules at all.
+  if (plugin.native !== false) {
+    copyNlc(join(work, 'node_modules', 'node-llama-cpp'))
+    copyNlcDeps(join(work, 'node_modules'))
+    for (const variant of plugin.variants) {
+      cpSync(join(nodeModules, '@node-llama-cpp', variant), join(work, 'node_modules', '@node-llama-cpp', variant), {
+        recursive: true,
+      })
+    }
   }
 
   const zipFile = join(distRoot, `${plugin.id}.zip`)

@@ -1,5 +1,6 @@
 export { backendInfo } from './backend'
 export {
+  activeModelRef,
   activeModel,
   modelStatus,
   listModels,
@@ -13,3 +14,4 @@ export {
   createInferenceContext,
 } from './context'
 export { ensureModel, warmupModel, complete } from './inference'
+export { localRuntimeAvailable, requireLocalRuntime } from './runtime'

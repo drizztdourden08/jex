@@ -31,7 +31,15 @@ const useStoreControls = (ref: RefObject<SteamWebview | null>) => {
       forward: () => wv.canGoForward() && wv.goForward(),
       reload: () => wv.reload(),
       stop: () => wv.stop(),
-      loadURL: (url: string) => void wv.loadURL(url),
+      // loadURL throws before dom-ready and rejects on a superseded load (ERR_ABORTED);
+      // neither should surface as an unhandled error, and `src` still works pre-attach.
+      loadURL: (url: string) => {
+        try {
+          wv.loadURL(url).catch(() => {})
+        } catch {
+          wv.src = url
+        }
+      },
       // Read/query the guest page's DOM by running JS inside the webview (the
       // renderer can't reach into the cross-origin store DOM any other way).
       readContent: (query?: StoreReadQuery) =>

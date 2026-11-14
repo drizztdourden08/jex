@@ -1,9 +1,9 @@
 import { app } from 'electron'
 import { join, dirname } from 'node:path'
-import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import initSqlJs, { type Database as SqlDatabase } from 'sql.js'
-import { atomicWriteSync } from './atomic-write'
+import { writeFileAtomic } from './atomic-write'
+import { openDbFile } from './open-db-file'
 import { createPersistScheduler } from './persist-scheduler'
 
 /**
@@ -24,7 +24,7 @@ const db = (): SqlDatabase => {
 const PERSIST_INTERVAL_MS = 15_000
 
 const writeNow = (): void => {
-  if (_db && _file) atomicWriteSync(_file, _db.export())
+  if (_db && _file) writeFileAtomic(_file, _db.export())
 }
 
 const scheduler = createPersistScheduler(writeNow, PERSIST_INTERVAL_MS)
@@ -136,7 +136,7 @@ const initDb = async (): Promise<void> => {
   const wasmDir = dirname(require.resolve('sql.js')) // …/sql.js/dist
   const SQL = await initSqlJs({ locateFile: () => join(wasmDir, 'sql-wasm.wasm') })
   _file = join(app.getPath('userData'), 'library.db')
-  _db = existsSync(_file) ? new SQL.Database(readFileSync(_file)) : new SQL.Database()
+  _db = openDbFile(SQL, _file)
   migrate(_db)
   persist()
 }
