@@ -40,6 +40,7 @@
 
 /* Free content (lists, tables, callouts) sits on the same rhythm as rows. */
 .ds-settings-group-body > :not(.ds-setting-row) { margin: var(--sp-3) 0; }
+
 .ds-settings-group-body > :not(.ds-setting-row) + .ds-setting-row,
 .ds-settings-group-body > .ds-setting-row + :not(.ds-setting-row) {
   border-top: 1px solid var(--hairline);

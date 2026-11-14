@@ -61,6 +61,7 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); ou
 :root { --sidebar-w: 200px; interpolate-size: allow-keywords; }
 .root-shell { height: 100vh; display: flex; flex-direction: column; }
 .root-shell--nav-collapsed { --sidebar-w: 64px; }
+
 .app {
   flex: 1; min-height: 0; display: grid; grid-template-columns: var(--sidebar-w) 1fr;
   transition: grid-template-columns var(--dur-slow) var(--ease-standard);
