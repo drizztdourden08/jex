@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { RemoteModelOption } from '@shared/remote-ai'
-
-const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e))
+import { ipcErrorText as errText } from '@/lib/ipc/ipcErrorText'
 
 // Remote-model side of the picker: the provider catalog, which ref is active, whether the
 // local runtime is present, and "Use" (set the model, then start a fresh chat).

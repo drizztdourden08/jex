@@ -1,6 +1,7 @@
 import './CommandSurface.css'
 import { Box } from '@ds/primitives/layout/Box'
 import { useCommandSurface } from './behavior/useCommandSurface'
+import { useRemoteEffort } from './behavior/useRemoteEffort'
 import { CommandTopbar } from './sub-components/CommandTopbar'
 import { NoModelNotice } from './sub-components/NoModelNotice'
 import { ChatTimeline } from './sub-components/ChatTimeline'
@@ -51,6 +52,7 @@ const CommandSurface = () => {
     showWorkingDots,
     isIntro,
   } = useCommandSurface()
+  const { effort, changeEffort } = useRemoteEffort(open)
 
   return (
     <>
@@ -116,6 +118,8 @@ const CommandSurface = () => {
                 modelGroups={modelGroups}
                 activeModel={activeModel}
                 switchModel={switchModel}
+                effort={effort}
+                changeEffort={changeEffort}
                 busy={busy}
                 ctxLevel={ctxLevel}
                 changeContextLevel={changeContextLevel}

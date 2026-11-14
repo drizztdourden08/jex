@@ -2,7 +2,7 @@ import type { ElementType, HTMLAttributes } from 'react'
 
 interface TextProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType
-  tone?: 'default' | 'muted' | 'faint'
+  tone?: 'default' | 'muted' | 'faint' | 'danger'
   weight?: 'regular' | 'medium' | 'semibold' | 'bold'
 }
 

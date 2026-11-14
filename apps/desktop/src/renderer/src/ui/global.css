@@ -94,11 +94,6 @@ h3 { font-size: 15px; font-weight: 400; margin: 0 0 10px; font-family: var(--fon
 }
 .muted { color: var(--text-2); }
 
-.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 9px 0; }
-.toggle-row + .toggle-row { border-top: 1px solid var(--hairline); }
-.toggle-label { display: block; color: var(--text-1); }
-.toggle-hint { display: block; font-size: 12px; margin-top: 2px; max-width: 60ch; }
-
 .pill {
   display: inline-block; background: var(--glass-2-bg); backdrop-filter: blur(var(--glass-2-blur));
   border: 1px solid var(--hairline); border-radius: var(--r-pill);

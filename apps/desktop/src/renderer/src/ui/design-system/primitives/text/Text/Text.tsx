@@ -4,6 +4,7 @@ const TONE = {
   default: 'var(--text-1)',
   muted: 'var(--text-2)',
   faint: 'var(--text-3)',
+  danger: 'var(--danger)',
 } as const
 
 const WEIGHT = {

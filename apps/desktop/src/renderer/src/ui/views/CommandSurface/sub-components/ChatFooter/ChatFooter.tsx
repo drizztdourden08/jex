@@ -1,9 +1,10 @@
 import type { ContextLevel, ContextStatus, PermissionMode } from '@shared/agent'
+import type { RemoteEffort } from '@shared/remote-ai'
 import { Select } from '@ds/primitives/form/Select'
 import type { SelectGroup } from '@ds/primitives/form/Select'
 import { Box } from '@ds/primitives/layout/Box'
 import { ContextMeter } from './sub-components/ContextMeter'
-import { PERM_OPTIONS, CTX_OPTIONS } from './ChatFooter.constants'
+import { PERM_OPTIONS, CTX_OPTIONS, EFFORT_OPTIONS } from './ChatFooter.constants'
 
 type ChatFooterProps = {
   permMode: PermissionMode
@@ -11,8 +12,10 @@ type ChatFooterProps = {
   ctx: ContextStatus | null
   ready: boolean
   modelGroups: SelectGroup[]
-  activeModel: { value: string; label: string } | null
+  activeModel: { value: string; label: string; remote: boolean } | null
   switchModel: (id: string) => void
+  effort: RemoteEffort
+  changeEffort: (effort: RemoteEffort) => void
   busy: boolean
   ctxLevel: ContextLevel
   changeContextLevel: (level: ContextLevel) => void
@@ -26,6 +29,8 @@ const ChatFooter = ({
   modelGroups,
   activeModel,
   switchModel,
+  effort,
+  changeEffort,
   busy,
   ctxLevel,
   changeContextLevel,
@@ -49,6 +54,18 @@ const ChatFooter = ({
           onChange={(id) => void switchModel(id)}
           disabled={busy}
           title="Model used for this chat"
+          variant="ghost"
+          placement="top"
+          align="end"
+        />
+      )}
+      {ready && activeModel?.remote && (
+        <Select
+          value={effort}
+          options={EFFORT_OPTIONS}
+          onChange={(e) => void changeEffort(e)}
+          disabled={busy}
+          title="Reasoning effort for this chat (higher = more thinking, slower and costlier)"
           variant="ghost"
           placement="top"
           align="end"

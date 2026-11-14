@@ -5,8 +5,8 @@
 import { app } from 'electron'
 import { join } from 'node:path'
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { AI_PLUGIN_API_VERSION } from '@jex/ai-contract'
 import type { PluginManifest } from '@jex/ai-contract'
+import { assertApiVersion } from './api-version'
 
 const REPO = 'drizztdourden08/jex'
 const RELEASE_BASE = `https://github.com/${REPO}/releases/latest/download`
@@ -27,7 +27,7 @@ const localDist = (): string | null => {
 // A manifest built for another plugin API version is refused, so an old release never
 // installs an engine this app cannot load.
 const checkApiVersion = (manifest: PluginManifest): PluginManifest => {
-  if (manifest.apiVersion !== AI_PLUGIN_API_VERSION) throw new Error('AI engine needs an update')
+  assertApiVersion(manifest.apiVersion)
   return manifest
 }
 

@@ -1,7 +1,6 @@
 /* Ai model picker (Settings view). Shares one 6-column grid between the download
    dropdown and the installed list so sizes line up across both. Tokens only. */
 
-.model-intro { margin-top: 0; }
 .model-error { color: var(--danger); }
 .model-warn { margin: 8px 0 0; font-size: 13px; color: var(--warning); }
 
@@ -126,14 +125,6 @@
 }
 
 /* ── Installed list ───────────────────────────────────────────────────────── */
-.model-installed-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 22px;
-}
-.model-installed-title { margin: 0; font-size: 14px; }
 .model-clean-btn { font-size: 13px; padding: 5px 12px; }
 .model-installed { margin-top: 8px; }
 .model-installed-empty { margin-top: 8px; font-size: 13px; }
