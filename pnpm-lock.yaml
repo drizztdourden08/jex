@@ -50,6 +50,9 @@ importers:
       '@jex/ai-contract':
         specifier: workspace:*
         version: link:../../packages/ai-contract
+      '@jex/ai-remote':
+        specifier: workspace:*
+        version: link:../../packages/ai-remote
       '@jex/shared':
         specifier: workspace:*
         version: link:../../packages/shared
