@@ -29,6 +29,7 @@ const GameFilters = ({
   const topbar = (
     <>
       <SegmentedControl
+        size="sm"
         options={modes.map((m) => ({ value: m, label: m[0].toUpperCase() + m.slice(1) }))}
         value={mode}
         onChange={(v) => setMode(v as FilterMode)}

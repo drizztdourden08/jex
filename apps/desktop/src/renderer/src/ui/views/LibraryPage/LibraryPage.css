@@ -1,19 +1,18 @@
-/* LibraryPage — header + filters on top, then a master-detail split that fills the
-   rest of the content area. Each pane scrolls on its own; the page itself only
-   scrolls when the filters leave less than the split's minimum height. Tokens only. */
-.lib-page {
+/* LibraryPage — header + filters on top, then either the cover-card grid (the page
+   scrolls as one) or the master-detail list that fills the rest of the content area
+   (each pane scrolls on its own; the page only scrolls when the filters leave less
+   than the split's minimum height). Tokens only. */
+.lib-page--list {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
 }
 
-.lib-toolbar {
-  margin: var(--sp-3) 0;
-}
-
-.lib-count {
-  margin-right: auto;
+.lib-notice {
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+  font-size: 13px;
 }
 
 .lib-md {

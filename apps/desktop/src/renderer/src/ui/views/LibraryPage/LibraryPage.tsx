@@ -3,18 +3,24 @@ import { useCallback, useMemo } from 'react'
 import { useLibrary } from '@/hooks/useLibrary'
 import { useFilterState } from '@/hooks/useFilterState'
 import { Box } from '@ds/primitives/layout/Box'
-import { Button } from '@ds/primitives/actions/Button'
+import { LazyGrid } from '@ds/composites/LazyGrid'
+import { GameCard } from '@ui/compounds/GameCard'
 import { GameFilters } from '@ui/compounds/GameFilters'
 import { LibraryGameList } from '@ui/compounds/LibraryGameList'
-import { SortControls } from '@ui/compounds/SortControls'
 import type { FilterSpec } from '@shared/filter'
+import type { Game } from '@shared/library'
 import { useAgentLibraryActions } from './behavior/useAgentLibraryActions'
 import { useLibrarySync } from './behavior/useLibrarySync'
 import { useLibrarySelection } from './behavior/useLibrarySelection'
 import { useLibraryDetail } from './behavior/useLibraryDetail'
+import { useLibraryDisplay } from './behavior/useLibraryDisplay'
 import { LibraryHeader } from './sub-components/LibraryHeader'
 import { LibraryNotices } from './sub-components/LibraryNotices'
+import { LibraryToolbar } from './sub-components/LibraryToolbar'
 import { LibraryDetailPane } from './sub-components/LibraryDetailPane'
+
+const NO_GAMES: Game[] = []
+const renderCard = (g: Game) => <GameCard key={g.appid} game={g} />
 
 const LibraryPage = () => {
   const { games: allGames, loading, scanning, scan, reload } = useLibrary()
@@ -25,27 +31,33 @@ const LibraryPage = () => {
   useAgentLibraryActions(flt)
   const { scanInfo, keySet, syncing, cancelling, stats, startSync, cancelSync, rescan } =
     useLibrarySync({ games, loading, scanning, scan, reload })
+  const { display, setDisplay } = useLibraryDisplay()
 
   const filtered = useMemo(() => flt.filterAndSort(games), [games, flt.filterAndSort])
   const installed = useMemo(() => games.filter((g) => g.installed).length, [games])
   const owned = useMemo(() => games.filter((g) => g.owned).length, [games])
-  const { selected, select } = useLibrarySelection(filtered)
+  const isList = display === 'list'
+  const { selected, select } = useLibrarySelection(isList ? filtered : NO_GAMES)
   const detail = useLibraryDetail(selected)
 
-  const { spec, setSpec } = flt
+  const { spec, setSpec, query, mode } = flt
   const handleSort = useCallback(
     (patch: Partial<FilterSpec>) => setSpec({ ...spec, ...patch }),
     [spec, setSpec],
   )
+  // The card grid jumps back to its first page only when the query changes, not on
+  // every data reload during a sync.
+  const gridKey = useMemo(() => ({ spec, query, mode }), [spec, query, mode])
 
   const busy = scanning || syncing
 
   return (
-    <Box className="lib-page">
+    <Box className={isList ? 'lib-page lib-page--list' : 'lib-page'}>
       <LibraryHeader
         total={games.length}
         installed={installed}
         owned={owned}
+        stats={stats}
         scanning={scanning}
         syncing={syncing}
         cancelling={cancelling}
@@ -56,7 +68,7 @@ const LibraryPage = () => {
         onCancelSync={cancelSync}
       />
 
-      <LibraryNotices stats={stats} keySet={keySet} scanInfo={scanInfo} />
+      <LibraryNotices keySet={keySet} scanInfo={scanInfo} />
 
       <GameFilters
         games={games}
@@ -69,29 +81,24 @@ const LibraryPage = () => {
         dirty={flt.dirty}
         reset={flt.reset}
         headerRight={
-          flt.activeCount > 0 ? (
-            <Button
-              variant="ghost"
-              onClick={flt.reset}
-              title="Clear filters"
-              style={{ color: 'var(--text-2)' }}
-            >
-              ✕ Clear
-            </Button>
-          ) : undefined
+          <LibraryToolbar
+            shown={filtered.length}
+            spec={flt.spec}
+            onSort={handleSort}
+            display={display}
+            onDisplay={setDisplay}
+            canClear={flt.activeCount > 0}
+            onClear={flt.reset}
+          />
         }
       />
-
-      {/* Sort + result count live with the list, separate from filtering. */}
-      <Box className="row lib-toolbar">
-        <Box as="span" className="muted lib-count">{filtered.length} shown</Box>
-        <SortControls value={flt.spec} onChange={handleSort} />
-      </Box>
 
       {loading || (scanning && games.length === 0) ? (
         <Box as="p" className="muted">Reading your Steam install…</Box>
       ) : games.length === 0 ? (
         <Box as="p" className="muted">No games found yet — click Rescan local.</Box>
+      ) : !isList ? (
+        <LazyGrid items={filtered} render={renderCard} resetKey={gridKey} />
       ) : (
         <Box className="lib-md">
           <Box className="lib-md-list">

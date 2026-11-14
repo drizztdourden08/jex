@@ -13,17 +13,20 @@ const DEFAULT_SORTS: SortOption[] = [
   { key: 'reviewTotal', label: 'Reviews' },
 ]
 
-/** Compact sort dropdowns operating on a FilterSpec. Lives in toolbar rows (not
- *  inside the filter panel) so it's always reachable. `sorts` overrides the option
- *  list (e.g. the Wishlist tab adds priority / date-added). */
+/** Compact sort dropdowns operating on a FilterSpec. Lives in an always-visible
+ *  toolbar (a page row, or the filter panel's top bar on the Library). `sorts`
+ *  overrides the option list (e.g. the Wishlist tab adds priority / date-added);
+ *  `size="sm"` fits a slim bar. */
 const SortControls = ({
   value,
   onChange,
   sorts = DEFAULT_SORTS,
+  size = 'md',
 }: {
   value: FilterSpec
   onChange: (patch: Partial<FilterSpec>) => void
   sorts?: SortOption[]
+  size?: 'sm' | 'md'
 }) => {
   const dir = value.sortDir ?? (value.sortBy === 'name' ? 'asc' : 'desc')
   return (
@@ -33,6 +36,7 @@ const SortControls = ({
       </Box>
       <Select
         variant="field"
+        size={size}
         title="Sort by"
         value={value.sortBy ?? 'name'}
         onChange={(v) => onChange({ sortBy: v as SortKey })}
@@ -40,6 +44,7 @@ const SortControls = ({
       />
       <Select
         variant="field"
+        size={size}
         title="Order"
         value={dir}
         onChange={(v) => onChange({ sortDir: v as 'asc' | 'desc' })}
