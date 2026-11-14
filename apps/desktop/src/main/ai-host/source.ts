@@ -5,6 +5,7 @@
 import { app } from 'electron'
 import { join } from 'node:path'
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { AI_PLUGIN_API_VERSION } from '@jex/ai-contract'
 import type { PluginManifest } from '@jex/ai-contract'
 
 const REPO = 'drizztdourden08/jex'
@@ -23,12 +24,19 @@ const localDist = (): string | null => {
   return null
 }
 
+// A manifest built for another plugin API version is refused, so an old release never
+// installs an engine this app cannot load.
+const checkApiVersion = (manifest: PluginManifest): PluginManifest => {
+  if (manifest.apiVersion !== AI_PLUGIN_API_VERSION) throw new Error('AI engine needs an update')
+  return manifest
+}
+
 const fetchManifest = async (): Promise<PluginManifest> => {
   const dist = localDist()
-  if (dist) return JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8')) as PluginManifest
+  if (dist) return checkApiVersion(JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8')) as PluginManifest)
   const res = await fetch(`${RELEASE_BASE}/manifest.json`)
   if (!res.ok) throw new Error(`Could not fetch the plugin manifest (HTTP ${res.status}).`)
-  return (await res.json()) as PluginManifest
+  return checkApiVersion((await res.json()) as PluginManifest)
 }
 
 const fetchZip = async (file: string, destPath: string): Promise<void> => {

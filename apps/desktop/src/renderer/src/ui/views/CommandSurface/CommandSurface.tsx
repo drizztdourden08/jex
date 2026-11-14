@@ -31,8 +31,8 @@ const CommandSurface = () => {
     scrollRef,
     prompt,
     setPrompt,
-    installed,
-    active,
+    activeModel,
+    modelGroups,
     ready,
     ctx,
     ctxLevel,
@@ -113,8 +113,8 @@ const CommandSurface = () => {
                 changePermMode={changePermMode}
                 ctx={ctx}
                 ready={ready}
-                installed={installed}
-                active={active}
+                modelGroups={modelGroups}
+                activeModel={activeModel}
                 switchModel={switchModel}
                 busy={busy}
                 ctxLevel={ctxLevel}

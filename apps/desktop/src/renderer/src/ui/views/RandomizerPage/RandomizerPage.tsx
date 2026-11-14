@@ -59,7 +59,7 @@ const RandomizerPage = () => {
       />
 
       {source === 'store' && flt.advancedActive && (
-        <Box className="panel" style={{ borderColor: 'var(--warn, #f0b84e)', marginTop: 12 }}>
+        <Box className="panel" style={{ borderColor: 'var(--warning)', marginTop: 12 }}>
           <Box as="p" className="muted" style={{ margin: 0 }}>
             ⚠️ Advanced formulas can't be sent to the Steam store, so this filter
             <Box as="strong"> won't apply to store rolls</Box>. Use <Box as="strong">Basic</Box> or{' '}

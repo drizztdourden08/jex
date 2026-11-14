@@ -3,25 +3,32 @@
 // manifest (local plugins/dist in dev, the latest release in prod) and the installed
 // flag. Returns only the rows relevant to this machine.
 import type { EnginePluginInfo } from '@shared/ai'
-import { basePluginId, cudaPluginId } from './resolve'
+import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
 
 type CatalogEntry = Omit<EnginePluginInfo, 'id' | 'sizeBytes' | 'installed'>
 
 const CUDA_TOOLKIT_ID = 'nvidia-cuda-toolkit'
 
 const CATALOG: Record<string, CatalogEntry> = {
-  'ai-win-x64': {
-    name: 'CPU + Vulkan',
-    packages: 'llama.cpp runtime + Vulkan GPU backend',
-    notes: 'Runs on any modern GPU — no extra setup',
+  [ENGINE_PLUGIN_ID]: {
+    name: 'AI engine',
+    packages: 'Agent, tools and remote model support (Claude, OpenAI) — no native runtime',
+    notes: 'Required. Runs the assistant with a remote model and your own API key',
     recommended: true,
     addOn: false,
   },
-  'ai-win-arm64': {
-    name: 'CPU + Vulkan (ARM)',
+  'ai-win-x64': {
+    name: 'Local models (CPU + Vulkan)',
     packages: 'llama.cpp runtime + Vulkan GPU backend',
-    notes: 'The build for this ARM PC',
-    recommended: true,
+    notes: 'Optional — only needed to run local GGUF models on this PC',
+    recommended: false,
+    addOn: false,
+  },
+  'ai-win-arm64': {
+    name: 'Local models (CPU + Vulkan, ARM)',
+    packages: 'llama.cpp runtime + Vulkan GPU backend',
+    notes: 'Optional — only needed to run local GGUF models on this PC',
+    recommended: false,
     addOn: false,
   },
   'ai-win-x64-cuda': {
@@ -43,10 +50,10 @@ const CATALOG: Record<string, CatalogEntry> = {
 
 const row = (id: string): EnginePluginInfo => ({ id, sizeBytes: null, installed: false, ...CATALOG[id] })
 
-// The checklist rows for this machine: the arch's base (always) + the CUDA add-on and
+// The checklist rows for this machine: the AI engine, the optional local runtime + the CUDA add-on and
 // its Toolkit prerequisite when an NVIDIA GPU is present.
 const enginePlugins = (nvidiaGpu: boolean): EnginePluginInfo[] => {
-  const rows = [row(basePluginId())]
+  const rows = [row(ENGINE_PLUGIN_ID), row(basePluginId())]
   const cuda = cudaPluginId()
   if (nvidiaGpu && cuda) {
     rows.push(row(cuda))

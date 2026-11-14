@@ -133,7 +133,9 @@ const WishlistMain = ({
       </Box>
     ) : (
       <LazyGrid
+        key={String(selected)}
         items={filtered}
+        resetKey={flt.filterAndSort}
         render={(g: Game) => (
           <GameCard
             key={g.appid}

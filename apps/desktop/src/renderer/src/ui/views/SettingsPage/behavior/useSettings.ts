@@ -18,24 +18,30 @@ const useSettings = () => {
     window.api.steam
       .detect()
       .then(setDetect)
+      .catch(() => {})
       .finally(() => setLoading(false))
-    window.api.secrets.has('steamApiKey').then(setKeySet)
+    window.api.secrets.has('steamApiKey').then(setKeySet).catch(() => {})
     // Booleans default true unless explicitly false; autoplay defaults false.
-    window.api.settings.getAll().then((all) =>
-      setPrefs({
-        autoplayVideos: all.autoplayVideos === true,
-        autoSyncOnOpen: all.autoSyncOnOpen !== false,
-        autoSyncDaily: all.autoSyncDaily !== false,
-        autoFullResyncMonthly: all.autoFullResyncMonthly !== false,
-      }),
-    )
-    window.api.search.getVocab().then(setVocab)
+    window.api.settings
+      .getAll()
+      .then((all) =>
+        setPrefs({
+          autoplayVideos: all.autoplayVideos === true,
+          autoSyncOnOpen: all.autoSyncOnOpen !== false,
+          autoSyncDaily: all.autoSyncDaily !== false,
+          autoFullResyncMonthly: all.autoFullResyncMonthly !== false,
+        }),
+      )
+      .catch(() => {})
+    window.api.search.getVocab().then(setVocab).catch(() => {})
   }, [])
 
   const syncVocab = async () => {
     setSyncingVocab(true)
     try {
       setVocab(await window.api.search.syncVocab())
+    } catch {
+      // Keep the previous vocabulary; the button can be pressed again.
     } finally {
       setSyncingVocab(false)
     }
@@ -55,14 +61,22 @@ const useSettings = () => {
   }
 
   const clearKey = async () => {
-    await window.api.secrets.clear('steamApiKey')
-    setKeySet(false)
-    setMsg('Key removed.')
+    try {
+      await window.api.secrets.clear('steamApiKey')
+      setKeySet(false)
+      setMsg('Key removed.')
+    } catch (e) {
+      setMsg(`Could not remove: ${String(e)}`)
+    }
   }
 
   const setPref = async (key: string, value: boolean) => {
     setPrefs((p) => ({ ...p, [key]: value }))
-    await window.api.settings.set(key, value)
+    try {
+      await window.api.settings.set(key, value)
+    } catch {
+      setPrefs((p) => ({ ...p, [key]: !value }))
+    }
   }
 
   const dropMetadata = async () => {
@@ -72,8 +86,12 @@ const useSettings = () => {
     }
     setConfirmDrop(false)
     setDropMsg('Dropping…')
-    const n = await window.api.library.dropMetadata()
-    setDropMsg(`Dropped metadata for ${n.toLocaleString()} games. Run a sync to re-fetch.`)
+    try {
+      const n = await window.api.library.dropMetadata()
+      setDropMsg(`Dropped metadata for ${n.toLocaleString()} games. Run a sync to re-fetch.`)
+    } catch (e) {
+      setDropMsg(`Could not drop metadata: ${String(e)}`)
+    }
   }
 
   return {

@@ -23,6 +23,7 @@ import type {
   UiInvokeResult,
 } from '@shared/agent'
 import type { IpcApi } from '@shared/ipc/api'
+import { aiRemoteApi } from './ai-remote-api'
 
 // The `ai` slice of the preload bridge — engine-plugin setup, model management, the
 // conversational agent stream, the tool registry, and the UI tool bridge. Split out of
@@ -93,6 +94,8 @@ const aiApi = {
     return () => ipcRenderer.removeListener('ui:invoke', listener)
   },
   uiResult: (result: UiInvokeResult): void => ipcRenderer.send('ui:result', result),
+  // ── Remote models (API keys, model list, effort) ──
+  remote: aiRemoteApi,
 } satisfies IpcApi['ai']
 
 export { aiApi }

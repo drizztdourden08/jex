@@ -8,6 +8,8 @@ import { IconButton } from '@ds/primitives/actions/IconButton'
 import { Image } from '@ds/primitives/media/Image'
 import { ArtFallback } from '@ui/compounds/ArtFallback'
 
+const FROM = { from: '/randomizer' }
+
 type PickCardProps = {
   game: Game
   onExclude: (appid: number) => void
@@ -17,8 +19,8 @@ type PickCardProps = {
 const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
   const [failed, setFailed] = useState(false)
   return (
-    <Box key={g.appid} className="card" style={{ display: 'flex', flexDirection: 'column' }}>
-      <Link to={`/game/${g.appid}`}>
+    <Box className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+      <Link to={`/game/${g.appid}`} state={FROM}>
         {failed ? (
           <ArtFallback />
         ) : (
@@ -49,7 +51,7 @@ const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
               ▶ Launch
             </Button>
           ) : (
-            <Link to={`/game/${g.appid}`} className="pill" style={{ alignSelf: 'center' }}>
+            <Link to={`/game/${g.appid}`} state={FROM} className="pill" style={{ alignSelf: 'center' }}>
               Details
             </Link>
           )}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLibrary } from '@/hooks/useLibrary'
 import { useFilterState } from '@/hooks/useFilterState'
 import { randomPick, type WeightMode } from '@/lib/query/randomizer'
@@ -22,12 +22,14 @@ const useRandomizer = () => {
   const [source, setSource] = useState<Source>('library')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Bumped by every roll and source change; a store roll only lands if it is still the latest.
+  const rollId = useRef(0)
 
   // The faceted vocabulary lets us reconstruct genres/tags on store hits (loaded
   // once; null until ready — store rolls still work, just without tag names).
   const [vocab, setVocab] = useState<SearchVocab | null>(null)
   useEffect(() => {
-    void window.api.search.getVocab().then(setVocab)
+    window.api.search.getVocab().then(setVocab).catch(() => {})
   }, [])
 
   // For the Store source, offer the whole-Steam faceted vocabulary (synced tags +
@@ -57,6 +59,7 @@ const useRandomizer = () => {
       setError('Store rolling needs an app restart to load — fully restart, then try again.')
       return
     }
+    const id = ++rollId.current
     setBusy(true)
     setError(null)
     try {
@@ -68,15 +71,17 @@ const useRandomizer = () => {
       const fresh = storeToGames(res.picks, vocab)
         .filter((g) => !exclude.includes(g.appid))
         .slice(0, count)
+      if (id !== rollId.current) return
       setPicks(fresh)
       setPoolSize(res.total)
     } catch (e) {
+      if (id !== rollId.current) return
       console.error('store randomizer roll failed', e)
       setError('Could not reach the Steam store — check your connection and try again.')
       setPicks([])
       setPoolSize(null)
     } finally {
-      setBusy(false)
+      if (id === rollId.current) setBusy(false)
     }
   }
 
@@ -85,6 +90,8 @@ const useRandomizer = () => {
       void rollStore(exclude)
       return
     }
+    rollId.current++
+    setBusy(false)
     const r = pickFrom(exclude)
     setPicks(r.picks)
     setPoolSize(r.poolSize)
@@ -112,6 +119,8 @@ const useRandomizer = () => {
   }
 
   const changeSource = (v: Source) => {
+    rollId.current++
+    setBusy(false)
     setSource(v)
     // Picks/exclusions belong to the previous source — drop them so only
     // the chosen source's content is shown until the next roll.
@@ -128,6 +137,8 @@ const useRandomizer = () => {
   useEffect(() => {
     const req = takeRandomizerRequest()
     if (!req) return
+    rollId.current++
+    setBusy(false)
     setSource(req.source)
     if (req.spec) {
       flt.setMode('normal')
