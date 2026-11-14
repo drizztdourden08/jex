@@ -1,5 +1,5 @@
 import type { Game } from '@shared/library'
-import { persist } from '../../db/database'
+import { schedulePersist } from '../../db/database'
 import {
   ensureStub,
   getGame,
@@ -46,7 +46,7 @@ const detailCore = async (appid: number, name?: string): Promise<Game | null> =>
     const core = await fetchCoreMetadata(appid)
     if (core) mergeMetadata(appid, core)
     else markNoStorePage(appid)
-    persist()
+    schedulePersist()
   } catch (e) {
     if (!(e instanceof RateLimitError)) console.error(`[detailCore ${appid}]`, String(e))
   }
@@ -64,7 +64,7 @@ const detailExtras = async (appid: number): Promise<Game | null> => {
   try {
     const extras = await fetchExtraMetadata(appid, g.name, g.metacriticUrl)
     mergePatch(appid, extras, true)
-    persist()
+    schedulePersist()
   } catch (e) {
     console.error(`[detailExtras ${appid}]`, String(e))
   }

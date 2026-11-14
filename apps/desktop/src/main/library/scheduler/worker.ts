@@ -2,7 +2,7 @@ import type { WorkerProgress } from '@shared/library'
 import { fetchFullMetadata } from '../../enrich/metadata'
 import { RateLimitError } from '../../steam/store'
 import { getGame, markEnrichFailed, markNoStorePage, mergeMetadata } from '../../db/games'
-import { persist, setMeta } from '../../db/database'
+import { persist, schedulePersist, setMeta } from '../../db/database'
 import { inflight, queue, sleep, state, workers } from './state'
 import { IDLE_POLL_MS, MAX_INTERVAL, WORKER_COUNT } from './constants'
 import { emit, remaining, resolveDrain } from './progress'
@@ -61,7 +61,7 @@ const runWorker = async (w: WorkerProgress): Promise<void> => {
 
     if (state.processed % 20 === 0) {
       saveTiming()
-      persist()
+      schedulePersist()
     }
     emit()
 

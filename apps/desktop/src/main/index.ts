@@ -1,6 +1,6 @@
 import './app-name' // MUST be first — sets app name before any import resolves userData
 import { app, BrowserWindow } from 'electron'
-import { initDb } from './db/database'
+import { initDb, flushPersist } from './db/database'
 import { onEnrichProgress } from './library/sync'
 import { initEngine } from './ai-host'
 import { registerLocalArtScheme, registerArtProtocol } from './protocol/localart'
@@ -51,3 +51,6 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
+app.on('before-quit', () => flushPersist())
+app.on('will-quit', () => flushPersist())
