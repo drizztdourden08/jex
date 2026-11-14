@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from 'react'
 import type { useFilterState } from '@/hooks/useFilterState'
 import type { FilterSpec } from '@shared/filter'
 import type { Game, SyncProgress } from '@shared/library'
@@ -22,12 +21,10 @@ type WishlistMainProps = {
   hint: string | null
   flt: FilterState
   groups: WishlistGroup[]
-  openMenu: number | null
   canSaveFilter: boolean
   onSync: () => void | Promise<void>
   onCreateAndEdit: (filterSpec: FilterSpec | null) => void | Promise<void>
   onSaveFilterToGroup: () => void | Promise<void>
-  onSetOpenMenu: Dispatch<SetStateAction<number | null>>
   onToggleManual: (id: number, appid: number) => void | Promise<void>
 }
 

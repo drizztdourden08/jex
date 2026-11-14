@@ -46,7 +46,26 @@ const AiEngineSection = ({
   progress,
   error,
   install,
+  loadError,
+  retry,
 }: AiEngineSectionProps) => {
+  if (!status && loadError) {
+    return (
+      <Box className="panel">
+        <Box as="h3">AI engine</Box>
+        <Stack gap={2}>
+          <Text as="p" style={{ color: 'var(--danger)' }}>
+            Couldn't load AI engine status: {loadError}
+          </Text>
+          <Flex>
+            <Button variant="secondary" onClick={retry}>
+              Retry
+            </Button>
+          </Flex>
+        </Stack>
+      </Box>
+    )
+  }
   if (!status) return null
 
   const gpu = status.gpu

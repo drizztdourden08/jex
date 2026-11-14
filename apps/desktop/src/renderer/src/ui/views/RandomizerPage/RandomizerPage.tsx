@@ -25,6 +25,7 @@ const RandomizerPage = () => {
     reroll,
     reset,
     excludeOne,
+    launchGame,
     changeSource,
     shownPicks,
   } = useRandomizer()
@@ -89,7 +90,7 @@ const RandomizerPage = () => {
 
       <Box className="grid">
         {shownPicks.map((g) => (
-          <PickCard key={g.appid} game={g} onExclude={excludeOne} />
+          <PickCard key={g.appid} game={g} onExclude={excludeOne} onLaunch={launchGame} />
         ))}
       </Box>
     </Box>

@@ -7,8 +7,6 @@ import { SelectMenu } from '@ds/primitives/form/Select'
 type Props = {
   appid: number
   groups: WishlistGroup[]
-  open: boolean
-  onToggleOpen: () => void
   onToggle: (id: number, appid: number) => void | Promise<void>
 }
 

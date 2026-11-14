@@ -102,6 +102,10 @@ const useRandomizer = () => {
     roll(next)
   }
 
+  const launchGame = (appid: number) => {
+    void window.api.app.openExternal(`steam://run/${appid}`)
+  }
+
   const reset = () => {
     setExcluded([])
     roll([])
@@ -161,6 +165,7 @@ const useRandomizer = () => {
     reroll,
     reset,
     excludeOne,
+    launchGame,
     changeSource,
     shownPicks,
   }

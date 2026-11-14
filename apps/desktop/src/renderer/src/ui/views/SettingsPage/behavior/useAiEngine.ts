@@ -11,13 +11,19 @@ const useAiEngine = () => {
   const [installing, setInstalling] = useState(false)
   const [progress, setProgress] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   // Pre-select the recommended rows that aren't installed yet (e.g. the base engine).
   const load = useCallback(async () => {
-    const [s, list] = await Promise.all([window.api.ai.engineStatus(), window.api.ai.enginePlugins()])
-    setStatus(s)
-    setPlugins(list)
-    setSelected(new Set(list.filter((p) => p.recommended && !p.installed).map((p) => p.id)))
+    try {
+      const [s, list] = await Promise.all([window.api.ai.engineStatus(), window.api.ai.enginePlugins()])
+      setStatus(s)
+      setPlugins(list)
+      setSelected(new Set(list.filter((p) => p.recommended && !p.installed).map((p) => p.id)))
+      setLoadError(null)
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : String(e))
+    }
   }, [])
 
   useEffect(() => {
@@ -58,7 +64,7 @@ const useAiEngine = () => {
     }
   }, [selected, load])
 
-  return { status, plugins, selected, toggle, installing, progress, error, install }
+  return { status, plugins, selected, toggle, installing, progress, error, install, loadError, retry: load }
 }
 
 export { useAiEngine }

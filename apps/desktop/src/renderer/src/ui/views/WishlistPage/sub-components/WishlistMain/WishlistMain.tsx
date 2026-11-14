@@ -23,12 +23,10 @@ const WishlistMain = ({
   hint,
   flt,
   groups,
-  openMenu,
   canSaveFilter,
   onSync,
   onCreateAndEdit,
   onSaveFilterToGroup,
-  onSetOpenMenu,
   onToggleManual,
 }: WishlistMainProps) => (
   <Box as="section" className="wl-main">
@@ -146,8 +144,6 @@ const WishlistMain = ({
               <AddToGroupButton
                 appid={g.appid}
                 groups={groups}
-                open={openMenu === g.appid}
-                onToggleOpen={() => onSetOpenMenu((cur) => (cur === g.appid ? null : g.appid))}
                 onToggle={onToggleManual}
               />
             }
