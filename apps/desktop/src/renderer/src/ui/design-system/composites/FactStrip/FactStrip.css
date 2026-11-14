@@ -1,0 +1,44 @@
+/* Action slot + label/value facts on one glass strip. Domain-agnostic; tokens only. */
+.ds-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--hairline);
+  background: var(--glass-1-bg);
+}
+
+.ds-facts-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.ds-facts-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  margin: 0;
+}
+
+.ds-fact {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ds-fact-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.ds-fact-value {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-1);
+  white-space: nowrap;
+}
