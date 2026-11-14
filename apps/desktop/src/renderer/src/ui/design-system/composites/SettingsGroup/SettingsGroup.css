@@ -1,0 +1,47 @@
+/* A labelled inset list inside a settings section. Tokens only. */
+.ds-settings-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 24px;
+  margin-bottom: var(--sp-1);
+}
+
+.ds-settings-group-label {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-2);
+}
+
+.ds-settings-group-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.ds-settings-group-desc {
+  margin: 0 0 var(--sp-2);
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 72ch;
+}
+
+.ds-settings-group-body {
+  border-radius: var(--r-md);
+  background: var(--glass-1-bg);
+  border: 1px solid var(--hairline);
+  padding: 0 var(--sp-4);
+}
+
+/* Free content (lists, tables, callouts) sits on the same rhythm as rows. */
+.ds-settings-group-body > :not(.ds-setting-row) { margin: var(--sp-3) 0; }
+.ds-settings-group-body > :not(.ds-setting-row) + .ds-setting-row,
+.ds-settings-group-body > .ds-setting-row + :not(.ds-setting-row) {
+  border-top: 1px solid var(--hairline);
+}
+.ds-settings-group-body > .ds-setting-row + :not(.ds-setting-row) { padding-top: var(--sp-3); }
