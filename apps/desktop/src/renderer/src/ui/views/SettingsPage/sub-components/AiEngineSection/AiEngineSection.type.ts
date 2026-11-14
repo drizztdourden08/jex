@@ -9,6 +9,8 @@ interface AiEngineSectionProps {
   progress: string | null
   error: string | null
   install: () => void
+  loadError: string | null
+  retry: () => void
 }
 
 export type { AiEngineSectionProps }

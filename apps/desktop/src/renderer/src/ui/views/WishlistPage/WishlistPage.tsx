@@ -20,7 +20,6 @@ const WishlistPage = () => {
   const wl = useWishlistGroups()
   const [selected, setSelected] = useState<Selection>('all')
   const [renaming, setRenaming] = useState<number | null>(null)
-  const [openMenu, setOpenMenu] = useState<number | null>(null) // appid whose add-menu is open
 
   const wishlist = useMemo(() => games.filter((g) => g.wishlisted), [games])
   const ready = useMemo(() => wishlist.filter(isResolved), [wishlist])
@@ -35,16 +34,6 @@ const WishlistPage = () => {
     flt.setSpec({ ...flt.spec, sortBy: 'wishlistPriority', sortDir: 'asc' })
 
   }, [])
-
-  // One card add-menu open at a time; a click anywhere outside closes it.
-  useEffect(() => {
-    if (openMenu == null) return
-    const onDown = (e: globalThis.MouseEvent) => {
-      if (!(e.target as HTMLElement).closest('.wl-add')) setOpenMenu(null)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [openMenu])
 
   const activeGroup: WishlistGroup | undefined =
     selected === 'all' ? undefined : wl.groups.find((g) => g.id === selected)
@@ -117,12 +106,10 @@ const WishlistPage = () => {
         hint={hint}
         flt={flt}
         groups={wl.groups}
-        openMenu={openMenu}
         canSaveFilter={canSaveFilter}
         onSync={doSync}
         onCreateAndEdit={createAndEdit}
         onSaveFilterToGroup={saveFilterToGroup}
-        onSetOpenMenu={setOpenMenu}
         onToggleManual={wl.toggleManual}
       />
     </Box>

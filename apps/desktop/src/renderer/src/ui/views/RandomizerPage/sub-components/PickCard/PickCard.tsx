@@ -13,9 +13,10 @@ const FROM = { from: '/randomizer' }
 type PickCardProps = {
   game: Game
   onExclude: (appid: number) => void
+  onLaunch: (appid: number) => void
 }
 
-const PickCard = ({ game: g, onExclude }: PickCardProps) => {
+const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
   const [failed, setFailed] = useState(false)
   return (
     <Box className="card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -45,7 +46,7 @@ const PickCard = ({ game: g, onExclude }: PickCardProps) => {
           {g.installed ? (
             <Button
               style={{ padding: '4px 10px', fontSize: 12 }}
-              onClick={() => window.api.app.openExternal(`steam://run/${g.appid}`)}
+              onClick={() => onLaunch(g.appid)}
             >
               ▶ Launch
             </Button>
