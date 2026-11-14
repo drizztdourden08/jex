@@ -25,24 +25,29 @@
 }
 
 .lib-md-list {
+  /* Bare: the list sits straight on the page glass, no card around it. */
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-lg);
-  background: var(--glass-1-bg);
 }
 
 .lib-md-list-empty {
-  padding: var(--sp-4);
+  padding: var(--sp-4) var(--sp-2);
   font-size: 13px;
 }
 
+/* The detail pane IS a container: a glass card that clips its own hero backdrop,
+   with the content scrolling inside it. */
 .lib-detail {
+  position: relative;
+  isolation: isolate;
   min-height: 0;
   min-width: 0;
-  overflow: hidden auto;
-  overscroll-behavior: contain;
-  padding-right: var(--sp-1);
+  overflow: hidden;
+  background: var(--glass-2-bg);
+  backdrop-filter: blur(var(--glass-2-blur));
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 1px 0 var(--top-highlight);
 }
 
 .lib-detail-empty {
@@ -50,24 +55,36 @@
   place-items: center;
 }
 
-.lib-detail-title {
-  margin: 0 0 var(--sp-3);
-  font-size: 20px;
-  font-weight: 400;
+/* Same blurred hero as the full detail page, scoped to the pane. */
+.lib-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center top;
+  filter: blur(36px) saturate(1.1);
+  opacity: 0.22;
+  mask-image: linear-gradient(to bottom, var(--media-bg) 0%, transparent 72%);
+  pointer-events: none;
 }
 
-.lib-detail-full {
-  align-self: center;
+.lib-detail-scroll {
+  height: 100%;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding: var(--sp-4) var(--sp-5);
+}
+
+.lib-detail-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
   font-size: 13px;
 }
 
 .lib-detail-loading {
-  margin: var(--sp-2) 0 0;
   font-size: 12px;
-}
-
-.lib-detail .game-quick {
-  margin-bottom: var(--sp-4);
 }
 
 /* Narrow window: stack the list above the detail instead of squeezing both. */

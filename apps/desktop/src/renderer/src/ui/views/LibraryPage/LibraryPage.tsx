@@ -115,6 +115,7 @@ const LibraryPage = () => {
             reqs={detail.reqs}
             autoplay={detail.autoplay}
             onOpen={detail.open}
+            onOpenInStore={detail.openInStore}
           />
         </Box>
       )}
