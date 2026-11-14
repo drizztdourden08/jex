@@ -1,6 +1,15 @@
 import type { ReactNode } from 'react'
 
-type GlyphName = 'send' | 'stop' | 'compose' | 'copy' | 'check'
+type GlyphName = 'send' | 'stop' | 'compose' | | 'copy'
+  | 'check'
+  | 'store'
+  | 'search'
+  | 'heart'
+  | 'library'
+  | 'shuffle'
+  | 'settings'
+  | 'chevron-left'
+  | 'chevron-right'
 
 interface GlyphProps {
   name: GlyphName
@@ -26,6 +35,45 @@ const PATHS: Record<GlyphName, ReactNode> = {
     </>
   ),
   check: <path d="M20 6 9 17l-5-5" />,
+  store: (
+    <>
+      <path d="M3 9 5 4h14l2 5" />
+      <path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+      <path d="M5 12v8h14v-8" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" />
+    </>
+  ),
+  heart: <path d="M12 20s-8-4.9-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6.1-8 11-8 11z" />,
+  library: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </>
+  ),
+  shuffle: (
+    <>
+      <path d="M16 3h5v5" />
+      <path d="M4 20 21 3" />
+      <path d="M21 16v5h-5" />
+      <path d="m15 15 6 6" />
+      <path d="m4 4 5 5" />
+    </>
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1" />
+    </>
+  ),
+  'chevron-left': <path d="m15 18-6-6 6-6" />,
+  'chevron-right': <path d="m9 18 6-6-6-6" />,
 }
 
 const Glyph = ({ name, size = 18, className }: GlyphProps) => (

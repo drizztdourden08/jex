@@ -60,7 +60,11 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); ou
    dropdown grow animates width on open, not just close). */
 :root { --sidebar-w: 200px; interpolate-size: allow-keywords; }
 .root-shell { height: 100vh; display: flex; flex-direction: column; }
-.app { flex: 1; min-height: 0; display: grid; grid-template-columns: var(--sidebar-w) 1fr; }
+.root-shell--nav-collapsed { --sidebar-w: 64px; }
+.app {
+  flex: 1; min-height: 0; display: grid; grid-template-columns: var(--sidebar-w) 1fr;
+  transition: grid-template-columns var(--dur-slow) var(--ease-standard);
+}
 .content { padding: 22px 26px; overflow: hidden auto; min-width: 0; min-height: 0; }
 .content--bleed { padding: 0; overflow: hidden; } /* full-bleed host for the store webview */
 

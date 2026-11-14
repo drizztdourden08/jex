@@ -2,7 +2,25 @@
 .sidebar {
   background: var(--glass-1-bg); backdrop-filter: blur(var(--glass-1-blur));
   border-right: 1px solid var(--hairline); padding: 14px 10px;
+  position: relative; min-width: 0; z-index: 2;
 }
+
+/* Chevron straddling the right border (half overlapping). */
+.sidebar__toggle {
+  position: absolute; top: 18px; right: -12px; width: 24px; height: 24px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: var(--text-2);
+  background: var(--glass-2-bg); border: 1px solid var(--hairline-strong);
+}
+.sidebar__toggle:hover { color: var(--text-1); }
+
+.nav { overflow: hidden; }
+.nav__label { white-space: nowrap; overflow: hidden; transition: opacity var(--dur-base); }
+.nav a svg { flex: none; }
+
+.sidebar--collapsed .nav__label { opacity: 0; width: 0; }
+.sidebar--collapsed .nav a { justify-content: center; gap: 0; padding-inline: 0; }
+.sidebar--collapsed .nav a::before { display: none; }
 
 .nav a {
   display: flex; align-items: center; gap: 10px;

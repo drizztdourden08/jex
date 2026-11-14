@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'node:path'
 import { attachNavKeys, routeNav } from './nav-guards'
+import { keepGlass } from './keep-glass'
 
 /**
  * Main window creation: frameless Mica/Acrylic glass, no focus stealing under
@@ -76,6 +77,7 @@ const createWindow = (): BrowserWindow => {
     console.log(`[main] window shown (${NO_FOCUS ? 'inactive' : 'active'})`)
   })
 
+  keepGlass(win)
   attachNavKeys(win.webContents)
 
   // Mouse back/forward buttons arrive on Windows as app-commands at the window
