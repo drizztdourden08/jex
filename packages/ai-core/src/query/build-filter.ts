@@ -1,5 +1,5 @@
 import type { AiVocab, QueryResult } from '@jex/shared/ai'
-import { isRemoteRef } from '@jex/shared/remote-ai'
+import { isRemoteRef } from '@jex/shared/remote-ai/index'
 import { activeModelRef } from '../model/catalog'
 import { localRuntimeAvailable, LOCAL_RUNTIME_MISSING } from '../model/runtime'
 import { localFilter } from './local-filter'
