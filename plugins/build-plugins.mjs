@@ -193,7 +193,7 @@ const run = async () => {
   for (const e of entries) byId.set(e.id, e)
   const manifest = {
     apiVersion,
-    appVersionRange: `>=${appVersion} <0.2.0`,
+    appVersionRange: `>=${appVersion}`,
     generatedAt: new Date().toISOString(),
     plugins: [...byId.values()],
   }
