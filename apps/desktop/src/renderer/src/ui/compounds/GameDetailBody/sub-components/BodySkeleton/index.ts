@@ -1,0 +1,1 @@
+export { BodySkeleton } from './BodySkeleton'

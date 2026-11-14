@@ -1,7 +1,7 @@
 import type { Game } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
-import { num } from '../../behavior/detail-utils'
+import { num } from '../../GameDetailBody.helpers'
 import { ReviewBar } from '../ReviewBar'
 import { ReviewBarSkeleton } from '../ReviewBarSkeleton'
 

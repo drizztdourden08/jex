@@ -1,37 +1,49 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import DOMPurify from 'dompurify'
 import type { Game } from '@shared/library'
 
-const FRESH_MS = 10 * 60 * 1000 // skip refetch-on-open if metadata is younger than this
-const RESCAN_MS = 60 * 1000 // throttle the local install re-scan across navigations
+const FRESH_MS = 10 * 60 * 1000
+const RESCAN_MS = 60 * 1000
 
-// Module-level so it persists across detail-page mounts (a single rescan covers
-// every game, so we don't repeat it for each one the user opens in quick succession).
+// Module-level so it persists across mounts: one rescan covers every game, so it is
+// not repeated for each game opened in quick succession.
 let lastLocalRescan = 0
 
 type UseGameDetailParams = {
   id: number
   name?: string
+  /** A copy already in memory (the library list's): shown at once instead of a skeleton. */
+  seed?: Game | null
+  /** Wait this long before any IPC, so arrow-keying through a list stays quiet. */
+  delayMs?: number
+  /** Metadata younger than this skips the Store API refetch (the API is IP-rate-limited). */
+  freshMs?: number
 }
 
-const useGameDetail = ({ id, name }: UseGameDetailParams) => {
-  const [game, setGame] = useState<Game | null>(null)
-  const [loading, setLoading] = useState(true) // no core data yet → full skeleton
-  const [extrasLoading, setExtrasLoading] = useState(false) // stage-2 (reviews/tags/…) in flight
+/**
+ * Staged detail load for one game: the cached mirror row first, then the Store API
+ * core details, then the slow extras (reviews, players, tags, Metacritic, HLTB).
+ */
+const useGameDetail = ({ id, name, seed, delayMs = 0, freshMs = FRESH_MS }: UseGameDetailParams) => {
+  const [game, setGame] = useState<Game | null>(seed ?? null)
+  const [loading, setLoading] = useState(!seed)
+  const [extrasLoading, setExtrasLoading] = useState(false)
+  const seedRef = useRef(seed)
+  seedRef.current = seed
 
   useEffect(() => {
     let active = true
-    setLoading(true)
+    const initial = seedRef.current?.appid === id ? seedRef.current : null
+    setGame(initial)
+    setLoading(!initial)
     setExtrasLoading(false)
-    setGame(null)
-    void (async () => {
-      // 1) Show whatever's cached instantly (skeletons fill in for the rest).
+
+    const run = async () => {
       const cached = await window.api.library.get(id).catch(() => null)
       if (!active) return
       if (cached) {
         setGame(cached)
         setLoading(false)
-        // Re-check local install state/art on open (throttled — one scan covers all).
         if (Date.now() - lastLocalRescan > RESCAN_MS) {
           lastLocalRescan = Date.now()
           window.api.library
@@ -42,33 +54,42 @@ const useGameDetail = ({ id, name }: UseGameDetailParams) => {
         }
       }
 
-      // Skip the network if metadata was fetched recently, or the page is delisted.
       const fresh =
         cached?.enrichment === 'enriched' &&
         cached.enrichedAt != null &&
-        Date.now() - cached.enrichedAt < FRESH_MS
+        Date.now() - cached.enrichedAt < freshMs
       if (fresh || cached?.enrichment === 'no-store-page') {
         setLoading(false)
         return
       }
 
-      // 2) Stage 1 — core (appdetails): name/media/description/price/genres/…
       const core = await window.api.library.detailCore(id, name).catch(() => null)
       if (!active) return
       if (core) setGame(core)
       setLoading(false)
 
-      // 3) Stage 2 — slow extras: reviews, players, tags, Metacritic, HLTB.
       setExtrasLoading(true)
       const full = await window.api.library.detailExtras(id).catch(() => null)
       if (!active) return
       if (full) setGame(full)
       setExtrasLoading(false)
-    })()
+    }
+
+    const timer = window.setTimeout(() => void run(), delayMs)
     return () => {
       active = false
+      window.clearTimeout(timer)
     }
   }, [id])
+
+  // A reloaded list hands in a newer copy of the same game (install state, a sync):
+  // take it unless what is on screen is fresher.
+  useEffect(() => {
+    if (!seed || seed.appid !== id) return
+    setGame((cur) =>
+      !cur || cur.appid !== id || (seed.enrichedAt ?? 0) >= (cur.enrichedAt ?? 0) ? seed : cur,
+    )
+  }, [seed])
 
   const sanitized = useMemo(() => {
     const html = game?.detailedHtml || game?.aboutHtml

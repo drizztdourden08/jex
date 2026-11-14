@@ -1,6 +1,6 @@
 import type { ReviewSummary } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
-import { num } from '../../behavior/detail-utils'
+import { num } from '../../GameDetailBody.helpers'
 
 type ReviewBarProps = {
   label: string
