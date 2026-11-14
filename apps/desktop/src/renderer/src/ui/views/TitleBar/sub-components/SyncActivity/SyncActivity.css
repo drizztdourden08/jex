@@ -1,0 +1,42 @@
+/* Title-bar scan/sync activity: the icon trigger (spins + accent dot while running,
+   danger dot after a failed sync) and its popover surface. Tokens only. */
+.tb-sync { position: relative; display: inline-flex; -webkit-app-region: no-drag; }
+
+.tb-sync-btn {
+  width: 30px; height: 26px; padding: 0;
+  color: var(--text-2); border-radius: var(--r-sm);
+}
+.tb-sync-btn:hover:not(:disabled) { background: var(--hairline); color: var(--text-1); }
+.tb-sync[data-state='active'] .tb-sync-btn { color: var(--accent); }
+.tb-sync[data-state='active'] .tb-sync-glyph { animation: tb-sync-spin 1.2s linear infinite; }
+
+.tb-sync[data-state='active']::after,
+.tb-sync[data-state='failed']::after {
+  content: ''; position: absolute; top: 3px; right: 4px; pointer-events: none;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.tb-sync[data-state='failed']::after { background: var(--danger); box-shadow: none; }
+
+.tb-sync-pop {
+  width: 380px; max-width: 92vw; padding: var(--sp-3);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  background: var(--glass-3-bg); backdrop-filter: blur(var(--glass-3-blur));
+  border: 1px solid var(--hairline); border-radius: var(--r-md);
+  box-shadow: var(--shadow-popover);
+}
+.tb-sync-pop-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); min-height: 22px; }
+
+.tb-sync-pop-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3);
+}
+.tb-sync-note { margin: 0; font-size: 13px; }
+.tb-sync-error { color: var(--danger); }
+
+@keyframes tb-sync-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb-sync[data-state='active'] .tb-sync-glyph { animation: none; }
+}

@@ -1,0 +1,9 @@
+/* Library header — a single slim row: title, counts + metadata stats, actions.
+   Tokens only. */
+.lib-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+.lib-head-title { margin: 0; font-size: 20px; line-height: 1.2; }
+.lib-head-meta { font-size: 12px; min-width: 0; }
+.lib-head-actions { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); }

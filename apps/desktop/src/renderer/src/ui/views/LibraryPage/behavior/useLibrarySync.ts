@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Game, LibraryStats, ScanResult, SyncProgress } from '@shared/library'
+import { useSyncStatus } from '@/store/syncStatus'
 
 type Params = {
   games: Game[]
@@ -11,50 +12,48 @@ type Params = {
 
 const REFRESH_MS = 8000
 
+/**
+ * The Library's side of the scan/sync. The sync state itself is app-wide (the
+ * sync-status store, fed from main by the TitleBar); here we drive it, mirror the
+ * local rescan into it, and reload the list as owned rows and metadata land.
+ */
 const useLibrarySync = ({ games, loading, scanning, scan, reload }: Params) => {
   const [scanInfo, setScanInfo] = useState<ScanResult | null>(null)
   const [autoTried, setAutoTried] = useState(false)
   const [keySet, setKeySet] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-  const [cancelling, setCancelling] = useState(false)
-  const [progress, setProgress] = useState<SyncProgress | null>(null)
+  const [stats, setStats] = useState<LibraryStats | null>(null)
   const lastRefresh = useRef(0)
   const lastPhase = useRef<SyncProgress['phase'] | null>(null)
-  const [stats, setStats] = useState<LibraryStats | null>(null)
+  const syncing = useSyncStatus((s) => s.syncing)
+  const cancelling = useSyncStatus((s) => s.cancelling)
+  const startSync = useSyncStatus((s) => s.start)
+  const cancelSync = useSyncStatus((s) => s.cancel)
+  const setScanning = useSyncStatus((s) => s.setScanning)
 
-  // The sync runs in main and survives navigation. On (re)mount, ask main for the
-  // real state so we resume the progress bar instead of restarting from 0, and
-  // subscribe to live updates. Terminal phases flip us out of the syncing state.
   useEffect(() => {
     window.api.secrets.has('steamApiKey').then(setKeySet).catch(() => {})
-    window.api.library
-      .syncState()
-      .then((st) => {
-        if (st.running) {
-          setSyncing(true)
-          if (st.progress) setProgress(st.progress)
+  }, [])
+
+  // Owned rows land when the phase flips owned -> enrich; then refresh quietly,
+  // throttled, as enrichment fills in metadata, and once more when the sync ends.
+  useEffect(
+    () =>
+      window.api.enrich.onProgress((p) => {
+        const now = Date.now()
+        const ownedLanded = p.phase === 'enrich' && lastPhase.current !== 'enrich'
+        lastPhase.current = p.phase
+        if (p.phase === 'enrich' && (ownedLanded || now - lastRefresh.current > REFRESH_MS)) {
+          lastRefresh.current = now
+          void reload()
         }
-      })
-      .catch(() => {})
-    return window.api.enrich.onProgress((p) => {
-      setProgress(p)
-      // Owned rows land when the phase flips owned -> enrich; then refresh quietly,
-      // throttled, as enrichment fills in metadata.
-      const now = Date.now()
-      const ownedLanded = p.phase === 'enrich' && lastPhase.current !== 'enrich'
-      lastPhase.current = p.phase
-      if (p.phase === 'enrich' && (ownedLanded || now - lastRefresh.current > REFRESH_MS)) {
-        lastRefresh.current = now
-        void reload()
-      }
-      const terminal = p.phase === 'done' || p.phase === 'paused' || p.phase === 'error'
-      setSyncing(!terminal)
-      if (terminal) {
-        setCancelling(false)
-        void reload()
-      }
-    })
-  }, [reload])
+        if (p.phase === 'done' || p.phase === 'paused' || p.phase === 'error') void reload()
+      }),
+    [reload],
+  )
+
+  // Mirror the local rescan into the app-wide status (the title-bar activity icon).
+  useEffect(() => setScanning(scanning), [scanning, setScanning])
+  useEffect(() => () => setScanning(false), [setScanning])
 
   // Refresh the analyzed-stats whenever the library data changes (scan/sync/reload).
   useEffect(() => {
@@ -78,37 +77,13 @@ const useLibrarySync = ({ games, loading, scanning, scan, reload }: Params) => {
     }
   }, [loading, games.length, autoTried, scanning, scan])
 
-  const startSync = () => {
-    setSyncing(true)
-    setProgress({ phase: 'owned', total: 1, done: 0, message: 'Starting…' })
-    window.api.library.syncFull().catch((e: unknown) => {
-      setSyncing(false)
-      setProgress({ phase: 'error', total: 0, done: 0, message: String(e) })
-    })
-  }
-
-  const cancelSync = () => {
-    setCancelling(true)
-    window.api.library.cancelSync().catch(() => setCancelling(false))
-  }
-
   const rescan = () => {
     scan()
       .then(setScanInfo)
       .catch(() => {})
   }
 
-  return {
-    scanInfo,
-    keySet,
-    syncing,
-    cancelling,
-    progress,
-    stats,
-    startSync,
-    cancelSync,
-    rescan,
-  }
+  return { scanInfo, keySet, syncing, cancelling, stats, startSync, cancelSync, rescan }
 }
 
 export { useLibrarySync }

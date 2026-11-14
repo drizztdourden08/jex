@@ -1,0 +1,3 @@
+/* Library filter-bar tools (count, sort, display mode). Tokens only. */
+.lib-tools-count { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lib-tools-clear { color: var(--text-2); }

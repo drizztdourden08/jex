@@ -14,7 +14,7 @@ interface Props {
   setQuery: (q: QueryGroup) => void
   dirty: boolean
   reset: () => void
-  /** Rendered at the right of the top bar (e.g. count + sort + clear). */
+  /** Rendered at the right of the top bar (e.g. count + sort + display mode + clear). */
   headerRight?: ReactNode
   /** Engagement toggles to hide (e.g. Wishlist hides install/playtime concepts). */
   omit?: FilterToggle[]

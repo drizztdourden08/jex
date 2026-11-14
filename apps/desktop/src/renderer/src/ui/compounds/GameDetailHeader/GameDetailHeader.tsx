@@ -1,33 +1,23 @@
-import type { Game } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
+import { statusFor } from './GameDetailHeader.helpers'
+import type { GameDetailHeaderProps } from './GameDetailHeader.type'
+import './GameDetailHeader.css'
 
-type DetailHeaderProps = {
-  game: Game
-  statusText: string
-  wlBusy: boolean
-  wlMsg: string | null
-  onOpen: (url: string) => void
-  onOpenInStore: (url: string) => void
-  onAddWishlist: () => void
-}
-
-const DetailHeader = ({
-  game,
-  statusText,
-  wlBusy,
-  wlMsg,
-  onOpen,
-  onOpenInStore,
-  onAddWishlist,
-}: DetailHeaderProps) => {
+/**
+ * A game's detail header: name, install status line and the action row (launch /
+ * install, wishlist, store page, discussions). Shared by the full detail page and
+ * the Library's detail pane. The wishlist button only shows when `onAddWishlist`
+ * is given (and the game is not owned).
+ */
+const GameDetailHeader = ({ game, wlBusy = false, wlMsg = null, onOpen, onOpenInStore, onAddWishlist }: GameDetailHeaderProps) => {
   return (
     <Box as="header" className="detail-header">
       <Box as="h1">{game.name}</Box>
       <Box className="row detail-status">
         <Box as="span" className={`dot ${game.installed ? 'inst' : 'own'}`} />
         <Box as="span" className="muted">
-          {statusText}
+          {statusFor(game)}
           {game.playtimeForever > 0 && ` · ${Math.round(game.playtimeForever / 60)}h played`}
           {game.releaseYear ? ` · ${game.releaseYear}` : ''}
         </Box>
@@ -38,6 +28,7 @@ const DetailHeader = ({
           <Button onClick={() => onOpen(`steam://install/${game.appid}`)}>⬇ Install</Button>
         )}
         {!game.owned &&
+          onAddWishlist &&
           (game.wishlisted ? (
             <Button variant="ghost" className="ghost" disabled title="On your Steam wishlist">
               ✓ Wishlisted
@@ -59,7 +50,7 @@ const DetailHeader = ({
         </Button>
       </Box>
       {wlMsg && (
-        <Box as="p" className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+        <Box as="p" className="muted detail-wl-msg">
           {wlMsg}
         </Box>
       )}
@@ -67,5 +58,4 @@ const DetailHeader = ({
   )
 }
 
-export { DetailHeader }
-export type { DetailHeaderProps }
+export { GameDetailHeader }

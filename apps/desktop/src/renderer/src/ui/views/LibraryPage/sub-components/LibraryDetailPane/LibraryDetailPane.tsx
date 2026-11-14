@@ -4,7 +4,7 @@ import type { Game } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
 import { GameDetailBody } from '@ui/compounds/GameDetailBody'
 import type { SanitizedRequirements } from '@ui/compounds/GameDetailBody'
-import { GameQuickActions } from '@ui/compounds/GameQuickActions'
+import { GameDetailHeader } from '@ui/compounds/GameDetailHeader'
 
 type LibraryDetailPaneProps = {
   game: Game | null
@@ -13,12 +13,17 @@ type LibraryDetailPaneProps = {
   reqs: SanitizedRequirements | null
   autoplay: boolean
   onOpen: (url: string) => void
+  onOpenInStore: (url: string) => void
 }
 
 const FROM = { from: '/library' }
 
-/** The Library's right pane: quick actions, then the shared detail body. Scrolls on its own. */
-const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen }: LibraryDetailPaneProps) => {
+/**
+ * The Library's right pane, inside its own glass container: the game shown exactly as
+ * its full detail page shows it (hero backdrop, header with status + actions, then the
+ * shared detail body), with a link to that page. Scrolls on its own.
+ */
+const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen, onOpenInStore }: LibraryDetailPaneProps) => {
   const ref = useRef<HTMLElement>(null)
   const appid = game?.appid
 
@@ -34,33 +39,36 @@ const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onO
       </Box>
     )
 
+  const background = game.media?.background
   return (
-    <Box ref={ref} as="section" className="lib-detail" aria-label={game.name}>
-      <Box as="h2" className="lib-detail-title">
-        {game.name}
-      </Box>
-      <GameQuickActions
-        game={game}
-        onOpen={onOpen}
-        extra={
-          <Link to={`/game/${game.appid}`} state={FROM} className="muted lib-detail-full">
+    <Box as="section" className="lib-detail" aria-label={game.name}>
+      {background && (
+        <Box
+          className="lib-detail-backdrop"
+          style={{ backgroundImage: `url("${background.replace(/["\\]/g, '')}")` }}
+        />
+      )}
+      <Box ref={ref} className="lib-detail-scroll">
+        <Box className="lib-detail-topbar">
+          <Link to={`/game/${game.appid}`} state={FROM} className="muted">
             Open full page →
           </Link>
-        }
-      />
-      {extrasLoading && (
-        <Box as="p" className="muted lib-detail-loading">
-          Loading details…
+          {extrasLoading && (
+            <Box as="span" className="muted lib-detail-loading">
+              Loading details…
+            </Box>
+          )}
         </Box>
-      )}
-      <GameDetailBody
-        game={game}
-        extrasLoading={extrasLoading}
-        sanitized={sanitized}
-        reqs={reqs}
-        autoplay={autoplay}
-        onOpen={onOpen}
-      />
+        <GameDetailHeader game={game} onOpen={onOpen} onOpenInStore={onOpenInStore} />
+        <GameDetailBody
+          game={game}
+          extrasLoading={extrasLoading}
+          sanitized={sanitized}
+          reqs={reqs}
+          autoplay={autoplay}
+          onOpen={onOpen}
+        />
+      </Box>
     </Box>
   )
 }

@@ -1,10 +1,14 @@
+import type { LibraryStats } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
+import { countsLine, statsLine } from './LibraryHeader.helpers'
+import './LibraryHeader.css'
 
 type LibraryHeaderProps = {
   total: number
   installed: number
   owned: number
+  stats: LibraryStats | null
   scanning: boolean
   syncing: boolean
   cancelling: boolean
@@ -15,10 +19,12 @@ type LibraryHeaderProps = {
   onCancelSync: () => void
 }
 
+/** One slim row: title, library counts + metadata stats, then the rescan/sync actions. */
 const LibraryHeader = ({
   total,
   installed,
   owned,
+  stats,
   scanning,
   syncing,
   cancelling,
@@ -28,27 +34,28 @@ const LibraryHeader = ({
   onStartSync,
   onCancelSync,
 }: LibraryHeaderProps) => {
+  const meta = [countsLine(total, installed, owned), statsLine(stats)].filter(Boolean).join(' · ')
   return (
-    <Box className="row" style={{ justifyContent: 'space-between' }}>
-      <Box as="h1">
-        Library{' '}
-        {total > 0 && (
-          <Box as="span" className="muted" style={{ fontSize: 14 }}>
-            {total} · {installed} installed{owned > 0 ? ` · ${owned} owned` : ''}
-          </Box>
-        )}
+    <Box className="lib-head">
+      <Box as="h1" className="lib-head-title">
+        Library
       </Box>
-      <Box className="row">
-        <Button variant="secondary" onClick={onRescan} disabled={busy}>
+      {meta && (
+        <Box as="span" className="muted lib-head-meta">
+          {meta}
+        </Box>
+      )}
+      <Box className="lib-head-actions">
+        <Button variant="secondary" size="slim" onClick={onRescan} disabled={busy}>
           {scanning ? 'Scanning…' : 'Rescan local'}
         </Button>
         {keySet && !syncing && (
-          <Button onClick={onStartSync} disabled={scanning}>
+          <Button size="slim" onClick={onStartSync} disabled={scanning}>
             Sync owned + metadata
           </Button>
         )}
         {syncing && (
-          <Button variant="danger" onClick={onCancelSync} disabled={cancelling}>
+          <Button variant="danger" size="slim" onClick={onCancelSync} disabled={cancelling}>
             {cancelling ? 'Cancelling…' : 'Cancel sync'}
           </Button>
         )}

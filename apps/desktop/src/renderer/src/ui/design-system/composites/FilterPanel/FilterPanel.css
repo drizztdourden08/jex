@@ -2,17 +2,21 @@
    and collapsible facet sections. Migrated from styles/sections/filters.css (Phase 5).
    Tokens only. Shared filter atoms (.chip-btn, .val-chip, .facet-*) live in global.css. */
 
-/* ── Filter panel: mode toggle, reset overlay ── */
-.filter-panel { position: relative; }
-.filter-topbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+/* ── Filter panel: mode toggle, reset overlay ──
+   Compact by design: slim padding, and with no body (Basic mode) it is one row. */
+.panel.filter-panel { position: relative; padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-3); }
+.filter-topbar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-2); }
 .filter-text { max-width: 360px; flex: 1; }
+.filter-topbar .filter-text { padding: 4px 10px; font-size: 13px; }
 
 /* Body holds the (overlay-able) filter content below the always-visible toggle. */
 .filter-body { position: relative; }
 .filter-body.has-overlay { min-height: 96px; }
+.filter-body:empty { display: none; }
+.filter-topbar:has(+ .filter-body:empty) { margin-bottom: 0; }
 
 /* Sort/clear/count cluster in the filter top bar. */
-.filter-header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.filter-header-right { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2); }
 
 /* Compact variant: covers just the Basic text input. */
 .filter-text-wrap { position: relative; flex: 1; max-width: 360px; }

@@ -1,5 +1,5 @@
-/* GameDetailPage — the page frame: hero backdrop, back link, header/status/actions.
-   The body below the header is the GameDetailBody compound. Tokens only. */
+/* GameDetailPage — the page frame: hero backdrop and back link. The header and the
+   body below it are the GameDetailHeader / GameDetailBody compounds. Tokens only. */
 .detail { position: relative; }
 
 /* Blurred hero backdrop pinned behind the content area. */
@@ -13,8 +13,3 @@
 
 .detail-topbar { display: flex; align-items: center; justify-content: space-between; }
 .detail-refreshing { font-size: 12px; animation: ai-fade var(--dur-base) ease; }
-
-.detail-header { margin: 8px 0 18px; }
-.detail-header h1 { margin: 0 0 6px; }
-.detail-status { gap: 6px; margin-bottom: 12px; }
-.detail-actions { gap: 8px; }

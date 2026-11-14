@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-type GlyphName = 'send' | 'stop' | 'compose' | | 'copy'
+type GlyphName = 'send' | 'stop' | 'compose' | 'copy'
   | 'check'
   | 'store'
   | 'search'
@@ -10,6 +10,7 @@ type GlyphName = 'send' | 'stop' | 'compose' | | 'copy'
   | 'settings'
   | 'chevron-left'
   | 'chevron-right'
+  | 'sync'
 
 interface GlyphProps {
   name: GlyphName
@@ -74,6 +75,14 @@ const PATHS: Record<GlyphName, ReactNode> = {
   ),
   'chevron-left': <path d="m15 18-6-6 6-6" />,
   'chevron-right': <path d="m9 18 6-6-6-6" />,
+  sync: (
+    <>
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+      <path d="M8 16H3v5" />
+    </>
+  ),
 }
 
 const Glyph = ({ name, size = 18, className }: GlyphProps) => (

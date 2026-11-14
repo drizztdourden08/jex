@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import type { Game } from '@shared/library'
 import { useGameDetail } from '@/hooks/useGameDetail'
 import { useAutoplaySetting } from '@/hooks/useAutoplaySetting'
+import { useOpenInStore } from '@/hooks/useOpenInStore'
 
 // Wait before loading so arrow-keying through the list does not fire a fetch per row.
 const DETAIL_DELAY_MS = 350
@@ -20,6 +21,7 @@ const useLibraryDetail = (selected: Game | null) => {
     freshMs: Infinity,
   })
   const autoplay = useAutoplaySetting()
+  const openInStore = useOpenInStore()
   const open = useCallback((url: string) => {
     window.api.app.openExternal(url).catch(() => {})
   }, [])
@@ -35,6 +37,7 @@ const useLibraryDetail = (selected: Game | null) => {
     reqs: current ? reqs : null,
     autoplay,
     open,
+    openInStore,
   }
 }
 

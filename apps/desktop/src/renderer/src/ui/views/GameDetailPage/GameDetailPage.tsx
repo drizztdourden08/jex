@@ -1,13 +1,13 @@
 import './GameDetailPage.css'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useStoreNav } from '@/store/storeNav'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useGameDetail } from '@/hooks/useGameDetail'
+import { useOpenInStore } from '@/hooks/useOpenInStore'
 import { useAutoplaySetting } from '@/hooks/useAutoplaySetting'
 import { Box } from '@ds/primitives/layout/Box'
 import { GameDetailBody } from '@ui/compounds/GameDetailBody'
-import { backTarget, statusFor } from './behavior/detail-utils'
+import { GameDetailHeader } from '@ui/compounds/GameDetailHeader'
+import { backTarget } from './behavior/detail-utils'
 import { useWishlistAction } from './behavior/useWishlistAction'
-import { DetailHeader } from './sub-components/DetailHeader'
 import { DetailSkeleton } from './sub-components/DetailSkeleton'
 
 const GameDetailPage = () => {
@@ -16,7 +16,7 @@ const GameDetailPage = () => {
   const navState = useLocation().state as { from?: string; name?: string } | null
   const from = navState?.from
   const back = backTarget(from)
-  const navigate = useNavigate()
+  const openInStore = useOpenInStore()
   const { game, setGame, loading, extrasLoading, sanitized, reqs } = useGameDetail({
     id,
     name: navState?.name,
@@ -32,15 +32,8 @@ const GameDetailPage = () => {
       </Box>
     )
 
-  const sizeGb = game.sizeOnDisk ? (game.sizeOnDisk / 1e9).toFixed(1) : null
   const open = (url: string) => {
     window.api.app.openExternal(url).catch(() => {})
-  }
-  // Steam links (store page, discussions) open in the embedded Store tab, which is
-  // logged in — only truly external links go to the OS browser.
-  const openInStore = (url: string) => {
-    navigate('/store')
-    useStoreNav.getState().controls?.loadURL(url)
   }
 
   return (
@@ -61,9 +54,8 @@ const GameDetailPage = () => {
         {extrasLoading && <Box as="span" className="muted detail-refreshing">Loading details…</Box>}
       </Box>
 
-      <DetailHeader
+      <GameDetailHeader
         game={game}
-        statusText={statusFor(game, sizeGb)}
         wlBusy={wlBusy}
         wlMsg={wlMsg}
         onOpen={open}
