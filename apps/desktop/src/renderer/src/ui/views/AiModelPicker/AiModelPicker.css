@@ -3,7 +3,7 @@
 
 .model-intro { margin-top: 0; }
 .model-error { color: var(--danger); }
-.model-warn { margin: 8px 0 0; font-size: 13px; color: var(--warn, var(--text-1)); }
+.model-warn { margin: 8px 0 0; font-size: 13px; color: var(--warning); }
 
 /* CUDA acceleration callout (NVIDIA + CUDA not yet active). */
 .cuda-callout {

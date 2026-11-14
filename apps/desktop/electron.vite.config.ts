@@ -10,7 +10,9 @@ export default defineConfig({
     // Bundle the workspace TS packages used by the app into the main process (they
     // ship as source, not built JS). @jex/ai-core is NOT here: it's no longer imported
     // by the app — the host dynamically-imports it from the downloaded plugin at runtime.
-    plugins: [externalizeDepsPlugin({ exclude: ['@jex/ai-contract', '@jex/shared'] })],
+    // @jex/ai-remote is bundled too; its SDKs (@anthropic-ai/sdk, openai) are NOT in this
+    // app's dependencies, so externalizeDepsPlugin leaves them to be bundled into out/main.
+    plugins: [externalizeDepsPlugin({ exclude: ['@jex/ai-contract', '@jex/shared', '@jex/ai-remote'] })],
     resolve: { alias: { '@shared': shared } },
     build: {
       rollupOptions: { input: { index: resolve(__dirname, 'src/main/index.ts') } },

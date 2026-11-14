@@ -1,5 +1,6 @@
 /** The subset of the Electron <webview> API the title-bar controls drive. */
 interface SteamWebview extends HTMLElement {
+  src: string
   canGoBack(): boolean
   canGoForward(): boolean
   goBack(): void

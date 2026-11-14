@@ -1,0 +1,43 @@
+.lib-list {
+  height: 100%;
+}
+
+/* VirtualList sizes each row box to ROW_HEIGHT; the row fills it. */
+.lib-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--sp-2);
+  min-width: 0;
+}
+
+.lib-row-art {
+  flex: none;
+  width: 68px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--media-bg);
+}
+
+.lib-row-art-blank {
+  border: 1px solid var(--hairline);
+}
+
+.lib-row-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-1);
+}
+
+.lib-row-inst {
+  width: 6px;
+  height: 6px;
+  opacity: 0.85;
+}

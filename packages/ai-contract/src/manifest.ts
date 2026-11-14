@@ -4,7 +4,7 @@
 // Ed25519 signature over its sha256 against the app's embedded public key, and only
 // then extracts + loads it. apiVersion / appVersionRange gate compatibility.
 
-type PluginArch = 'win-x64' | 'win-arm64'
+type PluginArch = 'win-x64' | 'win-arm64' | 'any'
 
 interface PluginEntry {
   // Stable id, e.g. 'ai-win-x64' | 'ai-win-arm64' | 'ai-win-x64-cuda'.

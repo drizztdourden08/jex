@@ -10,6 +10,7 @@ import type { DetectResult } from '@jex/shared/library/detect'
 import type { FilterSpec } from '@jex/shared/filter'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '@jex/shared/wishlist'
 import type { SearchQuery, SearchResponse } from '@jex/shared/search'
+import type { HostLlm } from './llm'
 
 // The SQLite library mirror (read paths + the AI's small key/value scratch space).
 interface HostDb {
@@ -68,6 +69,7 @@ interface HostServices {
   settings: HostSettings
   secrets: HostSecrets
   paths: HostPaths
+  llm: HostLlm
   log: (level: 'info' | 'warn' | 'error', message: string) => void
 }
 

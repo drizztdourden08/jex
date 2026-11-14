@@ -20,6 +20,7 @@ export {
   downloadModel,
   deleteModel,
   activeDownloads,
+  activeModelRef,
   activeModel,
   modelStatus,
   listModels,

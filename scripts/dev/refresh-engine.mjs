@@ -43,6 +43,7 @@ const FLAG = { auto: ARGV.includes('--auto'), force: ARGV.includes('--force'), n
 const SOURCE_PATHS = [
   join(REPO_ROOT, 'packages', 'ai-core', 'src'),
   join(REPO_ROOT, 'packages', 'ai-contract', 'src'),
+  join(REPO_ROOT, 'packages', 'ai-remote', 'src'),
   join(REPO_ROOT, 'packages', 'shared', 'src'),
   join(REPO_ROOT, 'plugins'),
 ]
@@ -61,6 +62,8 @@ const markerPath = (id) => join(installedDir(id), '.jex-installed.json')
 
 /** Base plugin id for this machine — matches ai-host/resolve.ts. */
 const baseId = () => (process.arch === 'arm64' ? 'ai-win-arm64' : 'ai-win-x64')
+/** The JS-only engine (arch 'any', no native files, no add-on merge) — ai-host/resolve.ts. */
+const ENGINE_ID = 'ai-engine'
 
 /** Newest mtime (ms) across the given files/dirs, skipping build output + vendor dirs. */
 const walkMtime = (path) => {
@@ -152,8 +155,9 @@ const main = async () => {
       console.log('▸ No engine installed — nothing to refresh (install once via the app, or pass --base).')
       return
     }
-    if (!byId.has(baseId())) throw new Error(`No base plugin "${baseId()}" in the manifest.`)
-    ids = [baseId()]
+    const first = [baseId(), ENGINE_ID].find((id) => byId.has(id))
+    if (!first) throw new Error(`No base plugin "${baseId()}" or "${ENGINE_ID}" in the manifest.`)
+    ids = [first]
   }
 
   // 2) Reinstall only the plugins whose installed sha256 no longer matches the manifest.

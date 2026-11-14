@@ -4,6 +4,7 @@ import type { Trailer } from '@/lib/steam/media'
 import { Box } from '@ds/primitives/layout/Box'
 import { Image } from '@ds/primitives/media/Image'
 import { IconButton } from '@ds/primitives/actions/IconButton'
+import { Portal } from '@ds/primitives/util/Portal'
 import { VideoPlayer } from '@ds/composites/VideoPlayer'
 
 interface Shot {
@@ -118,21 +119,25 @@ const MediaCarousel = ({ videos, shots, autoplay = false }: MediaCarouselProps) 
         </Box>
       )}
 
+      {/* Portalled: a fixed overlay is otherwise clipped by any glass (backdrop-filter)
+          or transformed ancestor, e.g. the Library detail pane. */}
       {lightbox && (
-        <Box className="lightbox" onClick={() => setLightbox(null)} role="dialog" aria-modal="true">
-          <Image src={lightbox} alt="" onClick={(e) => e.stopPropagation()} />
-          <IconButton
-            type="button"
-            plain
-            size="fit"
-            className="lightbox-close"
-            label="Close"
-            autoFocus
-            onClick={() => setLightbox(null)}
-          >
-            ✕
-          </IconButton>
-        </Box>
+        <Portal>
+          <Box className="lightbox" onClick={() => setLightbox(null)} role="dialog" aria-modal="true">
+            <Image src={lightbox} alt="" onClick={(e) => e.stopPropagation()} />
+            <IconButton
+              type="button"
+              plain
+              size="fit"
+              className="lightbox-close"
+              label="Close"
+              autoFocus
+              onClick={() => setLightbox(null)}
+            >
+              ✕
+            </IconButton>
+          </Box>
+        </Portal>
       )}
     </Box>
   )

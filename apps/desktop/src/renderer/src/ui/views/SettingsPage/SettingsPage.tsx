@@ -3,9 +3,11 @@ import { AiModelPicker } from '@ui/views/AiModelPicker'
 import { AiToolsPanel } from '@ui/views/AiToolsPanel'
 import { useSettings } from './behavior/useSettings'
 import { useAiEngine } from './behavior/useAiEngine'
+import { useRemoteKeys } from './behavior/useRemoteKeys'
 import { SteamDetectionSection } from './sub-components/SteamDetectionSection'
 import { ApiKeySection } from './sub-components/ApiKeySection'
 import { AiEngineSection } from './sub-components/AiEngineSection'
+import { RemoteKeysSection } from './sub-components/RemoteKeysSection'
 import { PlaybackSection } from './sub-components/PlaybackSection'
 import { AutoSyncSection } from './sub-components/AutoSyncSection'
 import { SearchFiltersSection } from './sub-components/SearchFiltersSection'
@@ -32,6 +34,7 @@ const SettingsPage = () => {
     dropMetadata,
   } = useSettings()
   const aiEngine = useAiEngine()
+  const remoteKeys = useRemoteKeys()
 
   return (
     <Box>
@@ -47,6 +50,8 @@ const SettingsPage = () => {
         saveKey={saveKey}
         clearKey={clearKey}
       />
+
+      <RemoteKeysSection {...remoteKeys} engineInstalled={aiEngine.status?.installed === true} />
 
       <AiEngineSection {...aiEngine} />
 
