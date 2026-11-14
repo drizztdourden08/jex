@@ -37,6 +37,12 @@ const useGameDetail = ({ id, name, seed, delayMs = 0, freshMs = FRESH_MS }: UseG
     setGame(initial)
     setLoading(!initial)
     setExtrasLoading(false)
+    // No game to load (a bad /game/:appid, or an empty Library selection): ask
+    // nothing of main, which would otherwise hit the Store API for appid NaN / 0.
+    if (!Number.isInteger(id) || id <= 0) {
+      setLoading(false)
+      return
+    }
 
     const run = async () => {
       const cached = await window.api.library.get(id).catch(() => null)
