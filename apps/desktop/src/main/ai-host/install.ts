@@ -1,16 +1,17 @@
 // Install flow: download (or copy) each plugin zip, verify its Ed25519 signature
 // against the embedded key, extract it under userData/ai-plugins/<id>/, then load the
-// base engine. A verification failure aborts the install — an unverified plugin is
+// best engine (native base, else ai-engine). A verification failure aborts the install — an unverified plugin is
 // never extracted into place or loaded.
 import { app } from 'electron'
 import { join } from 'node:path'
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs'
 import extract from 'extract-zip'
 import type { PluginManifest, UiDispatcher } from '@jex/ai-contract'
-import { fetchManifest, fetchZip, installedDir } from './source'
+import { fetchManifest, fetchZip, installedDir, isInstalled } from './source'
 import { verifyPluginZip } from './verify'
 import { loadPluginFrom } from './loader'
-import { basePluginId } from './resolve'
+import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { isInstalled } from './source'
 
 const installOne = async (
   id: string,
@@ -62,7 +63,9 @@ const installEngine = async (
     }
   }
   onProgress?.('Loading engine…')
-  await loadPluginFrom(installedDir(basePluginId()), ui)
+  // The native base (local models) wins when present; otherwise the JS-only engine.
+  const best = isInstalled(basePluginId()) ? basePluginId() : ENGINE_PLUGIN_ID
+  await loadPluginFrom(installedDir(best), ui)
 }
 
 export { installEngine }
