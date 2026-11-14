@@ -2,7 +2,7 @@ import type { Game } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
 import { Tag } from '@ds/primitives/feedback/Tag'
 import { FeatureIcon, activeFeatures } from '@ui/compounds/FeatureIcon'
-import { hrs } from '../../behavior/detail-utils'
+import { hrs } from '../../GameDetailBody.helpers'
 import { Block } from './sub-components/Block'
 
 type MetaSidebarProps = {

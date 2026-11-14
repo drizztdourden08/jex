@@ -43,7 +43,8 @@ const ChatInput = ({
         ref={inputRef}
         value={prompt}
         onChange={(e) => setPrompt(e.currentTarget.value)}
-        onKeyDown={(e) => e.key === 'Enter' && submit()}
+        // Enter that confirms an IME composition must not send the half-typed text.
+        onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && submit()}
         placeholder="Message the assistant…"
         // Stay enabled while the assistant works so the field keeps focus (a disabled
         // input blurs) and the user can type the next message; submit() guards `busy`.

@@ -27,7 +27,7 @@ const StorePage = ({ active }: { active: boolean }) => {
         partition={STORE_PARTITION}
         useragent={CHROME_UA}
         allowpopups
-        style={{ width: '100%', height: '100%', display: 'flex', border: 0, background: '#1b2838' }}
+        style={{ width: '100%', height: '100%', display: 'flex', border: 0, background: 'var(--store-bg)' }}
       />
     </Box>
   )

@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
 
@@ -9,13 +10,15 @@ type PagerProps = {
 }
 
 const Pager = ({ page, maxPage, disabled, onChange }: PagerProps) => {
+  const ref = useRef<HTMLDivElement>(null)
   if (maxPage === 0) return null
+  // The page itself never scrolls: the Layout's `.content` pane is the scroller.
   const go = (p: number) => {
     onChange(Math.max(0, Math.min(maxPage, p)))
-    window.scrollTo({ top: 0 })
+    ref.current?.closest('.content')?.scrollTo({ top: 0 })
   }
   return (
-    <Box className="row" style={{ justifyContent: 'center', gap: 12, margin: '20px 0' }}>
+    <Box ref={ref} className="row" style={{ justifyContent: 'center', gap: 12, margin: '20px 0' }}>
       <Button variant="secondary" onClick={() => go(page - 1)} disabled={disabled || page <= 0}>
         ← Prev
       </Button>

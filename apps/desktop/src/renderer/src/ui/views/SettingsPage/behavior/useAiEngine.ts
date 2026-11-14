@@ -14,10 +14,14 @@ const useAiEngine = () => {
 
   // Pre-select the recommended rows that aren't installed yet (e.g. the base engine).
   const load = useCallback(async () => {
-    const [s, list] = await Promise.all([window.api.ai.engineStatus(), window.api.ai.enginePlugins()])
-    setStatus(s)
-    setPlugins(list)
-    setSelected(new Set(list.filter((p) => p.recommended && !p.installed).map((p) => p.id)))
+    try {
+      const [s, list] = await Promise.all([window.api.ai.engineStatus(), window.api.ai.enginePlugins()])
+      setStatus(s)
+      setPlugins(list)
+      setSelected(new Set(list.filter((p) => p.recommended && !p.installed).map((p) => p.id)))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
   }, [])
 
   useEffect(() => {

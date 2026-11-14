@@ -1,0 +1,80 @@
+/* LibraryPage — header + filters on top, then a master-detail split that fills the
+   rest of the content area. Each pane scrolls on its own; the page itself only
+   scrolls when the filters leave less than the split's minimum height. Tokens only. */
+.lib-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.lib-toolbar {
+  margin: var(--sp-3) 0;
+}
+
+.lib-count {
+  margin-right: auto;
+}
+
+.lib-md {
+  flex: 1 1 0;
+  min-height: 420px;
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--sp-4);
+}
+
+.lib-md-list {
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  background: var(--glass-1-bg);
+}
+
+.lib-md-list-empty {
+  padding: var(--sp-4);
+  font-size: 13px;
+}
+
+.lib-detail {
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding-right: var(--sp-1);
+}
+
+.lib-detail-empty {
+  display: grid;
+  place-items: center;
+}
+
+.lib-detail-title {
+  margin: 0 0 var(--sp-3);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.lib-detail-full {
+  align-self: center;
+  font-size: 13px;
+}
+
+.lib-detail-loading {
+  margin: var(--sp-2) 0 0;
+  font-size: 12px;
+}
+
+.lib-detail .game-quick {
+  margin-bottom: var(--sp-4);
+}
+
+/* Narrow window: stack the list above the detail instead of squeezing both. */
+@media (width <= 720px) {
+  .lib-md {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(180px, 34%) minmax(0, 1fr);
+  }
+}

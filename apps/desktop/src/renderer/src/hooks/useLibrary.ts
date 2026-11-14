@@ -5,6 +5,10 @@ import type { Game, ScanResult } from '@shared/library'
  * Loads the library mirror from main (over IPC) into component state, and exposes
  * a `scan()` that re-reads the local Steam install. The renderer keeps the full
  * set in memory and runs the FilterSpec engine over it.
+ *
+ * `loading` is true only until the first read settles: later reloads (after a sync
+ * phase or an enrich tick) swap the data in place so consumers keep their list and
+ * scroll position instead of flashing a loading state.
  */
 const useLibrary = () => {
   const [games, setGames] = useState<Game[]>([])
@@ -12,9 +16,10 @@ const useLibrary = () => {
   const [scanning, setScanning] = useState(false)
 
   const reload = useCallback(async () => {
-    setLoading(true)
     try {
       setGames(await window.api.library.getAll())
+    } catch {
+      // Keep the last good list; the next reload retries.
     } finally {
       setLoading(false)
     }

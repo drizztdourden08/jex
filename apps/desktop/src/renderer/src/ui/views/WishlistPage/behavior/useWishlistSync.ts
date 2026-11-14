@@ -13,6 +13,9 @@ const useWishlistSync = ({ wishlist, reload }: Params) => {
   const [hint, setHint] = useState<string | null>(null)
   const syncingRef = useRef(false)
   const lastReload = useRef(0)
+  // The focus/interval handlers are bound once, so read the live list through a ref.
+  const wishlistRef = useRef(wishlist)
+  wishlistRef.current = wishlist
 
   const doSync = async () => {
     if (syncingRef.current) return
@@ -21,7 +24,7 @@ const useWishlistSync = ({ wishlist, reload }: Params) => {
     try {
       const res = await window.api.wishlist.sync()
       setHint(
-        res.empty && wishlist.length === 0
+        res.empty && wishlistRef.current.length === 0
           ? 'No wishlist items found. Make sure your Steam profile’s wishlist is public.'
           : null,
       )
