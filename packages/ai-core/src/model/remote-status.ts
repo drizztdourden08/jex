@@ -1,4 +1,4 @@
-import { parseModelRef } from '@jex/shared/remote-ai'
+import { parseModelRef } from '@jex/shared/remote-ai/index'
 import type { AiModelStatus } from '@jex/shared/ai'
 import { host } from '../host'
 

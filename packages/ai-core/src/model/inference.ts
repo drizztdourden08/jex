@@ -1,6 +1,6 @@
 import type { LlamaModel } from 'node-llama-cpp'
 import { disposeModel, getModelRef, setModelRef, getLoadedId, setLoadedId } from './state'
-import { isRemoteRef } from '@jex/shared/remote-ai'
+import { isRemoteRef } from '@jex/shared/remote-ai/index'
 import { activeModel, activeModelRef, resolveModelPath } from './catalog'
 import { ensureLlama } from './backend'
 import { requireLocalRuntime } from './runtime'

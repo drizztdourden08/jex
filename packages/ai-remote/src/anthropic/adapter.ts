@@ -1,5 +1,5 @@
 import { AuthenticationError, PermissionDeniedError } from '@anthropic-ai/sdk'
-import type { RemoteKeyCheck } from '@jex/shared/remote-ai'
+import type { RemoteKeyCheck } from '@jex/shared/remote-ai/index'
 import type { ProviderAdapter } from '../remote-llm.types'
 import { forgetClient, makeClient } from './client'
 import { capsFor, forgetCaps, listAnthropicModels } from './models'

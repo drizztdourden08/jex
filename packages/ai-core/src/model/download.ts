@@ -4,7 +4,7 @@ import { mkdir, rm } from 'node:fs/promises'
 import type { AiDownloadProgress } from '@jex/shared/ai'
 import { MODELS, findModel } from '../models'
 import { modelsDir, disposeModel, getLoadedId, downloads } from './state'
-import { isRemoteRef } from '@jex/shared/remote-ai'
+import { isRemoteRef } from '@jex/shared/remote-ai/index'
 import { activeModel, activeModelRef, modelPaths, rememberPath, forgetPath, isInstalled } from './catalog'
 import { requireLocalRuntime } from './runtime'
 

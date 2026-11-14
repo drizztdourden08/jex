@@ -11,7 +11,6 @@ import { fetchManifest, fetchZip, installedDir, isInstalled } from './source'
 import { verifyPluginZip } from './verify'
 import { loadPluginFrom } from './loader'
 import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
-import { isInstalled } from './source'
 
 const installOne = async (
   id: string,

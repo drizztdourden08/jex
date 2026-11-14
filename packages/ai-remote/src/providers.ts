@@ -1,4 +1,4 @@
-import type { RemoteProviderId } from '@jex/shared/remote-ai'
+import type { RemoteProviderId } from '@jex/shared/remote-ai/index'
 import { anthropicAdapter } from './anthropic/adapter'
 import { openaiAdapter } from './openai/adapter'
 import type { ProviderAdapter } from './remote-llm.types'

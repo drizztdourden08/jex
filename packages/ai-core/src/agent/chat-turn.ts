@@ -1,5 +1,5 @@
 import type { BrowserWindow } from 'electron'
-import { isRemoteRef } from '@jex/shared/remote-ai'
+import { isRemoteRef } from '@jex/shared/remote-ai/index'
 import type { AiStreamEvent } from '@jex/shared/agent'
 import { activeModelRef } from '../model/catalog'
 import { localRuntimeAvailable, LOCAL_RUNTIME_MISSING } from '../model/runtime'

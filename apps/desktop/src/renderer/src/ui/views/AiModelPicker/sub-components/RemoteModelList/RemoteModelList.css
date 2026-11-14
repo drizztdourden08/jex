@@ -1,4 +1,5 @@
 .remote-models { margin-top: 8px; }
+
 .remote-model-row {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) 0.7fr auto;

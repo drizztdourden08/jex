@@ -1,6 +1,6 @@
 import type { LlmFailureKind, LlmStepOutcome } from '@jex/ai-contract'
-import { parseModelRef, REMOTE_PROVIDERS, toModelRef } from '@jex/shared/remote-ai'
-import type { RemoteKeyStatus, RemoteModelOption, RemoteProviderId } from '@jex/shared/remote-ai'
+import { parseModelRef, REMOTE_PROVIDERS, toModelRef } from '@jex/shared/remote-ai/index'
+import type { RemoteKeyStatus, RemoteModelOption, RemoteProviderId } from '@jex/shared/remote-ai/index'
 import { RECOMMENDED_MODEL_ID } from './anthropic/anthropic.constants'
 import { providers } from './providers'
 import type { ProviderModel, RemoteLlm, RemoteLlmDeps } from './remote-llm.types'

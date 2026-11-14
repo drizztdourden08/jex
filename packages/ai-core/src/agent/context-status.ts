@@ -1,4 +1,4 @@
-import { isRemoteRef } from '@jex/shared/remote-ai'
+import { isRemoteRef } from '@jex/shared/remote-ai/index'
 import type { ContextStatus } from '@jex/shared/agent'
 import { activeModelRef } from '../model/catalog'
 import { getRemoteSession } from './remote/remote-session'

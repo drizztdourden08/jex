@@ -3,7 +3,7 @@
 // an LlmStepOutcome (the plugin and the host are separate bundles, so SDK error
 // classes cannot cross the seam).
 
-import type { RemoteKeyStatus, RemoteModelOption, RemoteProviderId } from '@jex/shared/remote-ai'
+import type { RemoteKeyStatus, RemoteModelOption, RemoteProviderId } from '@jex/shared/remote-ai/index'
 
 interface LlmToolSpec {
   name: string

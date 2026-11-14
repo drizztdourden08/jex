@@ -5,7 +5,7 @@ import type {
   RemoteKeyStatus,
   RemoteModelOption,
   RemoteProviderId,
-} from '@jex/shared/remote-ai'
+} from '@jex/shared/remote-ai/index'
 
 interface RemoteLlmDeps {
   getKey: (p: RemoteProviderId) => string | null

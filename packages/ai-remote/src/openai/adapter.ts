@@ -1,5 +1,5 @@
 import { AuthenticationError, PermissionDeniedError } from 'openai'
-import type { RemoteKeyCheck } from '@jex/shared/remote-ai'
+import type { RemoteKeyCheck } from '@jex/shared/remote-ai/index'
 import type { ProviderAdapter } from '../remote-llm.types'
 import { forgetClient, makeClient } from './client'
 import { listOpenAiModels } from './models'
