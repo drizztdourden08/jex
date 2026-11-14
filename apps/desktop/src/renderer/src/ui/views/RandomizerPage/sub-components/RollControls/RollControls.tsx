@@ -95,7 +95,7 @@ const RollControls = ({
         </Box>
       </Box>
       {error && (
-        <Box as="p" className="muted" style={{ marginTop: 10, color: 'var(--danger, #f87171)' }}>
+        <Box as="p" className="muted" style={{ marginTop: 10, color: 'var(--danger)' }}>
           {error}
         </Box>
       )}
