@@ -1,11 +1,14 @@
 import type { LlamaModel } from 'node-llama-cpp'
 import { disposeModel, getModelRef, setModelRef, getLoadedId, setLoadedId } from './state'
-import { activeModel, resolveModelPath } from './catalog'
+import { isRemoteRef } from '@jex/shared/remote-ai'
+import { activeModel, activeModelRef, resolveModelPath } from './catalog'
 import { ensureLlama } from './backend'
+import { requireLocalRuntime } from './runtime'
 import { activeContextSize, createInferenceContext } from './context'
 
 /** Load the active model into memory (reusing it across calls). */
 const ensureModel = async (): Promise<LlamaModel> => {
+  await requireLocalRuntime()
   const model = activeModel()
   const loaded = getModelRef()
   if (loaded && getLoadedId() === model.id) return loaded
@@ -40,6 +43,7 @@ const ensureModel = async (): Promise<LlamaModel> => {
  */
 const warmupModel = async (): Promise<void> => {
   try {
+    if (isRemoteRef(activeModelRef())) return
     if (resolveModelPath(activeModel())) await ensureModel()
   } catch {
     /* surfaced on first real use */

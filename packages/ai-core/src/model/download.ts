@@ -4,7 +4,9 @@ import { mkdir, rm } from 'node:fs/promises'
 import type { AiDownloadProgress } from '@jex/shared/ai'
 import { MODELS, findModel } from '../models'
 import { modelsDir, disposeModel, getLoadedId, downloads } from './state'
-import { activeModel, modelPaths, rememberPath, forgetPath, isInstalled } from './catalog'
+import { isRemoteRef } from '@jex/shared/remote-ai'
+import { activeModel, activeModelRef, modelPaths, rememberPath, forgetPath, isInstalled } from './catalog'
+import { requireLocalRuntime } from './runtime'
 
 /** Snapshot of in-flight downloads (id → bytes), so a (re)mounting UI can hydrate. */
 const activeDownloads = (): Record<string, AiDownloadProgress> => {
@@ -24,6 +26,7 @@ const downloadModel = async (
 ): Promise<string> => {
   const model = modelId ? findModel(modelId) ?? activeModel() : activeModel()
   if (downloads().has(model.id)) throw new Error(`${model.label} is already downloading.`)
+  await requireLocalRuntime()
   downloads().set(model.id, { downloadedSize: 0, totalSize: 0 })
   try {
     await mkdir(modelsDir(), { recursive: true })
@@ -42,7 +45,7 @@ const downloadModel = async (
     // If the active model isn't installed (e.g. the default points at a model the
     // user never downloaded), adopt this freshly-downloaded one so the assistant
     // works immediately instead of erroring on a missing file.
-    if (!isInstalled(activeModel())) host().db.setMeta('aiActiveModelId', model.id)
+    if (!isRemoteRef(activeModelRef()) && !isInstalled(activeModel())) host().db.setMeta('aiActiveModelId', model.id)
     return model.id
   } finally {
     downloads().delete(model.id)
