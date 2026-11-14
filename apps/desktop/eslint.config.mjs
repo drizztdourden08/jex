@@ -9,6 +9,7 @@
 
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
+import { baseIgnores, codeConfig } from '../../eslint.config.mjs';
 
 // ── R11: no raw HTML outside primitives (error — migration locked in Phase 7) ──
 // Any lowercase JSX element is an intrinsic HTML tag; PascalCase = a component.
@@ -96,55 +97,14 @@ const local = {
 };
 
 export default tseslint.config(
+  { ignores: [...baseIgnores, 'ai-eval/**', 'docs/**'] },
+  // Shared code rules (root config): max-lines, arrow fns, exports at end, import type.
+  codeConfig,
+  // Renderer-only: React hooks rules.
   {
-    ignores: [
-      'node_modules/**',
-      'out/**',
-      'dist/**',
-      'release/**',
-      'public/**',
-      'docs/**',
-      'ai-eval/**',
-      '**/*.d.ts',
-      '**/*.config.{js,ts,cjs,mjs}',
-    ],
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: { ecmaFeatures: { jsx: true }, sourceType: 'module' },
-    },
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      'react-hooks': reactHooks,
-    },
+    files: ['src/renderer/**/*.{ts,tsx}'],
+    plugins: { 'react-hooks': reactHooks },
     rules: {
-      // ── ≤200 lines per file (error — backlog is at zero; regressions are blocked) ──
-      'max-lines': ['error', { max: 200, skipBlankLines: false, skipComments: false }],
-
-      // ── Arrow functions only: no `function foo() {}` declarations ──
-      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
-
-      // ── Exports grouped at end: no inline `export const/function/type` ──
-      // Re-exports in barrels (`export { X } from './X'`) have no `declaration`
-      // node, so they are NOT flagged. `export default` is allowed.
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: 'ExportNamedDeclaration[declaration]',
-          message:
-            'No inline export. Declare locally, then group `export { ... }` / `export type { ... }` at the END of the file.',
-        },
-      ],
-
-      // ── Type-only imports must use `import type` ──
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
-      ],
-
-      // ── React hooks correctness ──
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'off',
     },
