@@ -5,7 +5,7 @@ import type { LlmToolSpec } from '@jex/ai-contract'
 const asInputSchema = (schema: Record<string, unknown>): BetaTool.InputSchema =>
   schema.type === 'object'
     ? (schema as BetaTool.InputSchema)
-    : { type: 'object', properties: {}, ...schema, type: 'object' }
+    : { properties: {}, ...schema, type: 'object' }
 
 const toBetaTools = (specs: readonly LlmToolSpec[], strict: ReadonlySet<string>): BetaToolUnion[] =>
   specs.map((spec): BetaTool => ({
