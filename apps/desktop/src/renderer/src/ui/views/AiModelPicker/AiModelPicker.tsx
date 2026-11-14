@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useModelCatalog } from './behavior/useModelCatalog'
 import { useCudaInstall } from './behavior/useCudaInstall'
+import { useRemoteModels } from './behavior/useRemoteModels'
+import { RemoteModelList } from './sub-components/RemoteModelList'
 import { ModelCompareSelect } from './sub-components/ModelCompareSelect'
 import { InstalledModelList } from './sub-components/InstalledModelList'
 import { CudaCallout } from './sub-components/CudaCallout'
@@ -38,6 +40,28 @@ const AiModelPicker = () => {
     cleanInactive,
   } = useModelCatalog()
   const cuda = useCudaInstall()
+  const remote = useRemoteModels()
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  // Local actions can reject (engine missing, disk error); surface it, and keep the
+  // remote group's "Active" marker in step with whichever model was just chosen.
+  const selectLocal = async (id: string) => {
+    setActionError(null)
+    try {
+      await select(id)
+      await remote.reload()
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : String(e))
+    }
+  }
+  const removeLocal = async (id: string) => {
+    setActionError(null)
+    try {
+      await remove(id)
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : String(e))
+    }
+  }
   const [chosenId, setChosenId] = useState<string | null>(null)
 
   // Keep a sensible default selected in the dropdown: the GPU-recommended model if
@@ -56,8 +80,28 @@ const AiModelPicker = () => {
   return (
     <Box className="panel">
       <Box as="h3">AI model</Box>
+      <Box as="h4" className="model-installed-title">Remote models</Box>
+      <RemoteModelList
+        models={remote.models}
+        activeRef={remote.activeRef}
+        busyRef={remote.busyRef}
+        onUse={(ref) => void remote.use(ref)}
+      />
+      {remote.error && (
+        <Box as="p" className="model-error" role="alert">
+          {remote.error}
+        </Box>
+      )}
+
+      <Box as="h4" className="model-installed-title">Local models</Box>
+      {!remote.localRuntime && (
+        <Box as="p" className="muted model-warn">
+          Local runtime not installed. Install the native base in the AI engine section to run
+          local models.
+        </Box>
+      )}
       <Box as="p" className="muted model-intro">
-        The built-in assistant runs fully on your PC — no account, no key, nothing leaves your
+        Local models run fully on your PC — no account, no key, nothing leaves your
         machine. These are Qwen reasoning models; bigger ones are smarter and better at using the
         app's tools but need more disk and RAM. Each is a one-time download.
       </Box>
@@ -79,6 +123,11 @@ const AiModelPicker = () => {
         error={cuda.error}
         onInstall={() => void cuda.install()}
       />
+      {actionError && (
+        <Box as="p" className="model-error" role="alert">
+          {actionError}
+        </Box>
+      )}
       {errorIds.map((id) => (
         <Box as="p" key={id} className="model-error">
           {id}: {errors[id]}
@@ -120,8 +169,8 @@ const AiModelPicker = () => {
       <InstalledModelList
         models={installed}
         downloading={downloading}
-        onSelect={select}
-        onRemove={remove}
+        onSelect={(id) => void selectLocal(id)}
+        onRemove={(id) => void removeLocal(id)}
       />
     </Box>
   )
