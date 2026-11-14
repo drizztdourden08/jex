@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AiEngineStatus, EnginePluginInfo } from '@shared/ai'
+import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
 
 // Drives the AI-engine setup: status + the per-machine checklist (with installed state),
 // install progress, and installing the selected set. Already-installed items show as
@@ -22,7 +23,7 @@ const useAiEngine = () => {
       setSelected(new Set(list.filter((p) => p.recommended && !p.installed).map((p) => p.id)))
       setLoadError(null)
     } catch (e) {
-      setLoadError(e instanceof Error ? e.message : String(e))
+      setLoadError(ipcErrorText(e))
     }
   }, [])
 
@@ -57,7 +58,7 @@ const useAiEngine = () => {
       await window.api.ai.installEngine([...selected])
       await load()
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(ipcErrorText(e))
     } finally {
       setInstalling(false)
       setProgress(null)

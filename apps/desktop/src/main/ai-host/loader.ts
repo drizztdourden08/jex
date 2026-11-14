@@ -5,8 +5,8 @@
 import { app } from 'electron'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { AI_PLUGIN_API_VERSION } from '@jex/ai-contract'
 import type { AiPlugin, AiPluginFactory, UiDispatcher } from '@jex/ai-contract'
+import { assertApiVersion } from './api-version'
 import { createHostServices } from './host-services'
 import { createEmit } from './emit'
 import { getEngine, setEngine } from './engine'
@@ -15,7 +15,7 @@ const loadPluginFrom = async (dir: string, ui: UiDispatcher): Promise<AiPlugin> 
   const entryUrl = pathToFileURL(join(dir, 'index.mjs')).href
   const mod = (await import(entryUrl)) as { default: AiPluginFactory }
   const plugin = mod.default()
-  if (plugin.apiVersion !== AI_PLUGIN_API_VERSION) throw new Error('AI engine needs an update')
+  assertApiVersion(plugin.apiVersion)
   // Replacing a loaded engine (e.g. ai-engine -> base): release the old one first.
   const previous = getEngine()
   if (previous) {

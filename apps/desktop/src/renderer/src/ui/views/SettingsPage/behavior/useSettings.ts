@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { DetectResult } from '@shared/library'
 import type { SearchVocab } from '@shared/search'
+import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
 
 const useSettings = () => {
   const [detect, setDetect] = useState<DetectResult | null>(null)
@@ -56,7 +57,7 @@ const useSettings = () => {
       setKeyInput('')
       setMsg('Key saved (encrypted on this PC).')
     } catch (e) {
-      setMsg(`Could not save: ${String(e)}`)
+      setMsg(`Could not save: ${ipcErrorText(e)}`)
     }
   }
 
@@ -66,7 +67,7 @@ const useSettings = () => {
       setKeySet(false)
       setMsg('Key removed.')
     } catch (e) {
-      setMsg(`Could not remove: ${String(e)}`)
+      setMsg(`Could not remove: ${ipcErrorText(e)}`)
     }
   }
 
@@ -90,7 +91,7 @@ const useSettings = () => {
       const n = await window.api.library.dropMetadata()
       setDropMsg(`Dropped metadata for ${n.toLocaleString()} games. Run a sync to re-fetch.`)
     } catch (e) {
-      setDropMsg(`Could not drop metadata: ${String(e)}`)
+      setDropMsg(`Could not drop metadata: ${ipcErrorText(e)}`)
     }
   }
 

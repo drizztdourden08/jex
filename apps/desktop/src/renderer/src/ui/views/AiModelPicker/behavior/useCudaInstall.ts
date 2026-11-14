@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { CudaStatus } from '@shared/ai'
+import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
 
 /**
  * CUDA install state for the picker (Custom Hook). Reports whether an NVIDIA GPU
@@ -29,7 +30,7 @@ const useCudaInstall = () => {
       await window.api.ai.installCuda()
       setInstalled(true)
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
+      setError(ipcErrorText(e))
     } finally {
       setInstalling(false)
       setMessage('')
