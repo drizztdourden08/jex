@@ -20,8 +20,13 @@ const TitleBar = () => {
   const [maximized, setMaximized] = useState(false)
   const nav = useStoreNav()
 
+  // No maximize-change event over IPC, so re-read on resize: snapping, a titlebar
+  // double-click or Win+Up all resize the window without touching our button.
   useEffect(() => {
-    window.api?.window.isMaximized().then(setMaximized).catch(() => {})
+    const read = () => window.api?.window.isMaximized().then(setMaximized).catch(() => {})
+    read()
+    window.addEventListener('resize', read)
+    return () => window.removeEventListener('resize', read)
   }, [])
 
   return (
@@ -72,9 +77,14 @@ const TitleBar = () => {
           –
         </IconButton>
         <IconButton
-          label="Maximize"
+          label={maximized ? 'Restore' : 'Maximize'}
           className="winctl"
-          onClick={async () => setMaximized((await window.api?.window.maximize()) ?? false)}
+          onClick={() => {
+            window.api?.window
+              .maximize()
+              .then((m) => setMaximized(m ?? false))
+              .catch(() => {})
+          }}
         >
           {maximized ? '❐' : '▢'}
         </IconButton>

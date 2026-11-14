@@ -14,7 +14,11 @@ export default function App() {
   const [accepted, setAccepted] = useState<boolean | null>(null)
 
   useEffect(() => {
-    window.api.settings.get<boolean>('acceptedTerms').then((v) => setAccepted(!!v))
+    // A failed read falls back to the disclosure screen rather than a blank window.
+    window.api.settings
+      .get<boolean>('acceptedTerms')
+      .then((v) => setAccepted(!!v))
+      .catch(() => setAccepted(false))
   }, [])
 
   if (accepted === null) return null // brief load while we read settings
