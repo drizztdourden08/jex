@@ -59,7 +59,8 @@
 }
 .cmdbar-x:hover { background: var(--hairline); color: var(--text-1); }
 
-.tb-right { grid-column: 3; justify-self: end; display: flex; gap: 2px; }
+.tb-right { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 2px; }
+.tb-right .tb-sync { margin-right: var(--sp-2); }
 
 .winctl {
   width: 36px; height: 28px; padding: 0; font-size: 12px; line-height: 1;

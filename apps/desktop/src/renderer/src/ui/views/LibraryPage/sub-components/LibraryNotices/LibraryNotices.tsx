@@ -1,13 +1,10 @@
-import type { LibraryStats, ScanResult, SyncProgress } from '@shared/library'
+import type { LibraryStats, ScanResult } from '@shared/library'
 import { Box } from '@ds/primitives/layout/Box'
-import { ProgressBar } from '../ProgressBar'
 
 type LibraryNoticesProps = {
   stats: LibraryStats | null
   keySet: boolean
   scanInfo: ScanResult | null
-  progress: SyncProgress | null
-  busy: boolean
 }
 
 const relTime = (ms: number): string => {
@@ -20,8 +17,9 @@ const relTime = (ms: number): string => {
   return `${Math.round(h / 24)}d ago`
 }
 
-/** Metadata stats, setup hints and sync progress/outcome above the library. */
-const LibraryNotices = ({ stats, keySet, scanInfo, progress, busy }: LibraryNoticesProps) => (
+/** Metadata stats and setup hints above the library. Sync progress and its outcome
+ *  live in the title-bar activity popover. */
+const LibraryNotices = ({ stats, keySet, scanInfo }: LibraryNoticesProps) => (
   <>
     {stats && stats.total > 0 && (
       <Box as="p" className="muted" style={{ marginTop: -4, marginBottom: 12, fontSize: 13 }}>
@@ -41,14 +39,6 @@ const LibraryNotices = ({ stats, keySet, scanInfo, progress, busy }: LibraryNoti
 
     {scanInfo && !scanInfo.detected.steamPath && (
       <Box className="panel">Couldn't find a Steam install on this PC.</Box>
-    )}
-
-    {progress && busy && <ProgressBar p={progress} />}
-    {progress?.phase === 'error' && !busy && (
-      <Box className="panel" style={{ color: 'var(--danger)' }}>{progress.message}</Box>
-    )}
-    {progress?.phase === 'paused' && !busy && (
-      <Box className="panel muted">Sync cancelled — click "Sync owned + metadata" to resume where it left off.</Box>
     )}
   </>
 )

@@ -1,6 +1,17 @@
-/* Parallel-worker mini progress bars (library sync). Colocated from
-   styles/sections/surfaces.css (Phase 5). Tokens only. */
+/* Library sync progress inside the title-bar activity popover: the overall bar,
+   parallel-worker mini bars and the status message. Tokens only. */
+.sync-progress { display: flex; flex-direction: column; gap: var(--sp-2); font-size: 13px; }
+.sync-progress-head { display: flex; justify-content: space-between; gap: var(--sp-3); }
+.sync-progress-msg { margin: 0; font-size: 12px; }
+
+.worker-list { display: grid; gap: 6px; margin-top: var(--sp-1); }
 .worker-row { display: flex; align-items: center; gap: 10px; }
+.worker-name { flex: none; width: 62px; font-size: 12px; }
+
+.worker-current {
+  flex: 1; min-width: 0; font-size: 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .wbar { flex: 0 0 120px; height: 6px; border-radius: var(--r-pill); background: var(--glass-1-bg); overflow: hidden; position: relative; }
 .wbar > span { display: block; height: 100%; border-radius: var(--r-pill); }
 .wbar.idle > span { width: 0; }

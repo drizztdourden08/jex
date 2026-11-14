@@ -23,7 +23,7 @@ const LibraryPage = () => {
   const games = useMemo(() => allGames.filter((g) => g.owned || g.installed), [allGames])
   const flt = useFilterState()
   useAgentLibraryActions(flt)
-  const { scanInfo, keySet, syncing, cancelling, progress, stats, startSync, cancelSync, rescan } =
+  const { scanInfo, keySet, syncing, cancelling, stats, startSync, cancelSync, rescan } =
     useLibrarySync({ games, loading, scanning, scan, reload })
 
   const filtered = useMemo(() => flt.filterAndSort(games), [games, flt.filterAndSort])
@@ -56,7 +56,7 @@ const LibraryPage = () => {
         onCancelSync={cancelSync}
       />
 
-      <LibraryNotices stats={stats} keySet={keySet} scanInfo={scanInfo} progress={progress} busy={busy} />
+      <LibraryNotices stats={stats} keySet={keySet} scanInfo={scanInfo} />
 
       <GameFilters
         games={games}

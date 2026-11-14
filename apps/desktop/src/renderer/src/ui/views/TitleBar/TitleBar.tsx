@@ -5,6 +5,8 @@ import { Box } from '@ds/primitives/layout/Box'
 import { IconButton } from '@ds/primitives/actions/IconButton'
 import { Image } from '@ds/primitives/media/Image'
 import wordmarkUrl from '@assets/wordmark.svg'
+import { useSyncActivity } from './behavior/useSyncActivity'
+import { SyncActivity } from './sub-components/SyncActivity'
 import './TitleBar.css'
 
 /**
@@ -14,11 +16,13 @@ import './TitleBar.css'
  * here, so the pill and the open drawer are literally the same element.
  *
  * When the Store tab is open the titlebar also hosts the webview's
- * back/forward/reload controls, anchored at the sidebar width.
+ * back/forward/reload controls, anchored at the sidebar width. On the right, before
+ * the window controls, sits the library scan/sync activity icon + popover.
  */
 const TitleBar = () => {
   const [maximized, setMaximized] = useState(false)
   const nav = useStoreNav()
+  const sync = useSyncActivity()
 
   // No maximize-change event over IPC, so re-read on resize: snapping, a titlebar
   // double-click or Win+Up all resize the window without touching our button.
@@ -73,6 +77,16 @@ const TitleBar = () => {
           by Layout) floats here as a fixed-position element. */}
 
       <Box className="tb-right">
+        <SyncActivity
+          open={sync.open}
+          syncing={sync.syncing}
+          scanning={sync.scanning}
+          cancelling={sync.cancelling}
+          progress={sync.progress}
+          onToggle={sync.toggle}
+          onClose={sync.close}
+          onCancel={sync.cancel}
+        />
         <IconButton label="Minimize" className="winctl" onClick={() => window.api?.window.minimize()}>
           –
         </IconButton>
