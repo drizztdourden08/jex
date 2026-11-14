@@ -1,0 +1,16 @@
+.remote-models { margin-top: 8px; }
+.remote-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) 0.7fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+}
+.remote-model-row.active { border-color: var(--accent); background: var(--glass-1-bg); }
+.remote-model-row.disabled { opacity: 0.55; }
+.remote-model-name { font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.remote-model-use { padding: 4px 12px; font-size: 12px; justify-self: end; }
+.remote-model-hint { font-size: 12px; justify-self: end; }
+.remote-models-empty { margin-top: 8px; font-size: 13px; }
