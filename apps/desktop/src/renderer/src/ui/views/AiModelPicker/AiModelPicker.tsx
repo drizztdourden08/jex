@@ -7,22 +7,19 @@ import { ModelCompareSelect } from './sub-components/ModelCompareSelect'
 import { InstalledModelList } from './sub-components/InstalledModelList'
 import { CudaCallout } from './sub-components/CudaCallout'
 import { Box } from '@ds/primitives/layout/Box'
+import { Text } from '@ds/primitives/text/Text'
 import { Button } from '@ds/primitives/actions/Button'
+import { SettingsGroup } from '@ds/composites/SettingsGroup'
+import { SettingRow } from '@ds/composites/SettingRow'
+import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
+import { BACKEND_LABEL, LOCAL_HELP } from './AiModelPicker.constants'
 import './AiModelPicker.css'
 
-const BACKEND_LABEL: Record<string, string> = {
-  cuda: 'NVIDIA GPU (CUDA)',
-  vulkan: 'GPU (Vulkan)',
-  metal: 'Apple GPU (Metal)',
-  cpu: 'CPU only',
-}
-
 /**
- * Settings model picker (View). Composes the catalog hook with two bare
- * sub-components: a compare-dropdown of downloadable models with a Download
- * button beside it, and a list of installed + currently-downloading models (the
- * latter showing live per-row progress). Downloads keep running and reporting
- * even after navigating away, since their state lives in the global store.
+ * Settings model picker (View), rendered as two groups of the AI settings section:
+ * remote models (pick one whose provider has a key) and local models (compute info,
+ * CUDA callout, a compare-dropdown with Download, and the installed/downloading list).
+ * Downloads keep running after navigating away, since their state lives in the store.
  */
 const AiModelPicker = () => {
   const {
@@ -51,7 +48,7 @@ const AiModelPicker = () => {
       await select(id)
       await remote.reload()
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : String(e))
+      setActionError(ipcErrorText(e))
     }
   }
   const removeLocal = async (id: string) => {
@@ -59,7 +56,7 @@ const AiModelPicker = () => {
     try {
       await remove(id)
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : String(e))
+      setActionError(ipcErrorText(e))
     }
   }
   const [chosenId, setChosenId] = useState<string | null>(null)
@@ -76,103 +73,96 @@ const AiModelPicker = () => {
   const inactiveCount = installed.filter((m) => !m.active).length
   const chosen = available.find((m) => m.id === chosenId) ?? null
   const chosenTooBig = chosen != null && !fits(chosen)
+  const compute = backend
+    ? [
+        BACKEND_LABEL[backend.backend] ?? backend.backend,
+        backend.deviceName,
+        vramGb != null ? `${Math.round(vramGb)} GB VRAM` : null,
+        backend.gpu ? 'GPU-accelerated.' : 'No GPU detected: runs on the CPU and will be slow, prefer a smaller model.',
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : null
 
   return (
-    <Box className="panel">
-      <Box as="h3">AI model</Box>
-      <Box as="h4" className="model-installed-title">Remote models</Box>
-      <RemoteModelList
-        models={remote.models}
-        activeRef={remote.activeRef}
-        busyRef={remote.busyRef}
-        onUse={(ref) => void remote.use(ref)}
-      />
-      {remote.error && (
-        <Box as="p" className="model-error" role="alert">
-          {remote.error}
-        </Box>
-      )}
-
-      <Box as="h4" className="model-installed-title">Local models</Box>
-      {!remote.localRuntime && (
-        <Box as="p" className="muted model-warn">
-          Local runtime not installed. Install the native base in the AI engine section to run
-          local models.
-        </Box>
-      )}
-      <Box as="p" className="muted model-intro">
-        Local models run fully on your PC — no account, no key, nothing leaves your
-        machine. These are Qwen reasoning models; bigger ones are smarter and better at using the
-        app's tools but need more disk and RAM. Each is a one-time download.
-      </Box>
-      {backend && (
-        <Box as="p" className="muted model-intro">
-          Compute: <Box as="strong">{BACKEND_LABEL[backend.backend] ?? backend.backend}</Box>
-          {backend.deviceName ? ` · ${backend.deviceName}` : ''}
-          {vramGb != null ? ` · ${Math.round(vramGb)} GB VRAM` : ''}.{' '}
-          {backend.gpu
-            ? 'Inference is GPU-accelerated.'
-            : '⚠ No GPU detected — inference runs on the CPU and will be slow. Prefer a smaller model.'}
-        </Box>
-      )}
-      <CudaCallout
-        status={cuda.status}
-        installing={cuda.installing}
-        message={cuda.message}
-        installed={cuda.installed}
-        error={cuda.error}
-        onInstall={() => void cuda.install()}
-      />
-      {actionError && (
-        <Box as="p" className="model-error" role="alert">
-          {actionError}
-        </Box>
-      )}
-      {errorIds.map((id) => (
-        <Box as="p" key={id} className="model-error">
-          {id}: {errors[id]}
-        </Box>
-      ))}
-
-      <Box className="model-download-bar">
-        <ModelCompareSelect
-          options={available}
-          value={chosenId}
-          onChange={setChosenId}
-          recommendedId={recommendedId}
-          fits={fits}
+    <>
+      <SettingsGroup label="Remote models" description="Chat with a cloud model. Needs that provider's key above.">
+        <RemoteModelList
+          models={remote.models}
+          activeRef={remote.activeRef}
+          busyRef={remote.busyRef}
+          onUse={(ref) => void remote.use(ref)}
         />
-        <Button
-          className="model-download-btn"
-          onClick={() => chosenId && download(chosenId)}
-          disabled={!chosenId}
-        >
-          Download
-        </Button>
-      </Box>
-      {chosenTooBig && (
-        <Box as="p" className="muted model-warn">
-          ⚠ {chosen?.label} (~{chosen?.sizeGb} GB) is larger than your{' '}
-          {vramGb != null ? `~${Math.round(vramGb)} GB` : ''} GPU VRAM. It will still run, but partly
-          on the CPU and noticeably slower.
-        </Box>
-      )}
-
-      <Box className="model-installed-head">
-        <Box as="h4" className="model-installed-title">Installed models</Box>
-        {inactiveCount > 0 && (
-          <Button variant="ghost" className="ghost model-clean-btn" onClick={() => void cleanInactive()}>
-            Clean up ({inactiveCount} unused)
-          </Button>
+        {remote.error && (
+          <Text as="p" tone="danger" role="alert">
+            {remote.error}
+          </Text>
         )}
-      </Box>
-      <InstalledModelList
-        models={installed}
-        downloading={downloading}
-        onSelect={(id) => void selectLocal(id)}
-        onRemove={(id) => void removeLocal(id)}
-      />
-    </Box>
+      </SettingsGroup>
+
+      <SettingsGroup
+        label="Local models"
+        description={LOCAL_HELP}
+        actions={
+          inactiveCount > 0 && (
+            <Button variant="ghost" className="ghost model-clean-btn" onClick={() => void cleanInactive()}>
+              Clean up ({inactiveCount} unused)
+            </Button>
+          )
+        }
+      >
+        {!remote.localRuntime && (
+          <SettingRow
+            label="Local runtime not installed"
+            description="Install the native base in Engine above to run local models."
+          />
+        )}
+        {compute && <SettingRow label="Compute" description={compute} />}
+        <CudaCallout
+          status={cuda.status}
+          installing={cuda.installing}
+          message={cuda.message}
+          installed={cuda.installed}
+          error={cuda.error}
+          onInstall={() => void cuda.install()}
+        />
+        {actionError && (
+          <Text as="p" tone="danger" role="alert">
+            {actionError}
+          </Text>
+        )}
+        {errorIds.map((id) => (
+          <Text as="p" key={id} tone="danger">
+            {id}: {errors[id]}
+          </Text>
+        ))}
+        <Box className="model-download-bar">
+          <ModelCompareSelect
+            options={available}
+            value={chosenId}
+            onChange={setChosenId}
+            recommendedId={recommendedId}
+            fits={fits}
+          />
+          <Button className="model-download-btn" onClick={() => chosenId && download(chosenId)} disabled={!chosenId}>
+            Download
+          </Button>
+        </Box>
+        {chosenTooBig && (
+          <Box as="p" className="model-warn">
+            ⚠ {chosen?.label} (~{chosen?.sizeGb} GB) is larger than your
+            {vramGb != null ? ` ~${Math.round(vramGb)} GB` : ''} GPU VRAM. It still runs, partly on
+            the CPU and noticeably slower.
+          </Box>
+        )}
+        <InstalledModelList
+          models={installed}
+          downloading={downloading}
+          onSelect={(id) => void selectLocal(id)}
+          onRemove={(id) => void removeLocal(id)}
+        />
+      </SettingsGroup>
+    </>
   )
 }
 

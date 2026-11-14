@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { RemoteEffort, RemoteKeyCheck, RemoteKeyStatus, RemoteProviderId } from '@shared/remote-ai'
+import type { RemoteKeyCheck, RemoteKeyStatus, RemoteProviderId } from '@shared/remote-ai'
+import { ipcErrorText as errText } from '@/lib/ipc/ipcErrorText'
 
 interface KeyResult {
   check: RemoteKeyCheck
@@ -8,13 +9,11 @@ interface KeyResult {
 
 type PerProvider<T> = Partial<Record<RemoteProviderId, T>>
 
-const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e))
-
-// Drives the "Remote AI models" settings: which providers have a key (never the key
-// itself), saving / replacing / clearing one, the verify result, and reasoning effort.
+// Drives the remote-provider settings: which providers have a key (never the key
+// itself), saving / replacing / clearing one, and the verify result. Reasoning effort
+// is a per-chat choice in the chat footer (CommandSurface/useRemoteEffort).
 const useRemoteKeys = () => {
   const [status, setStatus] = useState<RemoteKeyStatus | null>(null)
-  const [effort, setEffortState] = useState<RemoteEffort>('medium')
   const [drafts, setDrafts] = useState<PerProvider<string>>({})
   const [replacing, setReplacing] = useState<PerProvider<boolean>>({})
   const [results, setResults] = useState<PerProvider<KeyResult>>({})
@@ -23,7 +22,6 @@ const useRemoteKeys = () => {
 
   useEffect(() => {
     window.api.ai.remote.keyStatus().then(setStatus).catch((e) => setError(errText(e)))
-    window.api.ai.remote.getEffort().then(setEffortState).catch((e) => setError(errText(e)))
   }, [])
 
   const setDraft = useCallback((p: RemoteProviderId, v: string) => {
@@ -76,23 +74,8 @@ const useRemoteKeys = () => {
     }
   }, [])
 
-  const setEffort = useCallback(
-    async (next: RemoteEffort) => {
-      const prev = effort
-      setEffortState(next)
-      try {
-        await window.api.ai.remote.setEffort(next)
-      } catch (e) {
-        setEffortState(prev)
-        setError(errText(e))
-      }
-    },
-    [effort],
-  )
-
   return {
     status,
-    effort,
     drafts,
     replacing,
     results,
@@ -103,7 +86,6 @@ const useRemoteKeys = () => {
     cancelReplace,
     save,
     clear,
-    setEffort,
   }
 }
 
