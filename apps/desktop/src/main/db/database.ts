@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import initSqlJs, { type Database as SqlDatabase } from 'sql.js'
 import { writeFileAtomic } from './atomic-write'
 import { openDbFile } from './open-db-file'
+import { createPersistScheduler } from './persist-scheduler'
 
 /**
  * The local library mirror — real SQLite via sql.js (WASM), stored as a single
@@ -20,10 +21,25 @@ const db = (): SqlDatabase => {
   return _db
 }
 
-/** Flush the in-memory DB to disk (atomic + fsynced). Call after any write batch. */
-const persist = (): void => {
+const PERSIST_INTERVAL_MS = 15_000
+
+const writeNow = (): void => {
   if (_db && _file) writeFileAtomic(_file, _db.export())
 }
+
+const scheduler = createPersistScheduler(writeNow, PERSIST_INTERVAL_MS)
+
+/** Write the in-memory DB to disk now (atomic). Use at phase ends and for user actions. */
+const persist = (): void => {
+  scheduler.markClean()
+  writeNow()
+}
+
+/** Coalesced write: at most one per interval while dirty. For hot loops. */
+const schedulePersist = (): void => scheduler.schedule()
+
+/** Write now only if a scheduled write is pending. Call on quit. */
+const flushPersist = (): void => scheduler.flush()
 
 type Params = Record<string, unknown> | unknown[]
 
@@ -125,4 +141,4 @@ const initDb = async (): Promise<void> => {
   persist()
 }
 
-export { initDb, db, persist, all, get, run, setMeta, getMeta }
+export { initDb, db, persist, schedulePersist, flushPersist, all, get, run, setMeta, getMeta }
