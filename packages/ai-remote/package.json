@@ -1,0 +1,23 @@
+{
+  "name": "@jex/ai-remote",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Remote model clients (Anthropic Claude, OpenAI) behind one facade. Node-only; bundled into the desktop main process, which owns the keys.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.8.0",
+    "@jex/ai-contract": "workspace:*",
+    "@jex/shared": "workspace:*",
+    "openai": "7.57.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.21",
+    "typescript": "^5.6.3"
+  }
+}

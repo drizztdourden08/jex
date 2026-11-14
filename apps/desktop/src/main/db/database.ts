@@ -1,8 +1,9 @@
 import { app } from 'electron'
 import { join, dirname } from 'node:path'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import initSqlJs, { type Database as SqlDatabase } from 'sql.js'
+import { writeFileAtomic } from './atomic-write'
+import { openDbFile } from './open-db-file'
 
 /**
  * The local library mirror — real SQLite via sql.js (WASM), stored as a single
@@ -19,9 +20,9 @@ const db = (): SqlDatabase => {
   return _db
 }
 
-/** Flush the in-memory DB to disk. Call after any write batch. */
+/** Flush the in-memory DB to disk (atomic + fsynced). Call after any write batch. */
 const persist = (): void => {
-  if (_db && _file) writeFileSync(_file, Buffer.from(_db.export()))
+  if (_db && _file) writeFileAtomic(_file, _db.export())
 }
 
 type Params = Record<string, unknown> | unknown[]
@@ -119,7 +120,7 @@ const initDb = async (): Promise<void> => {
   const wasmDir = dirname(require.resolve('sql.js')) // …/sql.js/dist
   const SQL = await initSqlJs({ locateFile: () => join(wasmDir, 'sql-wasm.wasm') })
   _file = join(app.getPath('userData'), 'library.db')
-  _db = existsSync(_file) ? new SQL.Database(readFileSync(_file)) : new SQL.Database()
+  _db = openDbFile(SQL, _file)
   migrate(_db)
   persist()
 }

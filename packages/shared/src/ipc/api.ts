@@ -1,5 +1,12 @@
 import type { DetectResult, Game, LibraryStats, ScanResult, SyncProgress, SyncState } from '../library'
 import type {
+  RemoteEffort,
+  RemoteKeyStatus,
+  RemoteModelOption,
+  RemoteProviderId,
+  RemoteSetKeyResult,
+} from '../remote-ai'
+import type {
   AiBackendInfo,
   AiDownloadDone,
   AiDownloadProgress,
@@ -49,7 +56,6 @@ interface IpcApi {
     available: () => Promise<boolean>
     set: (key: string, value: string) => Promise<void>
     has: (key: string) => Promise<boolean>
-    get: (key: string) => Promise<string | null>
     clear: (key: string) => Promise<void>
   }
   steam: {
@@ -134,6 +140,14 @@ interface IpcApi {
     setToolPolicy: (name: string, policy: ToolPolicy) => Promise<void>
     onUiInvoke: (cb: (req: UiInvokeRequest) => void) => () => void
     uiResult: (result: UiInvokeResult) => void
+    remote: {
+      keyStatus: () => Promise<RemoteKeyStatus>
+      setKey: (provider: RemoteProviderId, key: string) => Promise<RemoteSetKeyResult>
+      clearKey: (provider: RemoteProviderId) => Promise<RemoteKeyStatus>
+      models: () => Promise<RemoteModelOption[]>
+      getEffort: () => Promise<RemoteEffort>
+      setEffort: (effort: RemoteEffort) => Promise<void>
+    }
   }
 }
 

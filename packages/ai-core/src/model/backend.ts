@@ -1,12 +1,14 @@
 import type { Llama } from 'node-llama-cpp'
 import type { AiBackendInfo } from '@jex/shared/ai'
 import { detectNvidiaVramMb, ensureCudaOnPath } from '../gpu'
+import { requireLocalRuntime } from './runtime'
 import { getLlamaRef, setLlamaRef, getBackend, setBackend, getRealVramBytes, setRealVramBytes } from './state'
 
 /** Initialize llama (downloads/picks the best prebuilt backend) and cache it. */
 const ensureLlama = async (): Promise<Llama> => {
   const cached = getLlamaRef()
   if (cached) return cached
+  await requireLocalRuntime()
   // Surface a freshly-installed CUDA to this process (stale-PATH workaround) so
   // 'auto' can pick it instead of Vulkan — CUDA is faster and only sees the NVIDIA
   // card (no iGPU mix-up, correct VRAM).

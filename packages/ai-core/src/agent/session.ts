@@ -1,8 +1,10 @@
 import type { LlamaContext, LlamaChatSession, LlamaContextSequence } from 'node-llama-cpp'
 import type { ContextStatus } from '@jex/shared/agent'
+import { requireLocalRuntime } from '../model/runtime'
 import { ensureModel, activeModel, activeContextSize, createInferenceContext } from '../model'
 import { buildSystemPrompt } from './system-prompt'
 import { clearPendingConfirms } from './confirm'
+import { resetRemoteSession } from './remote/remote-session'
 
 /**
  * The conversational agent's persistent session + context-window state. Unlike the
@@ -23,8 +25,8 @@ const setAbort = (a: AbortController | null): void => {
   _abort = a
 }
 
-/** Live context-window usage for the in-chat meter. */
-const contextStatus = (): ContextStatus => {
+/** Live context-window usage of the LOCAL session, for the in-chat meter. */
+const localContextStatus = (): ContextStatus => {
   const contextSize = activeContextSize()
   const usedTokens = _sequence ? _sequence.nextTokenIndex : 0
   return { usedTokens, contextSize, modelId: activeModel().id }
@@ -35,6 +37,7 @@ const ensureSession = async (): Promise<LlamaChatSession> => {
   const modelId = activeModel().id
   if (_session && _sessionModelId === modelId) return _session
   await resetChat()
+  await requireLocalRuntime()
   const model = await ensureModel()
   const { LlamaChatSession } = await import('node-llama-cpp')
   _context = await createInferenceContext(model)
@@ -64,6 +67,8 @@ const trimHistory = (session: LlamaChatSession): void => {
  *  chat-turn as a clean finish, so the partial answer is kept and history stays intact. */
 const cancelTurn = (): void => {
   _abort?.abort()
+  // A turn blocked on a confirm must unwind too (the confirm resolves as a deny).
+  clearPendingConfirms()
 }
 
 /** Drop the conversation + free the context (new chat, or model switch). */
@@ -72,6 +77,7 @@ const resetChat = async (): Promise<void> => {
   _abort = null
   // Resolve any dangling confirm so a blocked turn can unwind.
   clearPendingConfirms()
+  resetRemoteSession()
   _session = null
   _sequence = null
   _sessionModelId = ''
@@ -80,4 +86,4 @@ const resetChat = async (): Promise<void> => {
   if (ctx) await ctx.dispose()
 }
 
-export { contextStatus, ensureSession, trimHistory, resetChat, cancelTurn, getAbort, setAbort }
+export { localContextStatus, ensureSession, trimHistory, resetChat, cancelTurn, getAbort, setAbort }

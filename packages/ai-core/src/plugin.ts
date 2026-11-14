@@ -6,6 +6,7 @@
 
 import type { AiPlugin, PluginEmit, UiDispatcher } from '@jex/ai-contract'
 import type { HostServices } from '@jex/ai-contract'
+import { AI_PLUGIN_API_VERSION } from '@jex/ai-contract'
 import type { AiStreamEvent } from '@jex/shared/agent'
 import { setHost } from './host'
 import {
@@ -29,6 +30,7 @@ import {
   setActiveModel,
   backendInfo,
   warmupModel,
+  localRuntimeAvailable,
 } from './model'
 import { listToolInfo, setToolPolicy, setPolicyStore, registerAllTools } from './tools'
 import { cudaStatus, installCuda } from './cuda'
@@ -54,10 +56,12 @@ const createAiPlugin = (): AiPlugin => {
       set: (o) => opts.host.settings.set('aiToolPolicies', o),
     })
     registerAllTools()
+    // Warm the memoised probe so modelStatus() can report a missing local runtime.
+    void localRuntimeAvailable()
   }
 
   return {
-    apiVersion: 1,
+    apiVersion: AI_PLUGIN_API_VERSION,
     init,
     dispose: async () => {
       setUiDispatcher(null)
@@ -70,8 +74,11 @@ const createAiPlugin = (): AiPlugin => {
       await warmupModel()
     },
     listModels: () => listModels(),
-    setModel: async (id) => {
-      await setActiveModel(id)
+    // Accepts a local model id or a remote `provider/id` ref; the chat resets so the
+    // next turn starts on the new model.
+    setModel: async (ref) => {
+      await setActiveModel(ref)
+      await resetChat()
     },
     downloadModel: async (modelId) => {
       try {

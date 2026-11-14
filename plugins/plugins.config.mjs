@@ -5,6 +5,15 @@
 // the fallback). The host resolves which to install from the machine's arch + the
 // user's backend choice (see the setup UX / manifest, P3).
 const PLUGINS = [
+  // JS-only engine: the same entry without node-llama-cpp. Runs remote models (Claude,
+  // OpenAI); no native files, so it is arch 'any'.
+  {
+    id: 'ai-engine',
+    arch: 'any',
+    backends: [],
+    variants: [],
+    native: false,
+  },
   {
     id: 'ai-win-x64',
     arch: 'win-x64',

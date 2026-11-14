@@ -1,16 +1,17 @@
 import type { ContextLevel, ContextStatus, PermissionMode } from '@shared/agent'
-import type { AiModelOption } from '@shared/ai'
 import { Select } from '@ds/primitives/form/Select'
+import type { SelectGroup } from '@ds/primitives/form/Select'
 import { Box } from '@ds/primitives/layout/Box'
-import { PERM_OPTIONS, CTX_OPTIONS, fmtTokens } from './ChatFooter.constants'
+import { ContextMeter } from './sub-components/ContextMeter'
+import { PERM_OPTIONS, CTX_OPTIONS } from './ChatFooter.constants'
 
 type ChatFooterProps = {
   permMode: PermissionMode
   changePermMode: (mode: PermissionMode) => void
   ctx: ContextStatus | null
   ready: boolean
-  installed: AiModelOption[]
-  active: AiModelOption | null
+  modelGroups: SelectGroup[]
+  activeModel: { value: string; label: string } | null
   switchModel: (id: string) => void
   busy: boolean
   ctxLevel: ContextLevel
@@ -22,8 +23,8 @@ const ChatFooter = ({
   changePermMode,
   ctx,
   ready,
-  installed,
-  active,
+  modelGroups,
+  activeModel,
   switchModel,
   busy,
   ctxLevel,
@@ -40,23 +41,11 @@ const ChatFooter = ({
       title="Tool permissions for THIS chat (doesn't change your saved settings). Normal = saved rules · Ask = confirm everything · Allow all = no prompts."
     />
     <Box className="chat-foot-right">
-      {ctx && (
-        <Box as="span" className="chat-ctx-meter" title={`${ctx.usedTokens} / ${ctx.contextSize} tokens used`}>
-          <Box as="span" className="chat-ctx-bar">
-            <Box
-              as="span"
-              style={{ width: `${Math.min(100, Math.round((ctx.usedTokens / ctx.contextSize) * 100))}%` }}
-            />
-          </Box>
-          <Box as="span" className="muted">
-            {fmtTokens(ctx.usedTokens)}/{fmtTokens(ctx.contextSize)}
-          </Box>
-        </Box>
-      )}
-      {ready && installed.length > 0 && (
+      {ctx && <ContextMeter used={ctx.usedTokens} size={ctx.contextSize} />}
+      {ready && activeModel && modelGroups.length > 0 && (
         <Select
-          value={active!.id}
-          options={installed.map((m) => ({ value: m.id, label: m.label }))}
+          value={activeModel.value}
+          groups={modelGroups}
           onChange={(id) => void switchModel(id)}
           disabled={busy}
           title="Model used for this chat"

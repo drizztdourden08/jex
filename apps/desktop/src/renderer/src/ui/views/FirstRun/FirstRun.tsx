@@ -15,7 +15,11 @@ const FirstRun = ({ onAccept }: { onAccept: () => void }) => {
 
   const accept = async () => {
     setBusy(true)
-    await window.api.settings.set('acceptedTerms', true)
+    try {
+      await window.api.settings.set('acceptedTerms', true)
+    } catch {
+      // Not persisted: continue anyway, the disclosure simply shows again next launch.
+    }
     onAccept()
   }
 
