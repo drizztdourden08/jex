@@ -1,29 +1,22 @@
 import type { BrowserWindow } from 'electron'
 import type { AiStreamEvent } from '@jex/shared/agent'
-import { type ToolContext, registerAllTools } from '../tools'
-import { ensureSession, trimHistory, resetChat, setAbort } from './session'
-import { buildFunctions } from './tool-functions'
-import { getUiDispatcher } from './ui-dispatcher'
+import { registerAllTools } from '../../tools'
+import { ensureSession, trimHistory, resetChat, setAbort } from '../session'
+import { buildFunctions } from '../tool-functions'
+import { buildToolContext } from '../tool-context'
 
 /**
  * Run one user turn. Streams tokens/tool events via `emit` and resolves with the
  * final assistant text. Throws only on a hard model/load failure.
  */
-const chatTurn = async (
+const runLocalTurn = async (
   turnId: string,
   message: string,
   window: BrowserWindow | null,
   emit: (e: AiStreamEvent) => void,
 ): Promise<string> => {
   registerAllTools()
-  const ctx: ToolContext = {
-    window,
-    ui: async (action, payload) => {
-      const uiDispatch = getUiDispatcher()
-      if (!uiDispatch) throw new Error('UI is not available right now.')
-      return uiDispatch(action, payload)
-    },
-  }
+  const ctx = buildToolContext(window)
 
   // Hard cap on a single turn so it can NEVER hang forever (a weak model can spin
   // without ever finishing). On timeout we abort, clear the stuck session, and
@@ -136,4 +129,4 @@ const chatTurn = async (
   throw lastErr
 }
 
-export { chatTurn }
+export { runLocalTurn }
