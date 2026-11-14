@@ -41,9 +41,9 @@ const useModelOptions = () => {
   const activeModel = useMemo(() => {
     if (!activeId) return null
     const l = installed.find((m) => m.id === activeId)
-    if (l) return { value: l.id, label: l.label }
+    if (l) return { value: l.id, label: l.label, remote: false }
     const r = usableRemote.find((m) => m.ref === activeId)
-    return r ? { value: r.ref, label: r.label } : null
+    return r ? { value: r.ref, label: r.label, remote: true } : null
   }, [activeId, installed, usableRemote])
 
   const modelGroups = useMemo<SelectGroup[]>(() => {
