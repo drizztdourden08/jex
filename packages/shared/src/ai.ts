@@ -59,6 +59,8 @@ interface AiEngineStatus {
   vramGb: number | null
   /** Convenience: an NVIDIA GPU was detected (gpu != null) — surface the CUDA opt-in. */
   nvidiaGpu: boolean
+  /** The native base plugin (node-llama-cpp) is loaded, so local GGUF models can run. */
+  localRuntime: boolean
 }
 
 /** One installable engine-plugin row for the setup checklist (transparency: exactly
