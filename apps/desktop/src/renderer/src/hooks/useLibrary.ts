@@ -11,12 +11,12 @@ const useLibrary = () => {
   const [loading, setLoading] = useState(true)
   const [scanning, setScanning] = useState(false)
 
-  const reload = useCallback(async () => {
-    setLoading(true)
+  const reload = useCallback(async (quiet = false) => {
+    if (!quiet) setLoading(true)
     try {
       setGames(await window.api.library.getAll())
     } finally {
-      setLoading(false)
+      if (!quiet) setLoading(false)
     }
   }, [])
 

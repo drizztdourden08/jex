@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Game, LibraryStats, ScanResult, SyncProgress } from '@shared/library'
 
 type Params = {
@@ -6,8 +6,10 @@ type Params = {
   loading: boolean
   scanning: boolean
   scan: () => Promise<ScanResult>
-  reload: () => Promise<void> | void
+  reload: (quiet?: boolean) => Promise<void> | void
 }
+
+const REFRESH_MS = 8000
 
 const useLibrarySync = ({ games, loading, scanning, scan, reload }: Params) => {
   const [scanInfo, setScanInfo] = useState<ScanResult | null>(null)
@@ -16,6 +18,8 @@ const useLibrarySync = ({ games, loading, scanning, scan, reload }: Params) => {
   const [syncing, setSyncing] = useState(false)
   const [cancelling, setCancelling] = useState(false)
   const [progress, setProgress] = useState<SyncProgress | null>(null)
+  const lastRefresh = useRef(0)
+  const lastPhase = useRef<SyncProgress['phase'] | null>(null)
   const [stats, setStats] = useState<LibraryStats | null>(null)
 
   // The sync runs in main and survives navigation. On (re)mount, ask main for the
@@ -31,6 +35,15 @@ const useLibrarySync = ({ games, loading, scanning, scan, reload }: Params) => {
     })
     return window.api.enrich.onProgress((p) => {
       setProgress(p)
+      // Owned rows land when the phase flips owned -> enrich; then refresh quietly,
+      // throttled, as enrichment fills in metadata.
+      const now = Date.now()
+      const ownedLanded = p.phase === 'enrich' && lastPhase.current !== 'enrich'
+      lastPhase.current = p.phase
+      if (p.phase === 'enrich' && (ownedLanded || now - lastRefresh.current > REFRESH_MS)) {
+        lastRefresh.current = now
+        void reload(true)
+      }
       const terminal = p.phase === 'done' || p.phase === 'paused' || p.phase === 'error'
       setSyncing(!terminal)
       if (terminal) {
