@@ -36,7 +36,7 @@ const runRemoteTurn = async (
   const exec = createToolExecutor({
     turnId,
     emit,
-    ctx: buildToolContext(window),
+    ctx: buildToolContext(window, true),
     limits: REMOTE_LIMITS,
     signal: abort.signal,
   })

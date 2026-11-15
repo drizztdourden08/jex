@@ -1,26 +1,15 @@
 import { ipcMain } from 'electron'
-import { markWishlisted } from '../db/games'
-import { persist } from '../db/database'
 import { createGroup, deleteGroup, listGroups, reorderGroups, updateGroup } from '../db/wishlist'
 import { runWishlistSync } from '../library/sync'
-import { addToWishlist } from '../steam/wishlistAdd'
+import { addToWishlistAndMark } from '../steam/wishlistAddFlow'
 import type { FilterSpec } from '@shared/filter'
 import type { WishlistGroupPatch } from '@shared/wishlist'
 
 /** Keyless wishlist sync + local sub-wishlist groups. */
 const registerWishlistHandlers = (): void => {
   ipcMain.handle('wishlist:sync', () => runWishlistSync())
-  // Add a game to the Steam wishlist via the logged-in Store-tab session. On
-  // success, optimistically flip the local flag so the UI reflects it immediately.
-  ipcMain.handle('wishlist:add', async (_e, appid: number) => {
-    const res = await addToWishlist(appid)
-    if (res.ok) {
-      markWishlisted(appid, true)
-      persist()
-      void runWishlistSync().catch(() => {})
-    }
-    return res
-  })
+  // Add a game to the Steam wishlist via the logged-in Store-tab session.
+  ipcMain.handle('wishlist:add', (_e, appid: number) => addToWishlistAndMark(appid))
   ipcMain.handle('wishlist:groups:list', () => listGroups())
   ipcMain.handle(
     'wishlist:groups:create',

@@ -2,7 +2,7 @@ import { registerLaunchTools } from './launchTools'
 import { registerStoreTools } from './storeTools'
 import { registerSettingsTools } from './settingsTools'
 import { registerSyncTools } from './syncTools'
-import { registerWishlistTools } from './wishlistTools'
+import { registerWishlistTools } from './wishlist'
 import { registerSteamInfoTools } from './steamInfoTools'
 
 /**

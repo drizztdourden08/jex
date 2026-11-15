@@ -3,8 +3,8 @@ import { registerTool } from '../registry'
 import { FEATURE_KEYS } from '../../parse'
 import type { GAMING_GLOSSARY } from '@jex/shared/gamingGlossary';
 import { lookupGamingTerms } from '@jex/shared/gamingGlossary'
-import type { Game } from '@jex/shared/library/index'
 import { brief, facetCounts } from './helpers'
+import { resolveLocalGame } from '../game/resolve'
 
 /**
  * Read-only, main-surface library tools. These run entirely in the main process
@@ -148,7 +148,7 @@ const registerLibraryTools = (): void => {
   registerTool({
     name: 'get_game',
     description:
-      'Look up a single game by name (substring, case-insensitive) or numeric appid. Returns its key details. Use before launching, opening a store page, or answering questions about one game.',
+      'Quick lookup of a single library game by name (substring, case-insensitive) or numeric appid: appid, install/own state, playtime, genres, short description. Use it to resolve an appid before launching or opening a page. For the full description, tags, reviews, HowLongToBeat, etc. use get_game_details; to see what it looks like, view_game_screenshots.',
     category: 'library',
     sensitivity: 'safe',
     surface: 'main',
@@ -162,19 +162,7 @@ const registerLibraryTools = (): void => {
     run: async (args) => {
       const query = String(args.query ?? '').trim()
       if (!query) return { error: 'Provide a game name or appid.' }
-      const games = host().db.getAllGames()
-      const asId = Number(query)
-      let match: Game | undefined
-      if (Number.isFinite(asId) && asId > 0) match = games.find((g) => g.appid === asId)
-      if (!match) {
-        const q = query.toLowerCase()
-        // Prefer an exact (case-insensitive) name, else the shortest substring match.
-        match =
-          games.find((g) => g.name.toLowerCase() === q) ??
-          games
-            .filter((g) => g.name.toLowerCase().includes(q))
-            .sort((a, b) => a.name.length - b.name.length)[0]
-      }
+      const match = resolveLocalGame(query)
       if (!match) return { found: false, query }
       return {
         found: true,

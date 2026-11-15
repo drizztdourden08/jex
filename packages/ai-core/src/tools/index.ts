@@ -5,6 +5,7 @@ import { registerSearchTools } from './search'
 import { registerSitemapTools } from './sitemap'
 import { registerSkillTools } from './skills'
 import { registerProfileTools } from './profile'
+import { registerGameTools } from './game'
 
 /**
  * Registers all AI tools, exactly once, at startup. New tool groups (wishlist,
@@ -17,6 +18,7 @@ const registerAllTools = (): void => {
   if (registered) return
   registered = true
   registerLibraryTools()
+  registerGameTools()
   registerTasteTool()
   registerUiTools()
   registerActionTools()

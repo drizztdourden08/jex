@@ -44,7 +44,7 @@ const registerSearchTools = (): void => {
   registerTool({
     name: 'search_store',
     description:
-      'Search the WHOLE Steam catalog (not just the library) to discover or recommend games — by name, genre, tag, feature, platform, price (maxPrice/freeOnly/onSaleOnly), or sort. For "best/acclaimed/highly-rated" recommendations, sort instead of rolling the randomizer: sortBy:"metacritic" (or "reviewTotal" for most-reviewed/popular) with sortDir:"desc". Uses the same genre/tag/category/feature vocabulary as apply_filter. Each result includes appid, price, reviews, and inLibrary/wishlisted flags — for "games I never played / don\'t own", keep only inLibrary:false. Use search_games instead for games the user already owns. (Library-only filters like playtime, scores, and release year are not available on the catalog.)',
+      'Search the WHOLE Steam catalog (not just the library) to discover or recommend games — by name, genre, tag, feature, platform, price (maxPrice/freeOnly/onSaleOnly), or sort. For "best/acclaimed/highly-rated" recommendations, sort instead of rolling the randomizer: sortBy:"metacritic" (or "reviewTotal" for most-reviewed/popular) with sortDir:"desc". Uses the same genre/tag/category/feature vocabulary as apply_filter. Each result includes appid, price, reviews, and inLibrary/wishlisted flags — for "games I never played / don\'t own", keep only inLibrary:false. Use search_games instead for games the user already owns. To learn more about a result (description, reviews, tags…) call get_game_details with its appid; to see it, view_game_screenshots. (Library-only filters like playtime, scores, and release year are not available on the catalog.)',
     category: 'store',
     sensitivity: 'safe',
     surface: 'main',
