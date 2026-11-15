@@ -113,6 +113,7 @@ const VideoPlayer = ({ src, poster, autoPlay }: Props) => {
         {stage}
       </Box>
     </Box>
+  )
 }
 
 export { VideoPlayer }
