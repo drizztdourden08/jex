@@ -25,9 +25,11 @@ const countSpec = (spec: FilterSpec): number => {
  * facets / advanced query tree). Sort lives in `spec`. Leaving advanced keeps the
  * query (the page shows the reset overlay via `dirty`) until `reset` is called.
  */
-const useFilterState = () => {
+const useFilterState = (
+  initialSort: Pick<FilterSpec, 'sortBy' | 'sortDir'> = { sortBy: 'name', sortDir: 'asc' },
+) => {
   const [mode, setModeRaw] = useState<FilterMode>('basic')
-  const [spec, setSpec] = useState<FilterSpec>({ sortBy: 'name', sortDir: 'asc' })
+  const [spec, setSpec] = useState<FilterSpec>(initialSort)
   const [query, setQuery] = useState<QueryGroup>(() => emptyGroup())
   const [dirty, setDirty] = useState(false) // advanced query exists but mode has left advanced
 

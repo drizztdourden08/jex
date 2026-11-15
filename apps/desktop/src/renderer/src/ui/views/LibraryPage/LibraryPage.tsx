@@ -14,6 +14,7 @@ import { useLibrarySync } from './behavior/useLibrarySync'
 import { useLibrarySelection } from './behavior/useLibrarySelection'
 import { useLibraryDetail } from './behavior/useLibraryDetail'
 import { useLibraryDisplay } from './behavior/useLibraryDisplay'
+import { getInitialLibrarySort, useLibrarySort } from './behavior/useLibrarySort'
 import { LibraryHeader } from './sub-components/LibraryHeader'
 import { LibraryNotices } from './sub-components/LibraryNotices'
 import { LibraryToolbar } from './sub-components/LibraryToolbar'
@@ -27,7 +28,8 @@ const LibraryPage = () => {
   // The Library shows owned/installed games only — wishlist-only entries (added by
   // the wishlist sync) live in the Wishlist view, not here.
   const games = useMemo(() => allGames.filter((g) => g.owned || g.installed), [allGames])
-  const flt = useFilterState()
+  const flt = useFilterState(getInitialLibrarySort())
+  const { saveSort } = useLibrarySort(flt.setSpec)
   useAgentLibraryActions(flt)
   const { scanInfo, keySet, syncing, cancelling, stats, startSync, cancelSync, rescan } =
     useLibrarySync({ games, loading, scanning, scan, reload })
@@ -42,8 +44,12 @@ const LibraryPage = () => {
 
   const { spec, setSpec, query, mode } = flt
   const handleSort = useCallback(
-    (patch: Partial<FilterSpec>) => setSpec({ ...spec, ...patch }),
-    [spec, setSpec],
+    (patch: Partial<FilterSpec>) => {
+      const next = { ...spec, ...patch }
+      setSpec(next)
+      if (next.sortBy) saveSort({ sortBy: next.sortBy, sortDir: next.sortDir ?? 'asc' })
+    },
+    [spec, setSpec, saveSort],
   )
   // The card grid jumps back to its first page only when the query changes, not on
   // every data reload during a sync.
