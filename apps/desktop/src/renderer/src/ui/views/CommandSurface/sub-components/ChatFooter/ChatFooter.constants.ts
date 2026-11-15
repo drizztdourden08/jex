@@ -35,7 +35,8 @@ const EFFORT_GROUPS: SelectGroup<RemoteEffort>[] = [
   },
 ]
 
-const fmtTokens = (n: number): string =>
-  n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `${n}`
+const fmtCount = (n: number): string => n.toLocaleString('en-US')
 
-export { PERM_GROUPS, CTX_GROUPS, EFFORT_GROUPS, fmtTokens }
+const fmtCost = (usd: number): string => `$${usd.toFixed(usd < 1 ? 4 : 2)}`
+
+export { PERM_GROUPS, CTX_GROUPS, EFFORT_GROUPS, fmtCount, fmtCost }

@@ -89,11 +89,21 @@ type PermissionMode = 'default' | 'allow' | 'ask'
 /** Context-window allocation level (maps to a token budget, capped to model max). */
 type ContextLevel = 'low' | 'medium' | 'high'
 
-/** Live context-window usage, for the in-chat meter. */
+/** Cumulative token counts for one remote chat. */
+interface SessionUsage {
+  inputTokens: number
+  outputTokens: number
+  cacheReadTokens: number
+  cacheWriteTokens: number
+}
+
+/** Live context-window usage, for the in-chat meter. `usage` is remote-only and absent
+ *  from older engines. */
 interface ContextStatus {
   usedTokens: number
   contextSize: number
   modelId: string
+  usage?: SessionUsage
 }
 
 /**
@@ -148,6 +158,7 @@ export type {
   PermissionMode,
   ContextLevel,
   ContextStatus,
+  SessionUsage,
   UiInvokeRequest,
   UiInvokeResult,
   AiStreamEvent,

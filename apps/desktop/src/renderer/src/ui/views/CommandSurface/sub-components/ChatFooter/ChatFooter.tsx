@@ -21,10 +21,10 @@ type ChatFooterProps = {
   changeContextLevel: (level: ContextLevel) => void
 }
 
-// One quiet row of plain-text pickers (model · effort or context · permissions · meter):
-// each reads as text and only becomes a dropdown when clicked. The open menu's header
-// names the field. The model picker shows whenever any model exists, even when none
-// is active yet, so the user can always choose one.
+// One quiet row of plain-text pickers: permissions on the left; model · effort (or
+// context size) · context ring on the right. Each picker reads as text and only becomes a
+// dropdown when clicked. The model picker shows whenever any model exists, even when none
+// is active yet, so the user can always choose one. The ring is always visible.
 const ChatFooter = ({
   permMode,
   changePermMode,
@@ -39,41 +39,6 @@ const ChatFooter = ({
   changeContextLevel,
 }: ChatFooterProps) => (
   <Box className="chat-foot">
-    {modelGroups.length > 0 && (
-      <Select
-        value={activeModel?.value ?? ''}
-        groups={modelGroups}
-        placeholder="Choose a model"
-        onChange={(id) => void switchModel(id)}
-        disabled={busy}
-        title="Model for this chat"
-        triggerBare
-        triggerClass="chat-pick chat-pick--model"
-      />
-    )}
-    {activeModel?.remote && (
-      <Select
-        value={effort}
-        groups={EFFORT_GROUPS}
-        onChange={(e) => void changeEffort(e)}
-        disabled={busy}
-        title="Reasoning effort for this chat (higher = more thinking, slower and costlier)"
-        triggerBare
-        triggerClass="chat-pick chat-pick--dim"
-      />
-    )}
-    {/* Context size sizes the local llama context only; a cloud model's window is fixed. */}
-    {activeModel && !activeModel.remote && (
-      <Select
-        value={ctxLevel}
-        groups={CTX_GROUPS}
-        onChange={(l) => void changeContextLevel(l)}
-        disabled={busy}
-        title="Context size for this session (larger = more memory + history, slower; clears the chat)"
-        triggerBare
-        triggerClass="chat-pick chat-pick--dim"
-      />
-    )}
     <Select
       value={permMode}
       groups={PERM_GROUPS}
@@ -82,7 +47,44 @@ const ChatFooter = ({
       triggerBare
       triggerClass={`chat-pick perm-${permMode}`}
     />
-    {ctx && <ContextMeter used={ctx.usedTokens} size={ctx.contextSize} />}
+    <Box className="chat-foot-right">
+      {modelGroups.length > 0 && (
+        <Select
+          value={activeModel?.value ?? ''}
+          groups={modelGroups}
+          placeholder="Choose a model"
+          onChange={(id) => void switchModel(id)}
+          disabled={busy}
+          title="Model for this chat"
+          triggerBare
+          triggerClass="chat-pick chat-pick--model"
+        />
+      )}
+      {activeModel?.remote && (
+        <Select
+          value={effort}
+          groups={EFFORT_GROUPS}
+          onChange={(e) => void changeEffort(e)}
+          disabled={busy}
+          title="Reasoning effort for this chat (higher = more thinking, slower and costlier)"
+          triggerBare
+          triggerClass="chat-pick chat-pick--dim"
+        />
+      )}
+      {/* Context size sizes the local llama context only; a cloud model's window is fixed. */}
+      {activeModel && !activeModel.remote && (
+        <Select
+          value={ctxLevel}
+          groups={CTX_GROUPS}
+          onChange={(l) => void changeContextLevel(l)}
+          disabled={busy}
+          title="Context size for this session (larger = more memory + history, slower; clears the chat)"
+          triggerBare
+          triggerClass="chat-pick chat-pick--dim"
+        />
+      )}
+      <ContextMeter ctx={ctx} />
+    </Box>
   </Box>
 )
 

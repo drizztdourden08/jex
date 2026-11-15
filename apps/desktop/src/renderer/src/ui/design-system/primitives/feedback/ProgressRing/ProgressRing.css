@@ -1,0 +1,3 @@
+.ds-progress-ring { display: block; flex: none; }
+.ds-progress-ring-track { fill: none; stroke: var(--hairline-strong); }
+.ds-progress-ring-arc { fill: none; stroke: var(--ai-2); stroke-linecap: round; transition: stroke-dasharray var(--dur-base); }

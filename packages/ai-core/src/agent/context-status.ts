@@ -12,7 +12,7 @@ const contextStatus = (): ContextStatus => {
   const s = getRemoteSession()
   const u = s?.lastUsage
   const usedTokens = u ? u.inputTokens + u.cacheReadTokens + u.cacheWriteTokens + u.outputTokens : 0
-  return { usedTokens, contextSize: s?.contextSize ?? 0, modelId: ref }
+  return { usedTokens, contextSize: s?.contextSize ?? 0, modelId: ref, usage: s?.totalUsage }
 }
 
 export { contextStatus }
