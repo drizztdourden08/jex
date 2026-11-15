@@ -7,11 +7,13 @@ export type {
   HostSettings,
   HostSecrets,
   HostPaths,
+  HostMedia,
 } from './host'
 export { AI_PLUGIN_API_VERSION } from './api-version'
 export type {
   LlmToolSpec,
   LlmToolCall,
+  LlmImagePart,
   LlmToolResult,
   LlmAssistantItem,
   LlmTurnItem,

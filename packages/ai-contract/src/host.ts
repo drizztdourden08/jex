@@ -10,7 +10,7 @@ import type { DetectResult } from '@jex/shared/library/detect'
 import type { FilterSpec } from '@jex/shared/filter'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '@jex/shared/wishlist'
 import type { SearchQuery, SearchResponse } from '@jex/shared/search'
-import type { HostLlm } from './llm'
+import type { HostLlm, LlmImagePart } from './llm'
 
 // The SQLite library mirror (read paths + the AI's small key/value scratch space).
 interface HostDb {
@@ -42,6 +42,15 @@ interface HostLibrary {
 interface HostSteam {
   detectSteam: () => Promise<DetectResult>
   searchCatalog: (query: SearchQuery, countryCode?: string) => Promise<SearchResponse>
+  /** Store metadata for any appid through the throttled enrichment queue (caches it in
+   *  the mirror). Optional: hosts older than the game-details tools lack it. */
+  storeGame?: (appid: number) => Promise<Game | null>
+}
+
+// Image fetching for tools that show pictures to the model. Steam CDN URLs only;
+// downscaled so the longest side is at most maxSide. Null when it cannot be fetched.
+interface HostMedia {
+  fetchImage: (url: string, maxSide: number) => Promise<LlmImagePart | null>
 }
 
 // Non-secret settings (electron-store `config.json`).
@@ -70,6 +79,8 @@ interface HostServices {
   secrets: HostSecrets
   paths: HostPaths
   llm: HostLlm
+  /** Optional: hosts older than the screenshot tool lack it. */
+  media?: HostMedia
   log: (level: 'info' | 'warn' | 'error', message: string) => void
 }
 
@@ -82,4 +93,5 @@ export type {
   HostSettings,
   HostSecrets,
   HostPaths,
+  HostMedia,
 }

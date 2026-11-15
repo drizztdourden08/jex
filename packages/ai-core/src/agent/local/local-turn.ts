@@ -16,7 +16,7 @@ const runLocalTurn = async (
   emit: (e: AiStreamEvent) => void,
 ): Promise<string> => {
   registerAllTools()
-  const ctx = buildToolContext(window)
+  const ctx = buildToolContext(window, false)
 
   // Hard cap on a single turn so it can NEVER hang forever (a weak model can spin
   // without ever finishing). On timeout we abort, clear the stuck session, and

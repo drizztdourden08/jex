@@ -20,10 +20,18 @@ interface LlmToolCall {
   parseError: boolean
 }
 
+/** An image a tool hands back to the model (e.g. a screenshot), base64 without a data: prefix. */
+interface LlmImagePart {
+  mime: 'image/jpeg' | 'image/png' | 'image/webp'
+  base64: string
+}
+
 interface LlmToolResult {
   callId: string
   ok: boolean
   content: string
+  /** Optional images shown to the model with the text. Absent for text-only results. */
+  images?: LlmImagePart[]
 }
 
 interface LlmAssistantItem {
@@ -90,6 +98,7 @@ interface HostLlm {
 export type {
   LlmToolSpec,
   LlmToolCall,
+  LlmImagePart,
   LlmToolResult,
   LlmAssistantItem,
   LlmTurnItem,

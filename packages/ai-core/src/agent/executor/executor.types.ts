@@ -1,4 +1,5 @@
 import type { AiStreamEvent } from '@jex/shared/agent'
+import type { LlmImagePart } from '@jex/ai-contract'
 import type { ToolContext } from '../../tools'
 
 interface ToolExecLimits {
@@ -25,6 +26,8 @@ interface ToolRunResult {
   value: unknown
   /** The same outcome as text, for a remote tool-result. */
   content: string
+  /** Images the tool returned for the model (remote only; never sent to the UI). */
+  images?: LlmImagePart[]
   /** Set when a loop guard tripped: a message that should end the turn. */
   halt?: string
 }

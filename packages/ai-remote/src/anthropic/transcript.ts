@@ -1,14 +1,23 @@
 import type {
   BetaContentBlockParam,
+  BetaImageBlockParam,
   BetaMessageParam,
   BetaToolResultBlockParam,
 } from '@anthropic-ai/sdk/resources/beta/messages/messages'
-import type { LlmToolResult, LlmTurnItem } from '@jex/ai-contract'
+import type { LlmImagePart, LlmToolResult, LlmTurnItem } from '@jex/ai-contract'
 
+const toImageBlock = (img: LlmImagePart): BetaImageBlockParam => ({
+  type: 'image',
+  source: { type: 'base64', media_type: img.mime, data: img.base64 },
+})
+
+// A result with images becomes text + image blocks inside the tool_result.
 const toResultBlock = (r: LlmToolResult): BetaToolResultBlockParam => ({
   type: 'tool_result',
   tool_use_id: r.callId,
-  content: r.content,
+  content: r.images?.length
+    ? [{ type: 'text', text: r.content }, ...r.images.map(toImageBlock)]
+    : r.content,
   is_error: !r.ok,
 })
 
