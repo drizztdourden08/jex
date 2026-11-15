@@ -28,6 +28,9 @@ interface HostWishlist {
   createGroup: (name: string, filterSpec?: FilterSpec | null, manualAppids?: number[]) => WishlistGroup
   updateGroup: (id: number, patch: WishlistGroupPatch) => WishlistGroup | null
   deleteGroup: (id: number) => void
+  reorderGroups: (ids: number[]) => void
+  /** Add a game to the user's Steam wishlist (logged-in Store session). */
+  addToSteam: (appid: number) => Promise<{ ok: boolean; needsLogin?: boolean; error?: string }>
 }
 
 // Library scan/sync orchestration (throttled enrichment lives behind these).

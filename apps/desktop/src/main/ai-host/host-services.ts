@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import type { HostServices } from '@jex/ai-contract'
 import { getAllGames, getGame, getStats } from '../db/games'
 import { getMeta, setMeta } from '../db/database'
-import { createGroup, listGroups, getGroup, updateGroup, deleteGroup } from '../db/wishlist'
+import { createWishlistHost } from './wishlist-host'
 import { runFullSync, runWishlistSync, cancelEnrich, getSyncState } from '../library/sync'
 import { detectSteam } from '../steam/detect'
 import { searchCatalog } from '../steam/search'
@@ -22,7 +22,7 @@ const PLUGIN_WRITABLE_SECRETS: ReadonlySet<string> = new Set(['steamApiKey'])
 
 const createHostServices = (): HostServices => ({
   db: { getAllGames, getGame, getStats, getMeta, setMeta },
-  wishlist: { listGroups, getGroup, createGroup, updateGroup, deleteGroup },
+  wishlist: createWishlistHost(),
   library: { runFullSync, runWishlistSync, cancelEnrich, getSyncState },
   steam: { detectSteam, searchCatalog },
   settings: {

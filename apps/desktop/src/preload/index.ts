@@ -93,6 +93,12 @@ const api = {
       delete: (id: number): Promise<void> => ipcRenderer.invoke('wishlist:groups:delete', id),
       reorder: (ids: number[]): Promise<void> =>
         ipcRenderer.invoke('wishlist:groups:reorder', ids),
+      /** Fires when groups change outside the renderer (e.g. the AI edits them). */
+      onChanged: (cb: () => void): (() => void) => {
+        const listener = () => cb()
+        ipcRenderer.on('wishlist:groupsChanged', listener)
+        return () => ipcRenderer.removeListener('wishlist:groupsChanged', listener)
+      },
     },
   },
   app: {
