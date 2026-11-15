@@ -9,3 +9,5 @@ export type {
   RemoteKeyCheck,
   RemoteSetKeyResult,
 } from './types'
+export { priceFor, estimateCostUsd } from './pricing'
+export type { ModelPrice } from './pricing'

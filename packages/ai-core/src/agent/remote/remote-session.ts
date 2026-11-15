@@ -13,6 +13,8 @@ interface RemoteSession {
   tools: LlmToolSpec[]
   transcript: LlmTurnItem[]
   lastUsage: LlmUsage | null
+  /** Sum of every step's usage in this chat. */
+  totalUsage: LlmUsage
   contextSize: number | null
 }
 
@@ -29,6 +31,7 @@ const ensureRemoteSession = (modelRef: string): RemoteSession => {
     tools: buildToolSpecs(),
     transcript: [],
     lastUsage: null,
+    totalUsage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
     contextSize: null,
   }
   return current

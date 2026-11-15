@@ -1,32 +1,37 @@
+import { useCallback, useRef, useState } from 'react'
 import { Box } from '@ds/primitives/layout/Box'
-import { fmtTokens } from '../../ChatFooter.constants'
+import { ProgressRing } from '@ds/primitives/feedback/ProgressRing'
+import { Popover } from '@ds/primitives/overlay/Popover'
+import { ContextDetails } from './sub-components/ContextDetails'
+import type { ContextMeterProps } from './ContextMeter.type'
 
-type ContextMeterProps = {
-  used: number
-  /** Null/0 when the provider does not report a window (some remote models). */
-  size: number | null
-}
-
-// Context usage. With an unknown window only the used tokens show; never divide by it.
-const ContextMeter = ({ used, size }: ContextMeterProps) => {
-  if (size == null || size <= 0) {
-    return (
-      <Box as="span" className="chat-ctx-meter" title={`${used} tokens used`}>
-        <Box as="span" className="muted">
-          {fmtTokens(used)} tokens
-        </Box>
-      </Box>
-    )
-  }
+// A small always-visible ring for context usage; clicking it opens the numbers. With an
+// unknown window (0/null) only the empty track shows. Opens upward near the window bottom.
+const ContextMeter = ({ ctx }: ContextMeterProps) => {
+  const anchorRef = useRef<HTMLButtonElement>(null)
+  const [open, setOpen] = useState(false)
+  const close = useCallback(() => setOpen(false), [])
+  const toggle = useCallback(() => setOpen((o) => !o), [])
+  const size = ctx?.contextSize ?? 0
+  const frac = ctx && size > 0 ? ctx.usedTokens / size : 0
   return (
-    <Box as="span" className="chat-ctx-meter" title={`${used} / ${size} tokens used`}>
-      <Box as="span" className="chat-ctx-bar">
-        <Box as="span" style={{ width: `${Math.min(100, Math.round((used / size) * 100))}%` }} />
+    <>
+      <Box
+        as="button"
+        type="button"
+        ref={anchorRef}
+        className="chat-ctx-ring"
+        onClick={toggle}
+        title="Context usage"
+        aria-label="Context usage"
+        aria-expanded={open}
+      >
+        <ProgressRing value={frac} size={16} />
       </Box>
-      <Box as="span" className="muted">
-        {fmtTokens(used)}/{fmtTokens(size)}
-      </Box>
-    </Box>
+      <Popover open={open} anchorRef={anchorRef} placement="auto" align="end" onClose={close} className="chat-ctx-pop" role="dialog">
+        <ContextDetails ctx={ctx} />
+      </Popover>
+    </>
   )
 }
 

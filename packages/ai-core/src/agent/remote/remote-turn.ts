@@ -78,6 +78,12 @@ const runRemoteTurn = async (
       const { step } = out
       s.transcript.push(step.assistant)
       s.lastUsage = step.usage
+      s.totalUsage = {
+        inputTokens: s.totalUsage.inputTokens + step.usage.inputTokens,
+        outputTokens: s.totalUsage.outputTokens + step.usage.outputTokens,
+        cacheReadTokens: s.totalUsage.cacheReadTokens + step.usage.cacheReadTokens,
+        cacheWriteTokens: s.totalUsage.cacheWriteTokens + step.usage.cacheWriteTokens,
+      }
       s.contextSize = step.contextSize
       if (step.stop === 'pause') {
         pauses += 1

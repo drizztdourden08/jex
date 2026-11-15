@@ -231,14 +231,26 @@
 .chat-copy + .chat-newchat { margin-left: 6px; }
 
 /* ── Chat footer: one quiet row of plain-text pickers + the context meter ──── */
-.chat-foot { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 6px; }
-.chat-ctx-meter { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-left: 6px; }
+.chat-foot { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
+.chat-foot-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 
-.chat-ctx-bar {
-  display: block; width: 70px; height: 6px; border-radius: var(--r-pill);
-  background: var(--glass-1-bg); overflow: hidden;
+.chat-ctx-ring {
+  display: flex; align-items: center; padding: 4px 6px; border: 0; border-radius: var(--r-sm);
+  background: transparent; cursor: pointer; transition: background var(--dur-fast);
 }
-.chat-ctx-bar > span { display: block; height: 100%; background: var(--ai-gradient); transition: width var(--dur-base); }
+.chat-ctx-ring:hover { background: var(--glass-1-bg); }
+
+.chat-ctx-pop {
+  min-width: 240px; max-width: min(360px, 92vw); padding: 10px 12px; font-size: 12px; color: var(--text-1);
+  background: linear-gradient(var(--frost-veil), var(--frost-veil)), var(--glass-2-bg);
+  backdrop-filter: url("#frost-blur") saturate(var(--frost-sat));
+  border: 1px solid var(--hairline-strong); border-radius: var(--r-md);
+}
+.chat-ctx-details { display: flex; flex-direction: column; gap: 6px; }
+.chat-ctx-row { display: flex; justify-content: space-between; gap: 16px; }
+.chat-ctx-key { color: var(--text-3); }
+.chat-ctx-val { font-variant-numeric: tabular-nums; text-align: right; }
+.chat-ctx-empty { color: var(--text-3); }
 
 /* Closed, a picker is just its text (no box, no caret); hover hints it is clickable.
    Open, the standard Select surface takes over with its caret and field header. */
