@@ -17,6 +17,7 @@ const storePages: Skill = {
     '- read_store_page with NO args = an overview (text, headings, actions).',
     "- read_store_page WITH a query (selector/containsText/tag/attribute) = matching ELEMENTS as HTML + live attributes — including form state like a checkbox's `checked` or a `<select>` value that plain text hides.",
     '- Read the OVERVIEW first, then a TARGETED query. Results paginate — request the next page if told more exist. scroll_store_page({text}) brings something into view.',
+    '- screenshot_store_page shows you the visible viewport as an image (vision-capable models only; store page must be open). Prefer read_store_page for facts; use the screenshot for layout/visuals.',
     '',
     'BROWSING THE STORE YOURSELF (you drive the embedded browser like a person; the user watches the Store tab):',
     '- Loop: store_page_state (where am I?) → read_store_page overview and/or store_list_links({containsText}) (what can I click?) → store_click / store_type / store_select / store_press_key → store_wait_for if content loads late → read again to confirm. Never click blind: list or read first, and re-read after every action because the page changed.',

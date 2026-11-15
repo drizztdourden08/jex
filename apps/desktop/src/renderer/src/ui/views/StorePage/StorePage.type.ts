@@ -13,6 +13,8 @@ interface SteamWebview extends HTMLElement {
   loadURL(url: string): Promise<void>
   /** Run JS in the guest page and resolve with its (serializable) return value. */
   executeJavaScript(code: string): Promise<unknown>
+  /** Snapshot of the visible viewport (a NativeImage; only toDataURL is used). */
+  capturePage(): Promise<{ toDataURL(): string }>
 }
 
 export type { SteamWebview }
