@@ -11,7 +11,7 @@ import type { FilterSpec } from '@shared/filter'
 import type { SearchQuery, SearchResponse, SearchVocab, StoreRandomResponse } from '@shared/search'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '@shared/wishlist'
 import type { IpcApi } from '@shared/ipc/api'
-import type { LaunchAction, LaunchStatus } from '@shared/launch'
+import type { LaunchAction, LaunchStatus, StopResult } from '@shared/launch'
 import { aiApi } from './ai-api'
 
 /**
@@ -110,6 +110,14 @@ const api = {
       ipcRenderer.on('game:launchStatus', listener)
       return () => ipcRenderer.removeListener('game:launchStatus', listener)
     },
+    running: (): Promise<number[]> => ipcRenderer.invoke('game:running'),
+    onRunningChanged: (cb: (appids: number[]) => void): (() => void) => {
+      const listener = (_e: IpcRendererEvent, ids: number[]) => cb(ids)
+      ipcRenderer.on('game:runningChanged', listener)
+      return () => ipcRenderer.removeListener('game:runningChanged', listener)
+    },
+    watchRunning: (appid: number | null): Promise<void> => ipcRenderer.invoke('game:watchRunning', appid),
+    stop: (appid: number): Promise<StopResult> => ipcRenderer.invoke('game:stop', appid),
   },
   app: {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('app:openExternal', url),

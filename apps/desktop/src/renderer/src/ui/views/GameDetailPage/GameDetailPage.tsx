@@ -24,7 +24,7 @@ const GameDetailPage = () => {
   })
   const { wlBusy, wlMsg, addWishlist } = useWishlistAction({ game, setGame })
   const autoplay = useAutoplaySetting()
-  const { launch, statusOf } = useLaunchStatus()
+  const { launch, stop, statusOf } = useLaunchStatus(id)
 
   if (loading && !game) return <DetailSkeleton back={back} />
   if (!game)
@@ -38,7 +38,7 @@ const GameDetailPage = () => {
     window.api.app.openExternal(url).catch(() => {})
   }
 
-  const { busy: launchBusy, text: launchText } = statusOf(game.appid)
+  const { busy: launchBusy, text: launchText, running } = statusOf(game.appid)
 
   return (
     <Box className="detail">
@@ -64,6 +64,8 @@ const GameDetailPage = () => {
         wlMsg={wlMsg}
         launchBusy={launchBusy}
         launchText={launchText}
+        running={running}
+        onStop={() => stop(game.appid, game.name)}
         onLaunch={(action) => launch(game.appid, action)}
         onOpenInStore={openInStore}
         onAddWishlist={addWishlist}

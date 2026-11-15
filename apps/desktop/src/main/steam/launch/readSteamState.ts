@@ -28,5 +28,8 @@ const readSteamState = async (appid: number): Promise<SteamState> => {
   return { runningAppId, running: running === 1, updating: updating === 1, installed: installed === 1 }
 }
 
-export { readSteamState }
+/** The appid Steam reports as running right now (0 when none). */
+const readRunningAppId = (): Promise<number> => regNumber(STEAM_KEY, 'RunningAppID')
+
+export { readSteamState, readRunningAppId }
 export type { SteamState }

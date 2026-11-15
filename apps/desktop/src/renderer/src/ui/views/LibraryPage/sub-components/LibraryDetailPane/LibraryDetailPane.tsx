@@ -17,6 +17,8 @@ type LibraryDetailPaneProps = {
   onLaunch: (action: LaunchAction) => void
   launchBusy: boolean
   launchText: string
+  running: boolean
+  onStop: () => void
   onOpenInStore: (url: string) => void
 }
 
@@ -27,7 +29,7 @@ const FROM = { from: '/library' }
  * its full detail page shows it (hero backdrop, header with status + actions, then the
  * shared detail body), with a link to that page. Scrolls on its own.
  */
-const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen, onLaunch, launchBusy, launchText, onOpenInStore }: LibraryDetailPaneProps) => {
+const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen, onLaunch, launchBusy, launchText, running, onStop, onOpenInStore }: LibraryDetailPaneProps) => {
   const ref = useRef<HTMLElement>(null)
   const appid = game?.appid
 
@@ -67,6 +69,8 @@ const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onO
           game={game}
           launchBusy={launchBusy}
           launchText={launchText}
+          running={running}
+          onStop={onStop}
           onLaunch={onLaunch}
           onOpenInStore={onOpenInStore}
         />
