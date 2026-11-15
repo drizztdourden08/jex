@@ -4,6 +4,7 @@ import { SearchResultCard } from '@ui/compounds/SearchResultCard'
 import { GameFilters } from '@ui/compounds/GameFilters'
 import { SortControls } from '@ui/compounds/SortControls'
 import { SEARCH_PAGE_SIZE } from '@shared/search'
+import { useFiltersCollapsed } from '@/hooks/useFiltersCollapsed'
 import { BUFFER_PAGES, CATALOG_SORTS } from './SearchPage.constants'
 import { useCatalogSearch } from './behavior/useCatalogSearch'
 import { activeFacetCount } from './behavior/activeFacetCount'
@@ -18,6 +19,7 @@ import { StoreNativeFilters } from './sub-components/StoreNativeFilters'
  * state lives in a store, so opening a result and returning never re-runs anything.
  */
 const SearchPage = () => {
+  const { collapsed, toggle } = useFiltersCollapsed('search')
   const {
     games,
     ownedByAppid,
@@ -66,6 +68,8 @@ const SearchPage = () => {
         setQuery={s.setQuery}
         dirty={false}
         reset={s.reset}
+        collapsed={collapsed}
+        onToggleCollapsed={toggle}
         facets={facets}
         omit={['installed', 'unplayed', 'free']}
         hideScores

@@ -13,7 +13,31 @@
 .filter-body { position: relative; }
 .filter-body.has-overlay { min-height: 96px; }
 .filter-body:empty { display: none; }
-.filter-topbar:has(+ .filter-body:empty) { margin-bottom: 0; }
+.filter-topbar:has(~ .filter-collapse-wrap > .filter-body:empty) { margin-bottom: 0; }
+
+/* Collapse: animate the body's height via a 1fr -> 0fr grid track. */
+.filter-collapse-wrap {
+  display: grid; grid-template-rows: 1fr; opacity: 1;
+  transition: grid-template-rows var(--dur-base) var(--ease-standard), opacity var(--dur-base) var(--ease-standard);
+}
+.filter-collapse-wrap > .filter-body { min-height: 0; }
+.filter-collapse-wrap:has(> .filter-body:empty) { display: none; }
+.filter-collapse-wrap.is-collapsed {
+  grid-template-rows: 0fr; opacity: 0; visibility: hidden;
+  transition: grid-template-rows var(--dur-base) var(--ease-standard), opacity var(--dur-base) var(--ease-standard),
+    visibility 0s linear var(--dur-base);
+}
+.filter-collapse-wrap.is-collapsed > .filter-body { overflow: hidden; }
+
+.filter-collapse { margin-left: auto; flex: none; }
+.filter-header-right + .filter-collapse { margin-left: 0; }
+.filter-collapse svg { transition: transform var(--dur-base) var(--ease-standard); }
+.filter-collapse[aria-expanded='false'] svg { transform: rotate(-90deg); }
+
+.filter-summary {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); width: 100%;
+  justify-content: flex-start; text-align: left; cursor: pointer; color: var(--text-2); font-size: 12px;
+}
 
 /* Sort/clear/count cluster in the filter top bar. */
 .filter-header-right { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2); }

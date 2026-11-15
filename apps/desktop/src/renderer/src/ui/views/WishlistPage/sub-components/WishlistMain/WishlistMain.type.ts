@@ -22,6 +22,8 @@ type WishlistMainProps = {
   flt: FilterState
   groups: WishlistGroup[]
   canSaveFilter: boolean
+  filtersCollapsed: boolean
+  onToggleFilters: () => void
   onSync: () => void | Promise<void>
   onCreateAndEdit: (filterSpec: FilterSpec | null) => void | Promise<void>
   onSaveFilterToGroup: () => void | Promise<void>
