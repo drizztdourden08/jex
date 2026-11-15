@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 import { useStoreNav, type StoreReadQuery, type StoreReadResult, type StoreScrollResult } from '@/store/storeNav'
 import { buildReadScript } from './buildReadScript'
 import { buildStoreActions } from './buildStoreActions'
+import { captureWebview } from './captureWebview'
 import { OVERVIEW_TEXT_CAP, ELEMENT_HTML_CAP, RESULT_TOTAL_CAP } from '../StorePage.constants'
 import type { SteamWebview } from '../StorePage.type'
 
@@ -29,6 +30,7 @@ const useStoreControls = (ref: RefObject<SteamWebview | null>) => {
 
     setControls({
       ...buildStoreActions(wv),
+      capture: (maxSide) => captureWebview(wv, maxSide),
       back: () => wv.canGoBack() && wv.goBack(),
       forward: () => wv.canGoForward() && wv.goForward(),
       reload: () => wv.reload(),

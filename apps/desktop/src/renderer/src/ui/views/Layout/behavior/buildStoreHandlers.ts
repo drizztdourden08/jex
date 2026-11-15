@@ -39,6 +39,14 @@ const buildStoreHandlers = (deps: StoreDeps): Record<string, UiHandler> => ({
     const text = payload.text != null ? String(payload.text) : undefined
     return controls.scrollTo({ to, text })
   },
+  captureStorePage: async (payload) => {
+    const controls = useStoreNav.getState().controls
+    if (!controls) {
+      return { error: 'The store page is not open. Open it first with open_steam_search or open_steam_page, then try again.' }
+    }
+    const maxSide = Math.min(Math.max(Number(payload.maxSide) || 1024, 256), 1024)
+    return controls.capture(maxSide)
+  },
   ...buildStoreBrowseHandlers(deps),
 })
 

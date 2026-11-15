@@ -1,0 +1,35 @@
+import { registerTool } from '../registry'
+import { withImages } from '../media'
+
+/** Longest side sent to the model; images cost tokens. */
+const MAX_SIDE = 1024
+
+type Capture = { base64?: string; mime?: string; url?: string; title?: string; error?: string }
+
+const registerStoreScreenshotTool = (): void => {
+  registerTool({
+    name: 'screenshot_store_page',
+    description:
+      'Take a screenshot of what the embedded Steam store browser currently shows (the visible viewport) so you can LOOK at the page: layout, images, banners, what is on screen. Only works for vision-capable models; otherwise use read_store_page. The store page must already be open (open_steam_search / open_steam_page first).',
+    category: 'store',
+    sensitivity: 'safe',
+    surface: 'ui',
+    params: { type: 'object', properties: {} },
+    run: async (_args, ctx) => {
+      if (!ctx.vision) {
+        return { canView: false, note: "This local model can't view images; use read_store_page instead." }
+      }
+      const shot = (await ctx.ui('captureStorePage', { maxSide: MAX_SIDE })) as Capture
+      if (shot.error || !shot.base64) {
+        return { error: shot.error ?? 'Could not capture the store page.' }
+      }
+      const note = 'Attached: a screenshot of the visible part of the store page. Use scroll_store_page to see other parts.'
+      return withImages(
+        { url: shot.url, title: shot.title, note },
+        [{ mime: shot.mime ?? 'image/jpeg', base64: shot.base64 }],
+      )
+    },
+  })
+}
+
+export { registerStoreScreenshotTool }

@@ -86,7 +86,18 @@ interface StoreNavControls {
   /** Run a guarded click/type/select/key/links op in the guest, then wait for any resulting navigation. */
   act: (op: StoreActOp, args: Record<string, unknown>) => Promise<StoreActResult>
   /** Wait (capped ~10 s) until text or a selector appears on the page. */
+  /** Screenshot the visible viewport as a downscaled JPEG (AI screenshot_store_page tool). */
+  capture: (maxSide: number) => Promise<StoreCaptureResult>
   waitFor: (opts: { text?: string; selector?: string; timeoutMs?: number }) => Promise<StoreActResult>
+}
+
+/** A viewport screenshot (base64 JPEG) or an error. */
+interface StoreCaptureResult {
+  base64?: string
+  mime?: string
+  url?: string
+  title?: string
+  error?: string
 }
 
 interface StoreNavState {
@@ -121,6 +132,7 @@ export type {
   StoreElement,
   StoreReadResult,
   StoreScrollResult,
+  StoreCaptureResult,
   StoreNavControls,
   StoreActOp,
   StoreActResult,
