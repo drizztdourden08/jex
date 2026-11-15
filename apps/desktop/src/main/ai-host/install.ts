@@ -12,6 +12,7 @@ import { verifyPluginZip } from './verify'
 import { loadPluginFrom } from './loader'
 import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { clearStale, setLoadedId } from './engine-state'
+import { writeRecord } from './installed-record'
 
 const installOne = async (
   id: string,
@@ -35,6 +36,7 @@ const installOne = async (
   rmSync(dest, { recursive: true, force: true })
   mkdirSync(dest, { recursive: true })
   await extract(zipPath, { dir: dest })
+  writeRecord({ id, sha256: entry.sha256 })
 }
 
 // An add-on (CUDA) ships its own node_modules; merge its @node-llama-cpp backend(s)
