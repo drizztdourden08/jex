@@ -12,6 +12,10 @@ const badUrl = (u) => {
   if (h === 'help.steampowered.com' && /\/wizard\//.test(p)) return true;
   if (/paypal|stripe|adyen|paysafe|klarna|alipay|braintree/.test(h)) return true;
   if (/(^|\.)(steampowered|steamcommunity)\.com$/.test(h)) {
+    /* Preference pages (content filters, tags, notifications) and their save endpoints are
+       settings the user may ask to change; the rest of /account stays blocked. */
+    if (/^\/account\/(preferences|notificationsettings|languagepreferences|cookiepreferences)(\/|$)/.test(p)) return false;
+    if (/^\/account\/(save|set|ajax)\w*(pref|notification|descriptor|language|tag|content)\w*\/?$/.test(p)) return false;
     if (/^\/(cart|checkout|account|login|buy|steamaccount|payment|addfunds|giftcard|gifts?)(\/|$)/.test(p)) return true;
     if (/^\/openid\/login/.test(p) || /\/(checkout|purchase)\//.test(p)) return true;
   }

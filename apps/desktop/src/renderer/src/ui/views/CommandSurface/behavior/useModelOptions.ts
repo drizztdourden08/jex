@@ -18,6 +18,7 @@ const useModelOptions = () => {
   const [keys, setKeys] = useState<RemoteKeyStatus | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const [epoch, setEpoch] = useState(0)
 
   const refresh = useCallback(async () => {
     const [models, st, remoteModels, addedRefs, keyStatus] = await Promise.all([
@@ -60,7 +61,12 @@ const useModelOptions = () => {
   }, [activeId, installed, installedRemote])
 
   const fallbackId = useMemo(() => pickUsableModel(installed, installedRemote), [installed, installedRemote])
-  useAutoActivateModel({ loaded, hasActive: activeModel != null, fallbackId, switchModel })
+  useAutoActivateModel({ loaded, hasActive: activeModel != null, fallbackId, switchModel, epoch })
+  // Called when the assistant opens: re-read everything and allow one more auto-activation.
+  const reopen = useCallback(async () => {
+    setEpoch((e) => e + 1)
+    await refresh()
+  }, [refresh])
 
   const modelGroups = useMemo<SelectGroup[]>(() => {
     const groups: SelectGroup[] = []
@@ -82,7 +88,7 @@ const useModelOptions = () => {
     return groups
   }, [installedRemote, installed])
 
-  return { activeModel, modelGroups, ready: activeModel != null || fallbackId != null, refresh, switchModel }
+  return { activeModel, modelGroups, ready: activeModel != null || fallbackId != null, refresh: reopen, switchModel }
 }
 
 export { useModelOptions }

@@ -4,7 +4,7 @@ import { Select } from '@ds/primitives/form/Select'
 import type { SelectGroup } from '@ds/primitives/form/Select'
 import { Box } from '@ds/primitives/layout/Box'
 import { ContextMeter } from './sub-components/ContextMeter'
-import { PERM_OPTIONS, CTX_OPTIONS, EFFORT_OPTIONS } from './ChatFooter.constants'
+import { PERM_GROUPS, CTX_GROUPS, EFFORT_GROUPS } from './ChatFooter.constants'
 
 type ChatFooterProps = {
   permMode: PermissionMode
@@ -21,11 +21,14 @@ type ChatFooterProps = {
   changeContextLevel: (level: ContextLevel) => void
 }
 
+// One quiet row of plain-text pickers (model · effort or context · permissions · meter):
+// each reads as text and only becomes a dropdown when clicked. The open menu's header
+// names the field. The model picker shows whenever any model exists, even when none
+// is active yet, so the user can always choose one.
 const ChatFooter = ({
   permMode,
   changePermMode,
   ctx,
-  ready,
   modelGroups,
   activeModel,
   switchModel,
@@ -36,55 +39,50 @@ const ChatFooter = ({
   changeContextLevel,
 }: ChatFooterProps) => (
   <Box className="chat-foot">
+    {modelGroups.length > 0 && (
+      <Select
+        value={activeModel?.value ?? ''}
+        groups={modelGroups}
+        placeholder="Choose a model"
+        onChange={(id) => void switchModel(id)}
+        disabled={busy}
+        title="Model for this chat"
+        triggerBare
+        triggerClass="chat-pick chat-pick--model"
+      />
+    )}
+    {activeModel?.remote && (
+      <Select
+        value={effort}
+        groups={EFFORT_GROUPS}
+        onChange={(e) => void changeEffort(e)}
+        disabled={busy}
+        title="Reasoning effort for this chat (higher = more thinking, slower and costlier)"
+        triggerBare
+        triggerClass="chat-pick chat-pick--dim"
+      />
+    )}
+    {/* Context size sizes the local llama context only; a cloud model's window is fixed. */}
+    {activeModel && !activeModel.remote && (
+      <Select
+        value={ctxLevel}
+        groups={CTX_GROUPS}
+        onChange={(l) => void changeContextLevel(l)}
+        disabled={busy}
+        title="Context size for this session (larger = more memory + history, slower; clears the chat)"
+        triggerBare
+        triggerClass="chat-pick chat-pick--dim"
+      />
+    )}
     <Select
       value={permMode}
-      options={PERM_OPTIONS}
+      groups={PERM_GROUPS}
       onChange={(m) => void changePermMode(m)}
-      triggerClass="perm-tag"
-      variant="ghost"
-      placement="top"
       title="Tool permissions for THIS chat (doesn't change your saved settings). Normal = saved rules · Ask = confirm everything · Allow all = no prompts."
+      triggerBare
+      triggerClass={`chat-pick perm-${permMode}`}
     />
-    <Box className="chat-foot-right">
-      {ctx && <ContextMeter used={ctx.usedTokens} size={ctx.contextSize} />}
-      {ready && activeModel && modelGroups.length > 0 && (
-        <Select
-          value={activeModel.value}
-          groups={modelGroups}
-          onChange={(id) => void switchModel(id)}
-          disabled={busy}
-          title="Model used for this chat"
-          variant="ghost"
-          placement="top"
-          align="end"
-        />
-      )}
-      {ready && activeModel?.remote && (
-        <Select
-          value={effort}
-          options={EFFORT_OPTIONS}
-          onChange={(e) => void changeEffort(e)}
-          disabled={busy}
-          title="Reasoning effort for this chat (higher = more thinking, slower and costlier)"
-          variant="ghost"
-          placement="top"
-          align="end"
-        />
-      )}
-      {/* Context size sizes the local llama context only; a cloud model's window is fixed. */}
-      {!activeModel?.remote && (
-        <Select
-          value={ctxLevel}
-          options={CTX_OPTIONS}
-          onChange={(l) => void changeContextLevel(l)}
-          disabled={busy}
-          title="Context window size for this session (larger = more memory + history, slower; clears the chat)"
-          variant="ghost"
-          placement="top"
-          align="end"
-        />
-      )}
-    </Box>
+    {ctx && <ContextMeter used={ctx.usedTokens} size={ctx.contextSize} />}
   </Box>
 )
 

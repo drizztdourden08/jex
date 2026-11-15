@@ -230,13 +230,9 @@
 .cmd-topbar .chat-copy { margin-left: auto; }
 .chat-copy + .chat-newchat { margin-left: 6px; }
 
-/* ── Chat footer: per-session controls (ghost dropdowns) + context meter ───── */
-.chat-foot {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hairline);
-}
-.chat-foot-right { display: flex; align-items: center; gap: 8px; }
-.chat-ctx-meter { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+/* ── Chat footer: one quiet row of plain-text pickers + the context meter ──── */
+.chat-foot { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 6px; }
+.chat-ctx-meter { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-left: 6px; }
 
 .chat-ctx-bar {
   display: block; width: 70px; height: 6px; border-radius: var(--r-pill);
@@ -244,11 +240,22 @@
 }
 .chat-ctx-bar > span { display: block; height: 100%; background: var(--ai-gradient); transition: width var(--dur-base); }
 
-/* Permission as a colored tag: Normal (neutral) · Ask (green) · Allow all (yellow). */
-.ghost-btn.perm-tag { border-radius: var(--r-pill); font-weight: 600; }
-.ghost-btn.perm-normal { color: var(--text-2); border-color: var(--hairline); background: var(--glass-1-bg); }
-.ghost-btn.perm-ask { color: var(--success); border-color: color-mix(in srgb, var(--success) 50%, transparent); background: color-mix(in srgb, var(--success) 12%, transparent); }
-.ghost-btn.perm-allow { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 50%, transparent); background: color-mix(in srgb, var(--warning) 12%, transparent); }
+/* Closed, a picker is just its text (no box, no caret); hover hints it is clickable.
+   Open, the standard Select surface takes over with its caret and field header. */
+.ds-select-trigger.chat-pick {
+  padding: 3px 7px; border-radius: var(--r-sm); font-size: 13px; color: var(--text-1);
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.ds-select-trigger.chat-pick:hover:not(:disabled) { background: var(--glass-1-bg); }
+.chat-pick .ds-select-chevron { display: none; }
+.ds-select-trigger.chat-pick--model { font-weight: 600; }
+.ds-select-trigger.chat-pick--dim { color: var(--text-3); }
+.ds-select-trigger.chat-pick--dim:hover:not(:disabled) { color: var(--text-2); }
+
+/* Permission colors its text only: Normal (neutral) · Ask (green) · Allow all (yellow). */
+.ds-select-trigger.perm-default { color: var(--text-2); }
+.ds-select-trigger.perm-ask { color: var(--success); }
+.ds-select-trigger.perm-allow { color: var(--warning); }
 
 .confirm-card {
   margin-top: 10px; padding: 10px; border-radius: var(--r-md);
