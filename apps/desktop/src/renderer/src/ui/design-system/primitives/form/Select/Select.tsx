@@ -79,7 +79,7 @@ const Select = <T extends string>({
         <Portal>
           <Box
             ref={x.surfaceRef}
-            className={['ds-select-surface', x.expanded && 'is-open', x.grown && 'is-grown'].filter(Boolean).join(' ')}
+            className={['ds-select-surface', x.expanded && 'is-open', x.grown && 'is-grown', x.up && 'is-up'].filter(Boolean).join(' ')}
             style={x.style ?? undefined}
           >
             <button type="button" className={`ds-select-trigger ds-select-trigger--${size}`} onClick={d.toggle}>

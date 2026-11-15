@@ -5,6 +5,8 @@ const OPEN_DUR = 380 // --dur-drawer
 const CLOSE_DUR = 180 // --dur-base (close is quicker)
 const MARGIN = 8
 const TITLEBAR = 40
+/** Open upward when less than this fits below the trigger and more room is above. */
+const UP_MIN = 220
 
 type Rect = { top: number; left: number; width: number; height: number }
 
@@ -94,6 +96,13 @@ const useExpand = (open: boolean, onClose: () => void) => {
     }
   }, [mounted])
 
+  const up = useMemo(() => {
+    if (!rect) return false
+    const below = window.innerHeight - MARGIN - rect.top - rect.height
+    const above = rect.top - TITLEBAR - MARGIN
+    return below < UP_MIN && above > below
+  }, [rect])
+
   const style = useMemo<CSSProperties | null>(() => {
     if (!rect) return null
     const centerX = rect.left + rect.width / 2
@@ -102,10 +111,15 @@ const useExpand = (open: boolean, onClose: () => void) => {
     let corr = 0
     if (centerX - half < MARGIN) corr = MARGIN - (centerX - half)
     else if (centerX + half > window.innerWidth - MARGIN) corr = window.innerWidth - MARGIN - (centerX + half)
-    const maxBody = Math.max(80, Math.round(window.innerHeight - MARGIN - rect.top - rect.height))
+    const below = window.innerHeight - MARGIN - rect.top - rect.height
+    const above = rect.top - TITLEBAR - MARGIN
+    const maxBody = Math.max(80, Math.round(up ? above : below))
     return {
       position: 'fixed',
-      top: Math.round(Math.max(TITLEBAR, rect.top)),
+      // Opening up: pin the surface's bottom to the trigger's bottom so it grows upward.
+      ...(up
+        ? { bottom: Math.round(window.innerHeight - rect.top - rect.height) }
+        : { top: Math.round(Math.max(TITLEBAR, rect.top)) }),
       left: Math.round(centerX),
       transform: `translateX(-50%) translateX(${Math.round(corr)}px)`,
       // max-content while open (animated via interpolate-size), trigger width while closed.
@@ -114,9 +128,9 @@ const useExpand = (open: boolean, onClose: () => void) => {
       zIndex: zRef.current,
       ['--ds-maxh' as string]: `${maxBody}px`,
     }
-  }, [rect, openWidth, expanded])
+  }, [rect, openWidth, expanded, up])
 
-  return { triggerRef, surfaceRef, mounted, expanded, grown, style }
+  return { triggerRef, surfaceRef, mounted, expanded, grown, up, style }
 }
 
 export { useExpand }

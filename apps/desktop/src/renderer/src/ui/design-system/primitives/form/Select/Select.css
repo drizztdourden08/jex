@@ -67,6 +67,12 @@
    this the open head adds a second border, pushing its content 1px further in than idle. */
 .ds-select-surface > .ds-select-trigger { border-width: 0; }
 
+/* Near the bottom of the window the surface opens UPWARD: the options row sits above the
+   head and grows from 0fr, while useExpand pins the surface's bottom to the trigger. */
+.ds-select-surface.is-up { grid-template-rows: 0fr auto; align-content: end; }
+.ds-select-surface.is-up.is-open { grid-template-rows: 1fr auto; }
+.ds-select-surface.is-up > .ds-select-grow { order: -1; }
+
 @media (prefers-reduced-motion: reduce) { .ds-select-surface { transition: none; } }
 
 /* Body — the expanding grid row, clipped to the track during the grow. */
