@@ -12,7 +12,7 @@ const GRACE_MS: Record<StoreActOp, number> = { click: 800, type: 900, select: 50
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-const snapshot = (wv: SteamWebview, extra: Record<string, unknown> = {}): StoreActResult => ({
+const snapshot = (wv: SteamWebview, extra: object = {}): StoreActResult => ({
   url: wv.getURL(),
   title: wv.getTitle(),
   ...extra,
