@@ -128,6 +128,8 @@ const LibraryPage = () => {
             onLaunch={detail.launchSelected}
             launchBusy={detail.launchBusy}
             launchText={detail.launchText}
+            running={detail.running}
+            onStop={detail.stopSelected}
             onOpenInStore={detail.openInStore}
           />
         </Box>

@@ -33,7 +33,7 @@ import type {
 import type { FilterSpec } from '../filter'
 import type { SearchQuery, SearchResponse, SearchVocab, StoreRandomResponse } from '../search'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '../wishlist'
-import type { LaunchAction, LaunchStatus } from '../launch'
+import type { LaunchAction, LaunchStatus, StopResult } from '../launch'
 
 /**
  * The single source of truth for the renderer↔main bridge surface. Both ends derive
@@ -101,6 +101,12 @@ interface IpcApi {
   game: {
     launch: (appid: number, action: LaunchAction) => Promise<void>
     onLaunchStatus: (cb: (s: LaunchStatus) => void) => () => void
+    /** Appids Steam (or the fallback process check) says are running right now. */
+    running: () => Promise<number[]>
+    onRunningChanged: (cb: (appids: number[]) => void) => () => void
+    /** Ask main to also process-check this one game's install folder (null stops). */
+    watchRunning: (appid: number | null) => Promise<void>
+    stop: (appid: number) => Promise<StopResult>
   }
   app: {
     openExternal: (url: string) => Promise<void>

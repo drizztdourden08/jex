@@ -17,6 +17,8 @@ const GameDetailHeader = ({
   wlMsg = null,
   launchBusy = false,
   launchText = '',
+  running = false,
+  onStop,
   onLaunch,
   onOpenInStore,
   onAddWishlist,
@@ -33,7 +35,12 @@ const GameDetailHeader = ({
         </Box>
       </Box>
       <Box className="row detail-actions">
-        {game.installed && (
+        {running && onStop && (
+          <Button variant="danger" onClick={onStop}>
+            ■ Stop
+          </Button>
+        )}
+        {game.installed && !(running && onStop) && (
           <Button busy={launchBusy} onClick={() => onLaunch('run')}>
             ▶ Launch
           </Button>

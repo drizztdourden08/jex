@@ -24,9 +24,10 @@ const useLibraryDetail = (selected: Game | null) => {
   })
   const autoplay = useAutoplaySetting()
   const openInStore = useOpenInStore()
-  const { launch, statusOf } = useLaunchStatus()
   const appid = selected?.appid ?? 0
-  const { busy: launchBusy, text: launchText } = statusOf(appid)
+  const { launch, stop, statusOf } = useLaunchStatus(appid)
+  const { busy: launchBusy, text: launchText, running } = statusOf(appid)
+  const stopSelected = useCallback(() => stop(appid, selected?.name ?? 'this game'), [stop, appid, selected?.name])
   const launchSelected = useCallback((action: LaunchAction) => launch(appid, action), [launch, appid])
   const open = useCallback((url: string) => {
     window.api.app.openExternal(url).catch(() => {})
@@ -46,6 +47,8 @@ const useLibraryDetail = (selected: Game | null) => {
     openInStore,
     launchBusy,
     launchText,
+    running,
+    stopSelected,
     launchSelected,
   }
 }

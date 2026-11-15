@@ -24,5 +24,8 @@ const FINAL_PHASES: readonly LaunchPhase[] = ['running', 'done', 'timeout', 'err
 /** True once the watcher has stopped (no further updates for this click). */
 const isFinalPhase = (phase: LaunchPhase): boolean => FINAL_PHASES.includes(phase)
 
+/** Outcome of `game:stop`: processes ended, or why none were. */
+type StopResult = { stopped: number; error?: string }
+
 export { isFinalPhase }
-export type { LaunchAction, LaunchPhase, LaunchStatus }
+export type { LaunchAction, LaunchPhase, LaunchStatus, StopResult }
