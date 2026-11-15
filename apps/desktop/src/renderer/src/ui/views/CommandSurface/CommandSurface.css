@@ -234,6 +234,8 @@
 .chat-foot { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
 .chat-foot-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 
+.chat-ctx-anchor { display: inline-flex; }
+
 .chat-ctx-ring {
   display: flex; align-items: center; padding: 4px 6px; border: 0; border-radius: var(--r-sm);
   background: transparent; cursor: pointer; transition: background var(--dur-fast);

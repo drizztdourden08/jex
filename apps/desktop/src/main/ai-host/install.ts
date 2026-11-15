@@ -13,6 +13,7 @@ import { loadPluginFrom } from './loader'
 import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { clearStale, setLoadedId } from './engine-state'
 import { writeRecord } from './installed-record'
+import { logAi } from './ai-log'
 
 const installOne = async (
   id: string,
