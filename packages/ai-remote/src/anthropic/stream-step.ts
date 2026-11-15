@@ -21,7 +21,13 @@ const forwardDelta = (ctx: StepCtx, ev: BetaRawMessageStreamEvent): void => {
 const isJsonParseError = (e: unknown): boolean =>
   e instanceof AnthropicError && !(e instanceof APIError) && /parse tool parameter JSON/i.test(e.message)
 
-const isTooComplex = (e: unknown): boolean => e instanceof BadRequestError && /too complex/i.test(e.message)
+// Anthropic words this "schema too complex" or "compiled grammar is too large".
+const isTooComplex = (e: unknown): boolean =>
+  e instanceof BadRequestError && /too complex|too large|grammar|strict tools/i.test(e.message)
+
+// Once a tool set is refused in strict mode, later steps of this run skip strict
+// instead of paying for the same 400 again.
+let strictRefused = false
 
 // One model step. Never throws. Retries are bounded: a cut-off tool call raises the
 // output budget once, bad tool JSON retries up to MAX_JSON_RETRIES, and a "too
@@ -29,7 +35,7 @@ const isTooComplex = (e: unknown): boolean => e instanceof BadRequestError && /t
 const streamStep = async (ctx: StepCtx, caps: ModelCaps): Promise<LlmStepOutcome> => {
   const client = getClient(ctx.key)
   const messages = toBetaMessages(ctx.req.transcript)
-  let strict: ReadonlySet<string> = planStrict(ctx.req.tools)
+  let strict: ReadonlySet<string> = strictRefused ? new Set() : planStrict(ctx.req.tools)
   let maxTokens = Math.min(caps.maxOutput, DEFAULT_MAX_TOKENS)
   let jsonRetries = 0
   for (;;) {
@@ -53,6 +59,7 @@ const streamStep = async (ctx: StepCtx, caps: ModelCaps): Promise<LlmStepOutcome
       }
       if (!ctx.signal.aborted && strict.size > 0 && isTooComplex(e)) {
         strict = new Set()
+        strictRefused = true
         continue
       }
       return { ok: false, failure: toFailure(e, ctx) }
