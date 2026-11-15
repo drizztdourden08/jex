@@ -8,6 +8,7 @@ import { registerAiHostHandlers } from './ai-host-handlers'
 import { registerAiRemoteHandlers } from './ai-remote-handlers'
 import { registerSearchHandlers } from './search-handlers'
 import { registerMiscHandlers } from './misc-handlers'
+import { registerGameHandlers } from './game-handlers'
 
 /**
  * Register every IPC channel, grouped per domain. Each `register*Handlers()` owns
@@ -25,6 +26,7 @@ const registerIpc = (): void => {
   registerAiRemoteHandlers()
   registerSearchHandlers()
   registerMiscHandlers()
+  registerGameHandlers()
 }
 
 export { registerIpc }

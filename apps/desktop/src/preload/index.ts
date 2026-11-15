@@ -11,6 +11,7 @@ import type { FilterSpec } from '@shared/filter'
 import type { SearchQuery, SearchResponse, SearchVocab, StoreRandomResponse } from '@shared/search'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '@shared/wishlist'
 import type { IpcApi } from '@shared/ipc/api'
+import type { LaunchAction, LaunchStatus } from '@shared/launch'
 import { aiApi } from './ai-api'
 
 /**
@@ -99,6 +100,15 @@ const api = {
         ipcRenderer.on('wishlist:groupsChanged', listener)
         return () => ipcRenderer.removeListener('wishlist:groupsChanged', listener)
       },
+    },
+  },
+  game: {
+    launch: (appid: number, action: LaunchAction): Promise<void> =>
+      ipcRenderer.invoke('game:launch', appid, action),
+    onLaunchStatus: (cb: (s: LaunchStatus) => void): (() => void) => {
+      const listener = (_e: IpcRendererEvent, s: LaunchStatus) => cb(s)
+      ipcRenderer.on('game:launchStatus', listener)
+      return () => ipcRenderer.removeListener('game:launchStatus', listener)
     },
   },
   app: {

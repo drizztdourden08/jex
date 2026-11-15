@@ -32,6 +32,7 @@ import type {
 import type { FilterSpec } from '../filter'
 import type { SearchQuery, SearchResponse, SearchVocab, StoreRandomResponse } from '../search'
 import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '../wishlist'
+import type { LaunchAction, LaunchStatus } from '../launch'
 
 /**
  * The single source of truth for the renderer↔main bridge surface. Both ends derive
@@ -95,6 +96,10 @@ interface IpcApi {
       reorder: (ids: number[]) => Promise<void>
       onChanged: (cb: () => void) => () => void
     }
+  }
+  game: {
+    launch: (appid: number, action: LaunchAction) => Promise<void>
+    onLaunchStatus: (cb: (s: LaunchStatus) => void) => () => void
   }
   app: {
     openExternal: (url: string) => Promise<void>
