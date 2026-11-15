@@ -39,7 +39,7 @@ const EngineGroup = ({
   const rows: TableRow[] = plugins.map((p) => ({
     id: p.id,
     cells: {
-      check: p.installed ? (
+      check: p.installed && !p.updateAvailable ? (
         <Text as="span" weight="bold" style={{ color: 'var(--installed)' }} title="Installed">
           ✓
         </Text>
@@ -57,7 +57,7 @@ const EngineGroup = ({
         </Text>
       ),
       packages: <Text tone="muted">{p.packages}</Text>,
-      size: <Text tone="muted">{p.installed ? 'Installed' : fmtSize(p.sizeBytes)}</Text>,
+      size: <Text tone="muted">{p.updateAvailable ? `Update available (${fmtSize(p.sizeBytes)})` : p.installed ? 'Installed' : fmtSize(p.sizeBytes)}</Text>,
       notes: <Text tone="muted">{p.notes}</Text>,
     },
   }))

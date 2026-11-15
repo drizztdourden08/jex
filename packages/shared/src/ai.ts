@@ -85,6 +85,8 @@ interface EnginePluginInfo {
   /** A prerequisite the user installs themselves (e.g. the CUDA Toolkit) — no checkbox,
    *  not downloaded by us. */
   manual?: boolean
+  /** Installed, but the published plugin differs (the CUDA add-on is never auto-updated). */
+  updateAvailable?: boolean
 }
 
 /** CUDA acceleration availability for the AI model picker. */

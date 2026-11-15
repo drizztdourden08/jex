@@ -10,6 +10,7 @@ import { getLoadedId, isStale } from './engine-state'
 import { getMainWindow } from '../window/window-ref'
 import { installEngine as runInstall } from './install'
 import { isInstalled, fetchManifest } from './source'
+import { isOutdated } from './installed-record'
 import { cpus, totalmem, version } from 'node:os'
 import { basePluginId, cudaPluginId } from './resolve'
 import { enginePlugins as catalogPlugins, isInstallablePlugin, isManualId } from './catalog'
@@ -57,7 +58,11 @@ const enginePlugins = async (): Promise<EnginePluginInfo[]> => {
   try {
     const manifest = await fetchManifest()
     const sizes = new Map(manifest.plugins.map((p) => [p.id, p.size]))
-    return rows.map((r) => ({ ...r, sizeBytes: r.manual ? null : sizes.get(r.id) ?? null }))
+    return rows.map((r) => ({
+      ...r,
+      sizeBytes: r.manual ? null : sizes.get(r.id) ?? null,
+      updateAvailable: !r.manual && r.installed && isOutdated(r.id, manifest),
+    }))
   } catch {
     return rows
   }
