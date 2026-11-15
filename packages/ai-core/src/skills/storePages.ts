@@ -24,7 +24,7 @@ const storePages: Skill = {
     '- Navigation tools (open_steam_search, open_steam_page, open_store_page, store_back/forward/reload, store_click) wait for the load and return {url, title}; check them against what you expected.',
     '- store_click: target by visible `text` and/or `selector`, `index` to pick among several matches. On no match you get closeMatches — pick one of those or list links; do not repeat the same call.',
     '- store_type: target a field by `label` (label/placeholder/name) or `selector`; `submit:true` presses Enter. store_select sets dropdowns/checkboxes (age gate: select birth year, then click the continue button).',
-    '- Adding a game to the user's WISHLIST via its store button is fine. NEVER try to buy: purchase/Add to Cart/checkout/gift/payment/sign-in/account pages and password or card fields are hard-blocked and come back as "Refused for safety". When that happens stop and ask the user to do that step themselves in the Store tab.',
+    '- Adding a game to the Steam WISHLIST via its store button is fine. NEVER try to buy: purchase/Add to Cart/checkout/gift/payment/sign-in/account pages and password or card fields are hard-blocked and come back as "Refused for safety". When that happens stop and ask the user to do that step themselves in the Store tab.',
     '- You cannot read cookies or storage, and should not try.',
     '',
     'Helping with a Steam setting (age verification, family sharing): find_steam_page → open_steam_page to the page → read overview → query the specific control → tell the user its exact state/location/steps.',
