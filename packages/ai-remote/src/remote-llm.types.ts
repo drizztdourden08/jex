@@ -8,7 +8,7 @@ import type {
 } from '@jex/shared/remote-ai/index'
 
 interface RemoteLlmDeps {
-  getKey: (p: RemoteProviderId) => string | null
+  getKey: (p: RemoteProviderId) => Promise<string | null>
   getEffort: () => RemoteEffort
   /** meta carries provider, kind, status and requestId only; never params, headers or keys. */
   log: (msg: string, meta?: Record<string, unknown>) => void

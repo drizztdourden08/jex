@@ -64,7 +64,7 @@ interface HostSettings {
 
 // Encrypted secrets (safeStorage) — write-only from a plugin's perspective.
 interface HostSecrets {
-  setSecret: (key: string, value: string) => void
+  setSecret: (key: string, value: string) => void | Promise<void>
 }
 
 // Writable, plugin-managed locations the host resolves (under userData).

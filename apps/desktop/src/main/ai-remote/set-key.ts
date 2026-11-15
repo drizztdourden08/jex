@@ -13,7 +13,7 @@ const setProviderKey = async (provider: RemoteProviderId, key: string): Promise<
   if (!trimmed) return { status: keyStatus(), check: 'rejected', message: 'Enter an API key.' }
   const check = await remoteLlm().verifyKey(provider, trimmed)
   if (check === 'rejected') return { status: keyStatus(), check, message: REJECTED_MESSAGE }
-  setSecret(PROVIDER_SECRET[provider], trimmed)
+  await setSecret(PROVIDER_SECRET[provider], trimmed)
   remoteLlm().forget(provider)
   invalidateModels()
   return {
