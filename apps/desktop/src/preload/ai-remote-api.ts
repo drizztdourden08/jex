@@ -17,6 +17,9 @@ const aiRemoteApi = {
   clearKey: (provider: RemoteProviderId): Promise<RemoteKeyStatus> =>
     ipcRenderer.invoke('ai:remote:clearKey', provider),
   models: (): Promise<RemoteModelOption[]> => ipcRenderer.invoke('ai:remote:models'),
+  added: (): Promise<string[]> => ipcRenderer.invoke('ai:remote:added'),
+  add: (ref: string): Promise<string[]> => ipcRenderer.invoke('ai:remote:add', ref),
+  remove: (ref: string): Promise<string[]> => ipcRenderer.invoke('ai:remote:remove', ref),
   getEffort: (): Promise<RemoteEffort> => ipcRenderer.invoke('ai:remote:getEffort'),
   setEffort: (effort: RemoteEffort): Promise<void> => ipcRenderer.invoke('ai:remote:setEffort', effort),
 } satisfies IpcApi['ai']['remote']
