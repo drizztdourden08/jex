@@ -30,7 +30,7 @@ const createRemoteLlm = (deps: RemoteLlmDeps): RemoteLlm => {
   const step: RemoteLlm['step'] = async (req, onDelta, signal) => {
     const ref = parseModelRef(req.modelRef)
     if (!ref) return fail('bad_request', 'anthropic', 'Unknown model reference.')
-    const key = getKey(ref.provider)
+    const key = await getKey(ref.provider)
     if (!key) return fail('auth', ref.provider, `No ${PROVIDER_NAME[ref.provider]} API key is set. Add it in Settings.`)
     try {
       return await providers[ref.provider].step({
@@ -50,7 +50,7 @@ const createRemoteLlm = (deps: RemoteLlmDeps): RemoteLlm => {
 
   const listFor = async (provider: RemoteProviderId, present: boolean): Promise<RemoteModelOption[]> => {
     try {
-      const models = await providers[provider].listModels(present ? getKey(provider) : null)
+      const models = await providers[provider].listModels(present ? await getKey(provider) : null)
       return models.map((m) => toOption(provider, m, present))
     } catch {
       log('model list failed', { provider })

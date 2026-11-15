@@ -32,9 +32,9 @@ const createHostServices = (): HostServices => ({
     set: (key: string, value: unknown): void => settings.set(key, value as never),
   },
   secrets: {
-    setSecret: (name, value) => {
+    setSecret: async (name, value) => {
       if (!PLUGIN_WRITABLE_SECRETS.has(name)) throw new Error('secret not writable')
-      setSecret(name, value)
+      await setSecret(name, value)
     },
   },
   llm: createHostLlm(),

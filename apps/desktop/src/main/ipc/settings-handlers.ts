@@ -18,9 +18,9 @@ const registerSettingsHandlers = (): void => {
 
   // ── Secrets (encrypted at rest via OS safeStorage; no read-back channel) ─
   ipcMain.handle('secret:available', () => secretAvailable())
-  ipcMain.handle('secret:set', (_e, key: string, value: string) => {
+  ipcMain.handle('secret:set', async (_e, key: string, value: string) => {
     if (!isAllowed(key)) throw new Error('secret not writable')
-    setSecret(key, value)
+    await setSecret(key, value)
   })
   ipcMain.handle('secret:has', (_e, key: string) => isAllowed(key) && hasSecret(key))
   ipcMain.handle('secret:clear', (_e, key: string) => {

@@ -9,7 +9,7 @@ const PROVIDER_SECRET: Record<RemoteProviderId, string> = {
   openai: 'openaiApiKey',
 }
 
-const getKey = (provider: RemoteProviderId): string | null => getSecret(PROVIDER_SECRET[provider])
+const getKey = (provider: RemoteProviderId): Promise<string | null> => getSecret(PROVIDER_SECRET[provider])
 
 const clearKey = (provider: RemoteProviderId): void => clearSecret(PROVIDER_SECRET[provider])
 
