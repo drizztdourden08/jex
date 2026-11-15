@@ -23,6 +23,8 @@ const useWishlistGroups = () => {
     void reload()
   }, [reload])
 
+  useEffect(() => window.api.wishlist.groups.onChanged(() => void reload()), [reload])
+
   const create = useCallback(
     async (name: string, filterSpec?: FilterSpec | null, manualAppids?: number[]) => {
       const g = await window.api.wishlist.groups.create(name, filterSpec ?? null, manualAppids ?? [])

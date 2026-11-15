@@ -93,6 +93,7 @@ interface IpcApi {
       update: (id: number, patch: WishlistGroupPatch) => Promise<WishlistGroup | null>
       delete: (id: number) => Promise<void>
       reorder: (ids: number[]) => Promise<void>
+      onChanged: (cb: () => void) => () => void
     }
   }
   app: {
