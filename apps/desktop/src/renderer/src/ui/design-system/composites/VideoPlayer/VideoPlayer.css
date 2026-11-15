@@ -4,6 +4,7 @@
 .vp-root { width: 100%; min-width: 0; }
 .vp-slot { width: 100%; min-width: 0; }
 .vp-slot.theater { aspect-ratio: 16 / 9; } /* keeps the inline footprint while the root is lifted out */
+
 /* Body-level host (created by useTheaterHost): covers the whole window, titlebar included,
    and doubles as the scrim. no-drag so the titlebar's drag region doesn't eat clicks. */
 .vp-theater-host {
