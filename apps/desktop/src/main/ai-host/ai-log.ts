@@ -24,4 +24,4 @@ const logAi = (message: string): void => {
   console.log(`[ai-host] ${message}`)
 }
 
-export { logAi }
+export { logAi, logPath }

@@ -89,6 +89,25 @@ interface EnginePluginInfo {
   updateAvailable?: boolean
 }
 
+/** One installed plugin as the troubleshooting block shows it. */
+interface EnginePluginDiag {
+  id: string
+  /** Short sha256 of the installed zip (from its install record), or null when unknown. */
+  installedSha: string | null
+  /** Short sha256 of the published zip from the last successful check, or null. */
+  publishedSha: string | null
+  outdated: boolean
+}
+
+/** Update-check state for the Settings troubleshooting block. */
+interface EngineDiagnostics {
+  plugins: EnginePluginDiag[]
+  /** Last manifest check (this session), or null when none ran yet. */
+  lastCheck: { at: string; ok: boolean; detail: string } | null
+  /** A restart will apply a pending update or forced reinstall. */
+  pendingRestart: boolean
+}
+
 /** CUDA acceleration availability for the AI model picker. */
 interface CudaStatus {
   /** An NVIDIA GPU is present. */
@@ -155,6 +174,8 @@ export type {
   AiBackendInfo,
   AiEngineStatus,
   EnginePluginInfo,
+  EnginePluginDiag,
+  EngineDiagnostics,
   CudaStatus,
   ToolSupport,
   ModelArch,

@@ -5,6 +5,7 @@ import type {
   AiDownloadProgress,
   AiEngineStatus,
   EnginePluginInfo,
+  EngineDiagnostics,
   AiModelOption,
   AiModelStatus,
   AiVocab,
@@ -33,6 +34,10 @@ const aiApi = {
   engineStatus: (): Promise<AiEngineStatus> => ipcRenderer.invoke('ai:engineStatus'),
   enginePlugins: (): Promise<EnginePluginInfo[]> => ipcRenderer.invoke('ai:enginePlugins'),
   installEngine: (ids: string[]): Promise<void> => ipcRenderer.invoke('ai:installEngine', ids),
+  engineDiagnostics: (): Promise<EngineDiagnostics> => ipcRenderer.invoke('ai:engineDiagnostics'),
+  checkUpdates: (): Promise<EngineDiagnostics> => ipcRenderer.invoke('ai:checkUpdates'),
+  openLog: (): Promise<string> => ipcRenderer.invoke('ai:openLog'),
+  reinstallEngine: (): Promise<void> => ipcRenderer.invoke('ai:reinstallEngine'),
   removePlugin: (id: string): Promise<'removed' | 'after-restart'> => ipcRenderer.invoke('ai:removePlugin', id),
   onEngineProgress: (cb: (msg: string) => void): (() => void) => {
     const listener = (_e: IpcRendererEvent, msg: string) => cb(msg)

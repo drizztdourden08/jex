@@ -1,5 +1,6 @@
 import { Text } from '@ds/primitives/text/Text'
 import { Button } from '@ds/primitives/actions/Button'
+import { Spinner } from '@ds/primitives/feedback/Spinner'
 import { Checkbox } from '@ds/primitives/form/Checkbox'
 import { Table } from '@ds/composites/Table'
 import type { TableRow } from '@ds/composites/Table'
@@ -35,7 +36,13 @@ const EngineGroup = ({
       </SettingsGroup>
     )
   }
-  if (!status) return null
+  if (!status) {
+    return (
+      <SettingsGroup label="Engine">
+        <Spinner />
+      </SettingsGroup>
+    )
+  }
 
   const rows: TableRow[] = plugins.map((p) => ({
     id: p.id,

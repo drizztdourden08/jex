@@ -9,7 +9,7 @@ import { installedDir, isInstalled } from './source'
 import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { checkOutdated } from './update-check'
 import { retryInBackground } from './background-retry'
-import { clearPending, hasPending } from './pending-update'
+import { clearPending, forcedIds, hasPending } from './pending-update'
 import { applyPendingRemoval } from './remove-plugin'
 import { logAi } from './ai-log'
 import { clearStale, getLoadedId, markStale, setLoadedId, staleIds } from './engine-state'
@@ -49,11 +49,12 @@ const startEngine = async (
   const pending = hasPending()
   const { ok, ids: found } = await checkOutdated(pending ? PENDING_TIMEOUT_MS : STARTUP_TIMEOUT_MS)
   found.forEach(markStale)
+  forcedIds().forEach(markStale)
   // Update first (installEngine also loads the fresh engine, so no engine file is locked).
   // The CUDA add-on is never auto-updated; installEngine re-merges it into a new base.
   const outdated = staleIds()
   if (outdated.length > 0) await runUpdate(outdated, update)
-  if (pending && ok) clearPending()
+  if (pending && (ok || forcedIds().length > 0)) clearPending()
   if (!getLoadedId()) await loadFirstUsable(ui)
   if (!ok) void retryInBackground()
   const rest = staleIds()
