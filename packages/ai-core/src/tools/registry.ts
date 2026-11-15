@@ -24,6 +24,8 @@ interface ToolContext {
   window: BrowserWindow | null
   /** Dispatch a UI-surface action to the renderer and await its result. */
   ui: (action: string, payload: unknown) => Promise<unknown>
+  /** True when the active model can look at images a tool returns (remote models). */
+  vision: boolean
 }
 
 interface ToolDef {

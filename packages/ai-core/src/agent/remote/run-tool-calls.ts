@@ -20,7 +20,7 @@ const runOne = async (call: LlmToolCall, exec: ToolExecutor, signal: AbortSignal
   const checked = validate(tool.params as unknown as Record<string, unknown>, call.input)
   if (!checked.ok) return failed(callId, { INVALID_INPUT: checked.errors })
   const result = await exec.run({ callId, name, args: checked.value as Record<string, unknown> })
-  return { callId, ok: result.ok, content: result.content }
+  return { callId, ok: result.ok, content: result.content, ...(result.images ? { images: result.images } : {}) }
 }
 
 /**

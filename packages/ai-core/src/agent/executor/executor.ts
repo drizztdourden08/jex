@@ -1,4 +1,5 @@
 import { effectivePolicy, getTool } from '../../tools'
+import { splitImages } from '../../tools/media'
 import { gate } from '../permission'
 import { RESULT_CHAR_LIMIT } from './executor.constants'
 import type { ToolCallInput, ToolExecutor, ToolExecutorOptions, ToolRunResult } from './executor.types'
@@ -54,8 +55,9 @@ const createToolExecutor = (opts: ToolExecutorOptions): ToolExecutor => {
     }
     const out = await runWithRetry(() => live.run(args, ctx), limits.attempts, signal)
     if (out.ok) {
-      emit({ turnId, type: 'tool-result', callId, name, ok: true, result: out.value })
-      return { ok: true, value: out.value, content: toContent(out.value) }
+      const { value, images } = splitImages(out.value)
+      emit({ turnId, type: 'tool-result', callId, name, ok: true, result: value })
+      return { ok: true, value, content: toContent(value), ...(images.length ? { images } : {}) }
     }
     // Never throw: return the error so the model can recover or report it.
     return refuse(callId, name, out.error, { error: out.error })

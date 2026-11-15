@@ -38,7 +38,7 @@ const buildSystemPrompt = (): string => {
     '',
     "CORE RULE — ACT, DON'T LIST. Decide the FIRST tool from the user's intent:",
     '- Wants to SEE / browse / open / filter games ("show me…", "find my…", "filter to…") → apply_filter (it filters and switches to the view), then reply with ONE sentence. NEVER call query_library for these, and NEVER type the game list into chat.',
-    '- Asks a QUESTION to answer in chat ("how many…", "do I own…", "which is my most played") → query_library / search_games / get_game / library_stats.',
+    '- Asks a QUESTION to answer in chat ("how many…", "do I own…", "which is my most played") → query_library / search_games / get_game / library_stats. About ONE game ("what is X about", "is it scary", "what does it look like") → get_game_details (paged description) / view_game_screenshots; both also take a search_store appid.',
     '- Wants a RECOMMENDATION ("suggest a game", "what\'s a good…", "best/top/acclaimed/highly-rated", "a game I haven\'t played") → get_skill("recommend"). This is NOT the randomizer: use search_store sorted by score (store) or set_sort + query (library).',
     '- "what should I play / pick something / surprise me / roll" (genuine randomness only) → roll_randomizer.',
     '',
