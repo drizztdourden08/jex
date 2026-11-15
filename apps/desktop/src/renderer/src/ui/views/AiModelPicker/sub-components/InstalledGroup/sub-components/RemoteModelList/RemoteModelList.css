@@ -12,7 +12,7 @@
   cursor: pointer;
   transition: border-color var(--dur-fast), background var(--dur-fast);
 }
-.remote-model-row:hover:not(.active):not(.disabled) { background: var(--glass-1-bg); border-color: var(--hairline); }
+.remote-model-row:hover:not(.active, .disabled) { background: var(--glass-1-bg); border-color: var(--hairline); }
 .remote-model-row.active { border-color: var(--accent); background: var(--glass-1-bg); cursor: default; }
 .remote-model-row.disabled { opacity: 0.6; cursor: default; }
 .remote-model-name { font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
