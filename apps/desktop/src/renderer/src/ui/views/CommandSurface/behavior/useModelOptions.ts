@@ -4,17 +4,20 @@ import { REMOTE_PROVIDERS, REMOTE_PROVIDER_LABEL } from '@shared/remote-ai'
 import type { RemoteKeyStatus, RemoteModelOption } from '@shared/remote-ai'
 import type { SelectGroup } from '@ds/primitives/form/Select'
 import { toInstalledRemote } from '@/lib/ai/installedRemote'
+import { pickUsableModel } from './pickUsableModel'
+import { useAutoActivateModel } from './useAutoActivateModel'
 
 // The footer's model choices: the installed set, grouped like Settings (Local, then one
 // group per provider): downloaded local models plus the remote models the user added. A
-// remote model whose provider has no key is listed but disabled. "Ready" = the active
-// model is usable, so a stale saved default never reads as ready.
+// remote model whose provider has no key is listed but disabled. "Ready" = a usable
+// model exists; when none is active the first usable one is activated automatically.
 const useModelOptions = () => {
   const [local, setLocal] = useState<AiModelOption[]>([])
   const [remote, setRemote] = useState<RemoteModelOption[]>([])
   const [added, setAdded] = useState<string[]>([])
   const [keys, setKeys] = useState<RemoteKeyStatus | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
 
   const refresh = useCallback(async () => {
     const [models, st, remoteModels, addedRefs, keyStatus] = await Promise.all([
@@ -29,6 +32,7 @@ const useModelOptions = () => {
     setAdded(addedRefs)
     setKeys(keyStatus)
     setActiveId(models.find((m) => m.installed && m.active)?.id ?? st?.activeModelId ?? null)
+    setLoaded(true)
   }, [])
 
   const switchModel = useCallback(
@@ -55,6 +59,9 @@ const useModelOptions = () => {
     return r ? { value: r.ref, label: r.label, remote: true } : null
   }, [activeId, installed, installedRemote])
 
+  const fallbackId = useMemo(() => pickUsableModel(installed, installedRemote), [installed, installedRemote])
+  useAutoActivateModel({ loaded, hasActive: activeModel != null, fallbackId, switchModel })
+
   const modelGroups = useMemo<SelectGroup[]>(() => {
     const groups: SelectGroup[] = []
     if (installed.length > 0) {
@@ -75,7 +82,7 @@ const useModelOptions = () => {
     return groups
   }, [installedRemote, installed])
 
-  return { activeModel, modelGroups, ready: activeModel != null, refresh, switchModel }
+  return { activeModel, modelGroups, ready: activeModel != null || fallbackId != null, refresh, switchModel }
 }
 
 export { useModelOptions }

@@ -16,6 +16,7 @@ import {
   setProviderKey,
 } from '../ai-remote'
 import { getEngine } from '../ai-host/engine'
+import { activateIfNoUsable } from '../ai-remote/activate-added'
 
 const assertProvider = (p: unknown): RemoteProviderId => {
   if (!(REMOTE_PROVIDERS as readonly unknown[]).includes(p)) throw new Error('Unknown provider.')
@@ -32,7 +33,11 @@ const registerAiRemoteHandlers = (): void => {
   )
   ipcMain.handle('ai:remote:models', () => listRemoteModels())
   ipcMain.handle('ai:remote:added', () => listAdded(getEngine()?.modelStatus().activeModelId))
-  ipcMain.handle('ai:remote:add', (_e, ref: string) => addRemote(String(ref)))
+  ipcMain.handle('ai:remote:add', async (_e, ref: string) => {
+    const refs = addRemote(String(ref))
+    await activateIfNoUsable(String(ref))
+    return refs
+  })
   ipcMain.handle('ai:remote:remove', (_e, ref: string) => removeRemote(String(ref)))
   ipcMain.handle('ai:remote:getEffort', () => getEffort())
   ipcMain.handle('ai:remote:setEffort', (_e, effort: RemoteEffort) => setEffort(effort))
