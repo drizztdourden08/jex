@@ -1,11 +1,11 @@
 import type { AiModelOption } from '@shared/ai'
-import type { DownloadingModel } from '../behavior/useModelCatalog'
+import type { DownloadingModel } from '../../../behavior/useModelCatalog'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
 
 /**
- * The model table shown below the download dropdown: already-installed models
- * (click a row to make it active, trash to delete) plus any models currently
+ * The Local section of the installed table: downloaded models
+ * (click a row to make it active, Remove to delete) plus any models currently
  * downloading (a live progress bar in place of the action). Bare and
  * presentational. Showing in-flight downloads here keeps several concurrent
  * downloads clear at a glance.
@@ -20,7 +20,7 @@ const InstalledModelList = ({ models, downloading, onSelect, onRemove }: Install
   if (models.length === 0 && downloading.length === 0) {
     return (
       <Box as="p" className="muted model-installed-empty">
-        No models installed yet. Pick one above and download it.
+        No local models yet. Pick one in the list above and download it.
       </Box>
     )
   }

@@ -1,5 +1,6 @@
-/* Ai model picker (Settings view). Shares one 6-column grid between the download
-   dropdown and the installed list so sizes line up across both. Tokens only. */
+/* Ai model picker (Settings view). The catalog dropdown is a 7-column grid (with a
+   Provider column); the Local installed rows use the same columns minus Provider, plus
+   an action column. Tokens only. */
 
 .model-error { color: var(--danger); }
 .model-warn { margin: 8px 0 0; font-size: 13px; color: var(--warning); }
@@ -82,7 +83,7 @@
 /* ── Shared comparison grid ───────────────────────────────────────────────── */
 .model-row {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) 0.9fr 0.6fr 0.8fr 0.7fr 0.7fr;
+  grid-template-columns: minmax(0, 1.7fr) 0.8fr 0.9fr 0.6fr 0.8fr 0.7fr 0.7fr;
   align-items: center;
   gap: 10px;
   padding: 9px 12px;

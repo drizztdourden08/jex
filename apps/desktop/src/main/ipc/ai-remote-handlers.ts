@@ -1,9 +1,21 @@
-// Remote-model IPC: key status/set/clear, the model list, and the effort setting.
-// Keys flow renderer -> main only; every reply is status/metadata, never a key.
+// Remote-model IPC: key status/set/clear, the model list, the added (installed) remote
+// models, and the effort setting. Keys flow renderer -> main only; every reply is
+// status/metadata, never a key.
 import { ipcMain } from 'electron'
 import type { RemoteEffort, RemoteProviderId } from '@shared/remote-ai'
 import { REMOTE_PROVIDERS } from '@shared/remote-ai'
-import { clearProviderKey, getEffort, keyStatus, listRemoteModels, setEffort, setProviderKey } from '../ai-remote'
+import {
+  addRemote,
+  clearProviderKey,
+  getEffort,
+  keyStatus,
+  listAdded,
+  listRemoteModels,
+  removeRemote,
+  setEffort,
+  setProviderKey,
+} from '../ai-remote'
+import { getEngine } from '../ai-host/engine'
 
 const assertProvider = (p: unknown): RemoteProviderId => {
   if (!(REMOTE_PROVIDERS as readonly unknown[]).includes(p)) throw new Error('Unknown provider.')
@@ -19,6 +31,9 @@ const registerAiRemoteHandlers = (): void => {
     clearProviderKey(assertProvider(provider)),
   )
   ipcMain.handle('ai:remote:models', () => listRemoteModels())
+  ipcMain.handle('ai:remote:added', () => listAdded(getEngine()?.modelStatus().activeModelId))
+  ipcMain.handle('ai:remote:add', (_e, ref: string) => addRemote(String(ref)))
+  ipcMain.handle('ai:remote:remove', (_e, ref: string) => removeRemote(String(ref)))
   ipcMain.handle('ai:remote:getEffort', () => getEffort())
   ipcMain.handle('ai:remote:setEffort', (_e, effort: RemoteEffort) => setEffort(effort))
 }

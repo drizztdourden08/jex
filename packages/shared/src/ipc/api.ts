@@ -145,6 +145,10 @@ interface IpcApi {
       setKey: (provider: RemoteProviderId, key: string) => Promise<RemoteSetKeyResult>
       clearKey: (provider: RemoteProviderId) => Promise<RemoteKeyStatus>
       models: () => Promise<RemoteModelOption[]>
+      /** Refs of the remote models the user added to the installed list (persisted). */
+      added: () => Promise<string[]>
+      add: (ref: string) => Promise<string[]>
+      remove: (ref: string) => Promise<string[]>
       getEffort: () => Promise<RemoteEffort>
       setEffort: (effort: RemoteEffort) => Promise<void>
     }

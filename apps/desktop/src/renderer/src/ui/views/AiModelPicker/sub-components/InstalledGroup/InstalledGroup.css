@@ -1,0 +1,4 @@
+/* Provider sections of the installed table: a header row, then that provider's models.
+   Sections are split by a hairline. Tokens only. */
+.model-section { padding-bottom: 8px; }
+.model-section + .model-section { border-top: 1px solid var(--hairline); padding-top: 4px; }

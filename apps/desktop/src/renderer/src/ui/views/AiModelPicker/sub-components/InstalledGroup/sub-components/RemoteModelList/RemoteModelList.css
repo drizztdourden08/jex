@@ -1,0 +1,21 @@
+.remote-models { margin-top: 4px; }
+
+.remote-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) 0.7fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  font-size: 13px;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+.remote-model-row:hover:not(.active):not(.disabled) { background: var(--glass-1-bg); border-color: var(--hairline); }
+.remote-model-row.active { border-color: var(--accent); background: var(--glass-1-bg); cursor: default; }
+.remote-model-row.disabled { opacity: 0.6; cursor: default; }
+.remote-model-name { font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.remote-model-ctx { font-size: 12px; }
+.remote-model-hint { font-size: 12px; font-weight: 400; }
+.remote-models-empty { margin-top: 4px; font-size: 13px; }
