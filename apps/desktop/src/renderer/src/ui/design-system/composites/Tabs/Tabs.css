@@ -1,0 +1,14 @@
+/* Tab row. Tokens only. */
+.ds-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.ds-tab { border-radius: var(--r-lg) var(--r-lg) 0 0; color: var(--text-2); }
+
+.ds-tab--active {
+  color: var(--text-1);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}

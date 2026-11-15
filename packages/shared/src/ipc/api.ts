@@ -12,6 +12,7 @@ import type {
   AiDownloadProgress,
   AiEngineStatus,
   EnginePluginInfo,
+  EngineDiagnostics,
   AiModelOption,
   AiModelStatus,
   AiVocab,
@@ -118,6 +119,11 @@ interface IpcApi {
     engineStatus: () => Promise<AiEngineStatus>
     enginePlugins: () => Promise<EnginePluginInfo[]>
     installEngine: (ids: string[]) => Promise<void>
+    engineDiagnostics: () => Promise<EngineDiagnostics>
+    checkUpdates: () => Promise<EngineDiagnostics>
+    openLog: () => Promise<string>
+    reinstallEngine: () => Promise<void>
+    removePlugin: (id: string) => Promise<'removed' | 'after-restart'>
     onEngineProgress: (cb: (msg: string) => void) => () => void
     status: () => Promise<AiModelStatus>
     backend: () => Promise<AiBackendInfo>

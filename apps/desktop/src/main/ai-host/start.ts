@@ -5,52 +5,38 @@
 import type { UiDispatcher } from '@jex/ai-contract'
 import { ApiVersionError } from './api-version'
 import { loadPluginFrom } from './loader'
-import { fetchManifest, installedDir, isInstalled } from './source'
-import { isOutdated } from './installed-record'
-import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { installedDir, isInstalled } from './source'
+import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { checkOutdated } from './update-check'
+import { retryInBackground } from './background-retry'
+import { clearPending, forcedIds, hasPending } from './pending-update'
+import { applyPendingRemoval } from './remove-plugin'
+import { logAi } from './ai-log'
 import { clearStale, getLoadedId, markStale, setLoadedId, staleIds } from './engine-state'
 
-const MANIFEST_TIMEOUT_MS = 5000
+const STARTUP_TIMEOUT_MS = 15_000
+const PENDING_TIMEOUT_MS = 60_000
 
 const loadFirstUsable = async (ui: UiDispatcher): Promise<void> => {
   for (const id of [basePluginId(), ENGINE_PLUGIN_ID].filter(isInstalled)) {
     try {
       await loadPluginFrom(installedDir(id), ui)
       setLoadedId(id)
-      console.log(`[ai-host] loaded engine: ${id}`)
+      logAi(`loaded engine: ${id}`)
       return
     } catch (e) {
       if (e instanceof ApiVersionError) markStale(id)
-      console.error(`[ai-host] failed to load ${id}:`, e)
+      logAi(`failed to load ${id}: ${e instanceof Error ? e.message : e}`)
     }
-  }
-}
-
-// The CUDA add-on is never loaded on its own; it is outdated whenever its base is.
-const staleWithAddOn = (): string[] => {
-  const cuda = cudaPluginId()
-  if (cuda && staleIds().includes(basePluginId()) && isInstalled(cuda)) markStale(cuda)
-  return staleIds()
-}
-
-// Engine-side changes (new tools) ship without an apiVersion bump, so compare each
-// installed plugin's recorded sha256 with the published manifest. Offline/slow: skip.
-const markOutdated = async (): Promise<void> => {
-  try {
-    const manifest = await fetchManifest(MANIFEST_TIMEOUT_MS)
-    const ids = [basePluginId(), cudaPluginId(), ENGINE_PLUGIN_ID].filter(
-      (id): id is string => !!id && isInstalled(id),
-    )
-    ids.filter((id) => isOutdated(id, manifest)).forEach(markStale)
-  } catch (e) {
-    console.log(`[ai-host] update check skipped: ${e instanceof Error ? e.message : e}`)
   }
 }
 
 // One attempt per id per start; a failure is logged and the installed engine still loads.
 const runUpdate = async (ids: string[], update: (ids: string[]) => Promise<void>): Promise<void> => {
-  console.log(`[ai-host] updating outdated plugins: ${ids.join(', ')}`)
-  await update(ids).catch((e) => console.error('[ai-host] plugin auto-update failed:', e))
+  logAi(`download start: ${ids.join(', ')}`)
+  await update(ids)
+    .then(() => logAi(`download finish: ${ids.join(', ')}`))
+    .catch((e) => logAi(`download failed: ${e instanceof Error ? e.message : e}`))
   clearStale(ids)
 }
 
@@ -58,13 +44,21 @@ const startEngine = async (
   ui: UiDispatcher,
   update: (ids: string[]) => Promise<void>,
 ): Promise<void> => {
-  await markOutdated()
-  const outdated = staleWithAddOn()
+  applyPendingRemoval()
+  // A pending marker (found by the background retry) earns the manifest a longer wait.
+  const pending = hasPending()
+  const { ok, ids: found } = await checkOutdated(pending ? PENDING_TIMEOUT_MS : STARTUP_TIMEOUT_MS)
+  found.forEach(markStale)
+  forcedIds().forEach(markStale)
   // Update first (installEngine also loads the fresh engine, so no engine file is locked).
+  // The CUDA add-on is never auto-updated; installEngine re-merges it into a new base.
+  const outdated = staleIds()
   if (outdated.length > 0) await runUpdate(outdated, update)
+  if (pending && (ok || forcedIds().length > 0)) clearPending()
   if (!getLoadedId()) await loadFirstUsable(ui)
-  const ids = staleWithAddOn()
-  if (ids.length > 0) await runUpdate(ids, update)
+  if (!ok) void retryInBackground()
+  const rest = staleIds()
+  if (rest.length > 0) await runUpdate(rest, update)
 }
 
 export { startEngine }

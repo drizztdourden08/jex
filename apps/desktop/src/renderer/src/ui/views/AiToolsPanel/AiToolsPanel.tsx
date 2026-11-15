@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { ToolCategory, ToolInfo, ToolPolicy } from '@shared/agent'
 import { Box } from '@ds/primitives/layout/Box'
+import { Spinner } from '@ds/primitives/feedback/Spinner'
 import { Select } from '@ds/primitives/form/Select'
 import { SettingsGroup } from '@ds/composites/SettingsGroup'
 import { SettingRow } from '@ds/composites/SettingRow'
@@ -41,9 +42,10 @@ const CATEGORY_LABEL: Record<ToolCategory, string> = {
 
 const AiToolsPanel = () => {
   const [tools, setTools] = useState<ToolInfo[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    window.api.ai.listTools().then(setTools).catch(() => {})
+    window.api.ai.listTools().then(setTools).catch(() => {}).finally(() => setLoaded(true))
   }, [])
 
   const grouped = useMemo(() => {
@@ -66,6 +68,13 @@ const AiToolsPanel = () => {
     }
   }
 
+  if (!loaded) {
+    return (
+      <SettingsGroup label="Tools & permissions">
+        <Spinner />
+      </SettingsGroup>
+    )
+  }
   if (tools.length === 0) return null
 
   return (

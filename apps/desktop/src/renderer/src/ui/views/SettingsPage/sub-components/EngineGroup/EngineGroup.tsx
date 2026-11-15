@@ -1,5 +1,6 @@
 import { Text } from '@ds/primitives/text/Text'
 import { Button } from '@ds/primitives/actions/Button'
+import { Spinner } from '@ds/primitives/feedback/Spinner'
 import { Checkbox } from '@ds/primitives/form/Checkbox'
 import { Table } from '@ds/composites/Table'
 import type { TableRow } from '@ds/composites/Table'
@@ -22,6 +23,7 @@ const EngineGroup = ({
   install,
   loadError,
   retry,
+  remove,
 }: EngineGroupProps) => {
   if (!status && loadError) {
     return (
@@ -34,12 +36,18 @@ const EngineGroup = ({
       </SettingsGroup>
     )
   }
-  if (!status) return null
+  if (!status) {
+    return (
+      <SettingsGroup label="Engine">
+        <Spinner />
+      </SettingsGroup>
+    )
+  }
 
   const rows: TableRow[] = plugins.map((p) => ({
     id: p.id,
     cells: {
-      check: p.installed ? (
+      check: p.installed && !p.updateAvailable ? (
         <Text as="span" weight="bold" style={{ color: 'var(--installed)' }} title="Installed">
           ✓
         </Text>
@@ -57,8 +65,17 @@ const EngineGroup = ({
         </Text>
       ),
       packages: <Text tone="muted">{p.packages}</Text>,
-      size: <Text tone="muted">{p.installed ? 'Installed' : fmtSize(p.sizeBytes)}</Text>,
-      notes: <Text tone="muted">{p.notes}</Text>,
+      size: <Text tone="muted">{p.updateAvailable ? `Update available (${fmtSize(p.sizeBytes)})` : p.installed ? 'Installed' : fmtSize(p.sizeBytes)}</Text>,
+      notes: (
+        <>
+          <Text tone="muted">{p.notes}</Text>
+          {p.addOn && p.installed && (
+            <Button variant="ghost" onClick={() => remove(p.id)} disabled={installing}>
+              Remove
+            </Button>
+          )}
+        </>
+      ),
     },
   }))
 

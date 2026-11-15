@@ -10,12 +10,15 @@ import { getLoadedId, isStale } from './engine-state'
 import { getMainWindow } from '../window/window-ref'
 import { installEngine as runInstall } from './install'
 import { isInstalled, fetchManifest } from './source'
+import { isOutdated } from './installed-record'
 import { cpus, totalmem, version } from 'node:os'
 import { basePluginId, cudaPluginId } from './resolve'
 import { enginePlugins as catalogPlugins, isInstallablePlugin, isManualId } from './catalog'
 import { detectNvidia } from './detect'
 import { isCudaToolkitInstalled, installCudaToolkit } from './cuda-toolkit'
 import { getEngine } from './engine'
+import { removeAddOn } from './remove-plugin'
+import type { RemoveResult } from './remove-plugin'
 
 let sharedUi: UiDispatcher | null = null
 const ui = (): UiDispatcher => (sharedUi ??= createUiDispatcher())
@@ -57,7 +60,11 @@ const enginePlugins = async (): Promise<EnginePluginInfo[]> => {
   try {
     const manifest = await fetchManifest()
     const sizes = new Map(manifest.plugins.map((p) => [p.id, p.size]))
-    return rows.map((r) => ({ ...r, sizeBytes: r.manual ? null : sizes.get(r.id) ?? null }))
+    return rows.map((r) => ({
+      ...r,
+      sizeBytes: r.manual ? null : sizes.get(r.id) ?? null,
+      updateAvailable: !r.manual && r.installed && isOutdated(r.id, manifest),
+    }))
   } catch {
     return rows
   }
@@ -77,4 +84,6 @@ const installEngine = (ids: string[], onProgress?: (msg: string) => void): Promi
   return Promise.all(tasks).then(() => undefined)
 }
 
-export { initEngine, engineStatus, enginePlugins, installEngine }
+const removePlugin = (id: string): RemoveResult => removeAddOn(id)
+
+export { removePlugin, initEngine, engineStatus, enginePlugins, installEngine }

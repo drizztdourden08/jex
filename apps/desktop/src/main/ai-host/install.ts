@@ -10,7 +10,7 @@ import type { PluginManifest, UiDispatcher } from '@jex/ai-contract'
 import { fetchManifest, fetchZip, installedDir, isInstalled } from './source'
 import { verifyPluginZip } from './verify'
 import { loadPluginFrom } from './loader'
-import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { clearStale, setLoadedId } from './engine-state'
 import { writeRecord } from './installed-record'
 
@@ -63,6 +63,12 @@ const installEngine = async (
       onProgress?.(`Enabling ${id}…`)
       mergeAddOnInto(entry.requires, id)
     }
+  }
+  // A reinstalled base lost the add-on's backend: re-merge the installed add-on, no download.
+  const cuda = cudaPluginId()
+  if (cuda && ids.includes(basePluginId()) && !ids.includes(cuda) && isInstalled(cuda)) {
+    mergeAddOnInto(basePluginId(), cuda)
+    logAi(`re-merged installed add-on ${cuda} into ${basePluginId()}`)
   }
   onProgress?.('Loading engine…')
   // The native base (local models) wins when present; otherwise the JS-only engine.

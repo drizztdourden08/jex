@@ -65,7 +65,22 @@ const useAiEngine = () => {
     }
   }, [selected, load])
 
-  return { status, plugins, selected, toggle, installing, progress, error, install, loadError, retry: load }
+  const remove = useCallback(
+    async (id: string) => {
+      if (!window.confirm('Remove this add-on from disk? You can install it again later.')) return
+      setError(null)
+      try {
+        const result = await window.api.ai.removePlugin(id)
+        setProgress(result === 'after-restart' ? 'Removed after restart.' : null)
+        await load()
+      } catch (e) {
+        setError(ipcErrorText(e))
+      }
+    },
+    [load],
+  )
+
+  return { remove, status, plugins, selected, toggle, installing, progress, error, install, loadError, retry: load }
 }
 
 export { useAiEngine }
