@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { Game } from '@shared/library'
+import type { LaunchAction } from '@shared/launch'
 import { Box } from '@ds/primitives/layout/Box'
 import { GameDetailBody } from '@ui/compounds/GameDetailBody'
 import type { SanitizedRequirements } from '@ui/compounds/GameDetailBody'
@@ -13,6 +14,9 @@ type LibraryDetailPaneProps = {
   reqs: SanitizedRequirements | null
   autoplay: boolean
   onOpen: (url: string) => void
+  onLaunch: (action: LaunchAction) => void
+  launchBusy: boolean
+  launchText: string
   onOpenInStore: (url: string) => void
 }
 
@@ -23,7 +27,7 @@ const FROM = { from: '/library' }
  * its full detail page shows it (hero backdrop, header with status + actions, then the
  * shared detail body), with a link to that page. Scrolls on its own.
  */
-const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen, onOpenInStore }: LibraryDetailPaneProps) => {
+const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onOpen, onLaunch, launchBusy, launchText, onOpenInStore }: LibraryDetailPaneProps) => {
   const ref = useRef<HTMLElement>(null)
   const appid = game?.appid
 
@@ -59,7 +63,13 @@ const LibraryDetailPane = ({ game, extrasLoading, sanitized, reqs, autoplay, onO
             </Box>
           )}
         </Box>
-        <GameDetailHeader game={game} onOpen={onOpen} onOpenInStore={onOpenInStore} />
+        <GameDetailHeader
+          game={game}
+          launchBusy={launchBusy}
+          launchText={launchText}
+          onLaunch={onLaunch}
+          onOpenInStore={onOpenInStore}
+        />
         <GameDetailBody
           game={game}
           extrasLoading={extrasLoading}

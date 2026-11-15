@@ -1,0 +1,6 @@
+.ds-status-line {
+  min-height: var(--status-line-h);
+  margin: 0;
+  font-size: 13px;
+  line-height: var(--status-line-h);
+}

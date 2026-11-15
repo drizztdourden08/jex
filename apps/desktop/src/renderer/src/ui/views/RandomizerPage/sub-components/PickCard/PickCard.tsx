@@ -4,6 +4,7 @@ import type { Game } from '@shared/library'
 import { capsuleUrl, localArtUrl } from '@/lib/steam/media'
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
+import { StatusLine } from '@ds/primitives/text/StatusLine'
 import { IconButton } from '@ds/primitives/actions/IconButton'
 import { Image } from '@ds/primitives/media/Image'
 import { ArtFallback } from '@ui/compounds/ArtFallback'
@@ -12,11 +13,13 @@ const FROM = { from: '/randomizer' }
 
 type PickCardProps = {
   game: Game
+  launchBusy: boolean
+  launchText: string
   onExclude: (appid: number) => void
   onLaunch: (appid: number) => void
 }
 
-const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
+const PickCard = ({ game: g, launchBusy, launchText, onExclude, onLaunch }: PickCardProps) => {
   const [failed, setFailed] = useState(false)
   return (
     <Box className="card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -45,6 +48,7 @@ const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
         <Box className="row" style={{ gap: 6, marginTop: 8 }}>
           {g.installed ? (
             <Button
+              busy={launchBusy}
               style={{ padding: '4px 10px', fontSize: 12 }}
               onClick={() => onLaunch(g.appid)}
             >
@@ -64,6 +68,7 @@ const PickCard = ({ game: g, onExclude, onLaunch }: PickCardProps) => {
             ✕
           </IconButton>
         </Box>
+        <StatusLine text={launchText} />
       </Box>
     </Box>
   )

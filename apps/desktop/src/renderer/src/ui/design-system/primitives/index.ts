@@ -22,6 +22,8 @@ export type { DividerProps } from './layout/Divider'
 
 export { Text } from './text/Text'
 export type { TextProps } from './text/Text'
+export { StatusLine } from './text/StatusLine'
+export type { StatusLineProps } from './text/StatusLine'
 
 export { Button } from './actions/Button'
 export type { ButtonProps } from './actions/Button'

@@ -4,4 +4,5 @@
 .detail-header h1 { margin: 0 0 6px; }
 .detail-status { gap: 6px; margin-bottom: 12px; }
 .detail-actions { gap: 8px; }
+.detail-launch-status { margin-top: 8px; }
 .detail-wl-msg { margin-top: 8px; font-size: 13px; }

@@ -125,6 +125,9 @@ const LibraryPage = () => {
             reqs={detail.reqs}
             autoplay={detail.autoplay}
             onOpen={detail.open}
+            onLaunch={detail.launchSelected}
+            launchBusy={detail.launchBusy}
+            launchText={detail.launchText}
             onOpenInStore={detail.openInStore}
           />
         </Box>

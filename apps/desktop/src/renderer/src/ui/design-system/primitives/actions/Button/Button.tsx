@@ -5,6 +5,8 @@ import type { ButtonProps } from './Button.type'
 const Button = ({
   variant = 'primary',
   size = 'md',
+  busy = false,
+  disabled,
   type = 'button',
   className,
   children,
@@ -12,9 +14,11 @@ const Button = ({
 }: ButtonProps) => (
   <button
     type={type}
-    className={['ds-btn', `ds-btn--${variant}`, `ds-btn--${size}`, className]
+    className={['ds-btn', `ds-btn--${variant}`, `ds-btn--${size}`, busy && 'ds-btn--busy', className]
       .filter(Boolean)
       .join(' ')}
+    disabled={disabled || busy}
+    aria-busy={busy || undefined}
     {...rest}
   >
     {children}

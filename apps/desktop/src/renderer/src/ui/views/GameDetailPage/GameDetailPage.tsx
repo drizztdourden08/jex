@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom'
 import { useGameDetail } from '@/hooks/useGameDetail'
 import { useOpenInStore } from '@/hooks/useOpenInStore'
 import { useAutoplaySetting } from '@/hooks/useAutoplaySetting'
+import { useLaunchStatus } from '@/hooks/useLaunchStatus'
 import { Box } from '@ds/primitives/layout/Box'
 import { GameDetailBody } from '@ui/compounds/GameDetailBody'
 import { GameDetailHeader } from '@ui/compounds/GameDetailHeader'
@@ -23,6 +24,7 @@ const GameDetailPage = () => {
   })
   const { wlBusy, wlMsg, addWishlist } = useWishlistAction({ game, setGame })
   const autoplay = useAutoplaySetting()
+  const { launch, statusOf } = useLaunchStatus()
 
   if (loading && !game) return <DetailSkeleton back={back} />
   if (!game)
@@ -35,6 +37,8 @@ const GameDetailPage = () => {
   const open = (url: string) => {
     window.api.app.openExternal(url).catch(() => {})
   }
+
+  const { busy: launchBusy, text: launchText } = statusOf(game.appid)
 
   return (
     <Box className="detail">
@@ -58,7 +62,9 @@ const GameDetailPage = () => {
         game={game}
         wlBusy={wlBusy}
         wlMsg={wlMsg}
-        onOpen={open}
+        launchBusy={launchBusy}
+        launchText={launchText}
+        onLaunch={(action) => launch(game.appid, action)}
         onOpenInStore={openInStore}
         onAddWishlist={addWishlist}
       />

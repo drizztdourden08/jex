@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLibrary } from '@/hooks/useLibrary'
+import { useLaunchStatus } from '@/hooks/useLaunchStatus'
 import { useFilterState } from '@/hooks/useFilterState'
 import { randomPick, type WeightMode } from '@/lib/query/randomizer'
 import { applyFilter } from '@shared/filterApply'
@@ -109,9 +110,8 @@ const useRandomizer = () => {
     roll(next)
   }
 
-  const launchGame = (appid: number) => {
-    void window.api.app.openExternal(`steam://run/${appid}`)
-  }
+  const { launch, statusOf: launchStatusOf } = useLaunchStatus()
+  const launchGame = (appid: number) => launch(appid, 'run')
 
   const reset = () => {
     setExcluded([])
@@ -159,6 +159,7 @@ const useRandomizer = () => {
   )
 
   return {
+    launchStatusOf,
     games,
     flt,
     weight,
