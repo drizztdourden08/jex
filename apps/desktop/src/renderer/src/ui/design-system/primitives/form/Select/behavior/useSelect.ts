@@ -38,6 +38,7 @@ const useSelect = <T extends string>(
   }
 
   const choose = (value: T) => {
+    if (allOptions.find((o) => o.value === value)?.disabled) return
     onChange(value)
     close()
   }

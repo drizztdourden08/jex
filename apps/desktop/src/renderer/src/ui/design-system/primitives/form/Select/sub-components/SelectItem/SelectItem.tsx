@@ -15,6 +15,8 @@ const SelectItem = <T extends string>({
     type="button"
     role="option"
     aria-selected={selected}
+    aria-disabled={option.disabled || undefined}
+    disabled={option.disabled}
     data-index={index}
     className={['ds-select-item', selected && 'is-selected', highlighted && 'is-highlight']
       .filter(Boolean)

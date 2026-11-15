@@ -9,6 +9,8 @@ interface SelectOption<T extends string = string> {
   icon?: ReactNode
   /** Optional class applied to the trigger when this option is selected (e.g. a tag color). */
   triggerClass?: string
+  /** Shown but not choosable (e.g. a model that still needs a key). */
+  disabled?: boolean
 }
 
 interface SelectGroup<T extends string = string> {

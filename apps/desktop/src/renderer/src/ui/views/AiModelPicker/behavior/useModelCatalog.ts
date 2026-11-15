@@ -88,6 +88,7 @@ const useModelCatalog = () => {
     select,
     remove,
     cleanInactive,
+    refresh,
   }
 }
 

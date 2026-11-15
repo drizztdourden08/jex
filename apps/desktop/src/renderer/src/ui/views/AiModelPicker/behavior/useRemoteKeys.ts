@@ -9,10 +9,11 @@ interface KeyResult {
 
 type PerProvider<T> = Partial<Record<RemoteProviderId, T>>
 
-// Drives the remote-provider settings: which providers have a key (never the key
-// itself), saving / replacing / clearing one, and the verify result. Reasoning effort
-// is a per-chat choice in the chat footer (CommandSurface/useRemoteEffort).
-const useRemoteKeys = () => {
+// Drives each provider section's key: which providers have one (never the key itself),
+// saving / replacing / clearing it, and the verify result. `onChanged` runs after a key
+// is stored or cleared (the provider's model list changes with it). Reasoning effort is a
+// per-chat choice in the chat footer (CommandSurface/useRemoteEffort).
+const useRemoteKeys = (onChanged?: () => void) => {
   const [status, setStatus] = useState<RemoteKeyStatus | null>(null)
   const [drafts, setDrafts] = useState<PerProvider<string>>({})
   const [replacing, setReplacing] = useState<PerProvider<boolean>>({})
@@ -51,6 +52,7 @@ const useRemoteKeys = () => {
         if (res.check !== 'rejected') {
           setDrafts((d) => ({ ...d, [p]: '' }))
           setReplacing((r) => ({ ...r, [p]: false }))
+          onChanged?.()
         }
       } catch (e) {
         setError(errText(e))
@@ -58,7 +60,7 @@ const useRemoteKeys = () => {
         setBusy(null)
       }
     },
-    [drafts],
+    [drafts, onChanged],
   )
 
   const clear = useCallback(async (p: RemoteProviderId) => {
@@ -67,12 +69,13 @@ const useRemoteKeys = () => {
     try {
       setStatus(await window.api.ai.remote.clearKey(p))
       setResults((r) => ({ ...r, [p]: undefined }))
+      onChanged?.()
     } catch (e) {
       setError(errText(e))
     } finally {
       setBusy(null)
     }
-  }, [])
+  }, [onChanged])
 
   return {
     status,

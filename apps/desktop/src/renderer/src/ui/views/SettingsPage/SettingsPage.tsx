@@ -5,12 +5,10 @@ import { AiModelPicker } from '@ui/views/AiModelPicker'
 import { AiToolsPanel } from '@ui/views/AiToolsPanel'
 import { useSettings } from './behavior/useSettings'
 import { useAiEngine } from './behavior/useAiEngine'
-import { useRemoteKeys } from './behavior/useRemoteKeys'
 import { SteamGroup } from './sub-components/SteamGroup'
 import { SyncGroup } from './sub-components/SyncGroup'
 import { LibraryDataGroup } from './sub-components/LibraryDataGroup'
 import { EngineGroup } from './sub-components/EngineGroup'
-import { ProvidersGroup } from './sub-components/ProvidersGroup'
 import { PlaybackGroup } from './sub-components/PlaybackGroup'
 
 // Settings: three sections (Library, AI, General), each a SettingsSection of labelled
@@ -37,7 +35,6 @@ const SettingsPage = () => {
     dropMetadata,
   } = useSettings()
   const aiEngine = useAiEngine()
-  const remoteKeys = useRemoteKeys()
   const engineInstalled = aiEngine.status?.installed === true
 
   return (
@@ -68,11 +65,10 @@ const SettingsPage = () => {
 
       <SettingsSection
         title="AI assistant"
-        description="The engine, remote providers, local models and what the assistant may do. Model and reasoning effort are picked per chat."
+        description="The engine, your models (local and cloud, with their keys) and what the assistant may do. Model and reasoning effort are picked per chat."
       >
         <EngineGroup {...aiEngine} />
-        <ProvidersGroup {...remoteKeys} engineInstalled={engineInstalled} />
-        {/* Models and tools only make sense once the engine plugin is installed. */}
+        {/* Models (local and remote) and tools only make sense once the engine plugin is installed. */}
         {engineInstalled && (
           <>
             <AiModelPicker />

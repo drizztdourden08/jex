@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useModelCatalog } from './behavior/useModelCatalog'
 import { useCudaInstall } from './behavior/useCudaInstall'
 import { useRemoteModels } from './behavior/useRemoteModels'
-import { RemoteModelList } from './sub-components/RemoteModelList'
+import { useRemoteKeys } from './behavior/useRemoteKeys'
+import { useCatalog } from './behavior/useCatalog'
+import { useProviderSections } from './behavior/useProviderSections'
 import { ModelCompareSelect } from './sub-components/ModelCompareSelect'
-import { InstalledModelList } from './sub-components/InstalledModelList'
+import { InstalledGroup } from './sub-components/InstalledGroup'
 import { CudaCallout } from './sub-components/CudaCallout'
 import { Box } from '@ds/primitives/layout/Box'
 import { Text } from '@ds/primitives/text/Text'
@@ -12,67 +14,61 @@ import { Button } from '@ds/primitives/actions/Button'
 import { SettingsGroup } from '@ds/composites/SettingsGroup'
 import { SettingRow } from '@ds/composites/SettingRow'
 import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
-import { BACKEND_LABEL, LOCAL_HELP } from './AiModelPicker.constants'
+import { ACTION_LABEL, ADD_HELP, BACKEND_LABEL } from './AiModelPicker.constants'
 import './AiModelPicker.css'
 
 /**
- * Settings model picker (View), rendered as two groups of the AI settings section:
- * remote models (pick one whose provider has a key) and local models (compute info,
- * CUDA callout, a compare-dropdown with Download, and the installed/downloading list).
- * Downloads keep running after navigating away, since their state lives in the store.
+ * Settings model picker (View), two groups of the AI settings section: one catalog to add
+ * a model (local ones download, Claude / OpenAI ones are added), and the installed models
+ * split by provider, each cloud provider's header holding its API key. Downloads keep
+ * running after navigating away, since their state lives in the store.
  */
 const AiModelPicker = () => {
-  const {
-    available,
-    installed,
-    downloading,
-    backend,
-    vramGb,
-    recommendedId,
-    fits,
-    errors,
-    download,
-    select,
-    remove,
-    cleanInactive,
-  } = useModelCatalog()
+  const local = useModelCatalog()
   const cuda = useCudaInstall()
   const remote = useRemoteModels()
+  const keys = useRemoteKeys(remote.reload)
+  const catalog = useCatalog({
+    available: local.available,
+    remoteModels: remote.models,
+    added: remote.added,
+    keys: keys.status,
+    recommendedId: local.recommendedId,
+  })
+  const sections = useProviderSections(remote.added, remote.models, keys.status, remote.revealed)
   const [actionError, setActionError] = useState<string | null>(null)
 
-  // Local actions can reject (engine missing, disk error); surface it, and keep the
-  // remote group's "Active" marker in step with whichever model was just chosen.
-  const selectLocal = async (id: string) => {
+  // Local actions can reject (engine missing, disk error); surface it. Switching model
+  // reloads both sides so the one "Active" marker stays right.
+  const guard = async (action: () => Promise<void>) => {
     setActionError(null)
     try {
-      await select(id)
+      await action()
+    } catch (e) {
+      setActionError(ipcErrorText(e))
+    }
+  }
+  const selectLocal = (id: string) =>
+    guard(async () => {
+      await local.select(id)
       await remote.reload()
-    } catch (e) {
-      setActionError(ipcErrorText(e))
-    }
+    })
+  const switchRemote = async (ref: string) => {
+    await remote.use(ref)
+    await local.refresh()
   }
-  const removeLocal = async (id: string) => {
-    setActionError(null)
-    try {
-      await remove(id)
-    } catch (e) {
-      setActionError(ipcErrorText(e))
-    }
+
+  const { chosen } = catalog
+  const act = () => {
+    if (!chosen) return
+    if (chosen.kind === 'local') local.download(chosen.key)
+    else if (chosen.kind === 'remote') void remote.add(chosen.key)
+    else remote.reveal(chosen.provider)
   }
-  const [chosenId, setChosenId] = useState<string | null>(null)
 
-  // Keep a sensible default selected in the dropdown: the GPU-recommended model if
-  // it's downloadable, else the first available. Reset if the chosen one leaves.
-  useEffect(() => {
-    if (chosenId && available.some((m) => m.id === chosenId)) return
-    const rec = available.some((m) => m.id === recommendedId) ? recommendedId : null
-    setChosenId(rec ?? available[0]?.id ?? null)
-  }, [available, chosenId, recommendedId])
-
-  const errorIds = Object.keys(errors)
-  const inactiveCount = installed.filter((m) => !m.active).length
-  const chosen = available.find((m) => m.id === chosenId) ?? null
-  const chosenTooBig = chosen != null && !fits(chosen)
+  const { backend, vramGb, errors } = local
+  const chosenTooBig = chosen?.kind === 'local' && !local.fits(chosen.model) ? chosen.model : null
+  const inactiveCount = local.installed.filter((m) => !m.active).length
   const compute = backend
     ? [
         BACKEND_LABEL[backend.backend] ?? backend.backend,
@@ -86,35 +82,11 @@ const AiModelPicker = () => {
 
   return (
     <>
-      <SettingsGroup label="Remote models" description="Chat with a cloud model. Needs that provider's key above.">
-        <RemoteModelList
-          models={remote.models}
-          activeRef={remote.activeRef}
-          busyRef={remote.busyRef}
-          onUse={(ref) => void remote.use(ref)}
-        />
-        {remote.error && (
-          <Text as="p" tone="danger" role="alert">
-            {remote.error}
-          </Text>
-        )}
-      </SettingsGroup>
-
-      <SettingsGroup
-        label="Local models"
-        description={LOCAL_HELP}
-        actions={
-          inactiveCount > 0 && (
-            <Button variant="ghost" className="ghost model-clean-btn" onClick={() => void cleanInactive()}>
-              Clean up ({inactiveCount} unused)
-            </Button>
-          )
-        }
-      >
+      <SettingsGroup label="Add a model" description={ADD_HELP}>
         {!remote.localRuntime && (
           <SettingRow
             label="Local runtime not installed"
-            description="Install the native base in Engine above to run local models."
+            description="Install the native base in Engine above to run local models. Cloud models work without it."
           />
         )}
         {compute && <SettingRow label="Compute" description={compute} />}
@@ -131,37 +103,47 @@ const AiModelPicker = () => {
             {actionError}
           </Text>
         )}
-        {errorIds.map((id) => (
+        {Object.keys(errors).map((id) => (
           <Text as="p" key={id} tone="danger">
             {id}: {errors[id]}
           </Text>
         ))}
         <Box className="model-download-bar">
           <ModelCompareSelect
-            options={available}
-            value={chosenId}
-            onChange={setChosenId}
-            recommendedId={recommendedId}
-            fits={fits}
+            entries={catalog.entries}
+            value={catalog.chosenKey}
+            onChange={catalog.setChosenKey}
+            recommendedId={local.recommendedId}
+            fits={local.fits}
           />
-          <Button className="model-download-btn" onClick={() => chosenId && download(chosenId)} disabled={!chosenId}>
-            Download
+          <Button className="model-download-btn" onClick={act} disabled={!chosen || remote.busyRef != null}>
+            {chosen ? ACTION_LABEL[chosen.kind] : 'Add'}
           </Button>
         </Box>
         {chosenTooBig && (
           <Box as="p" className="model-warn">
-            ⚠ {chosen?.label} (~{chosen?.sizeGb} GB) is larger than your
+            ⚠ {chosenTooBig.label} (~{chosenTooBig.sizeGb} GB) is larger than your
             {vramGb != null ? ` ~${Math.round(vramGb)} GB` : ''} GPU VRAM. It still runs, partly on
             the CPU and noticeably slower.
           </Box>
         )}
-        <InstalledModelList
-          models={installed}
-          downloading={downloading}
-          onSelect={(id) => void selectLocal(id)}
-          onRemove={(id) => void removeLocal(id)}
-        />
       </SettingsGroup>
+
+      <InstalledGroup
+        localModels={local.installed}
+        downloading={local.downloading}
+        inactiveCount={inactiveCount}
+        onSelectLocal={(id) => void selectLocal(id)}
+        onRemoveLocal={(id) => void guard(() => local.remove(id))}
+        onCleanLocal={() => void local.cleanInactive()}
+        sections={sections}
+        activeRef={remote.activeRef}
+        busyRef={remote.busyRef}
+        onUseRemote={(ref) => void switchRemote(ref)}
+        onRemoveRemote={(ref) => void remote.remove(ref)}
+        keys={keys}
+        error={remote.error}
+      />
     </>
   )
 }
