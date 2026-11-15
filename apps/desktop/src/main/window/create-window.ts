@@ -95,7 +95,7 @@ const createWindow = (): BrowserWindow => {
   win.webContents.on('did-fail-load', (_e, code, desc, url) => {
     console.error(`[main] renderer failed to load: ${code} ${desc} ${url}`)
   })
-  win.webContents.on('console-message', (_e, _lvl, msg) => {
+  win.webContents.on('console-message', ({ message: msg }) => {
     if (/error/i.test(msg)) console.error(`[renderer] ${msg}`)
   })
 
