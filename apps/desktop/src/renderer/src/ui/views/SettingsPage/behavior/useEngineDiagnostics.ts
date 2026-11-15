@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { EngineDiagnostics } from '@shared/ai'
 import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
+import { askConfirm } from '@/store/confirm'
 
 // Troubleshooting state for the AI engine: installed vs published hashes, the last update
 // check, and the check / open-log / reinstall actions. `onChecked` refreshes the plugin rows
@@ -38,7 +39,8 @@ const useEngineDiagnostics = (onChecked: () => void) => {
   const reinstall = useCallback(
     () =>
       run(async () => {
-        if (!window.confirm('Re-download the AI engine at the next start? Restart Jex to apply it.')) return
+        const ok = await askConfirm({ title: 'Reinstall the AI engine?', message: 'The engine is re-downloaded at the next start. Restart Jex to apply it.', confirmLabel: 'Reinstall', tone: 'primary' })
+        if (!ok) return
         await window.api.ai.reinstallEngine()
         setDiag(await window.api.ai.engineDiagnostics())
         setNote('Restart Jex to reinstall the engine.')

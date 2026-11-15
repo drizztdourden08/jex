@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { askConfirm } from '@/store/confirm'
 import { useModelCatalog } from './behavior/useModelCatalog'
 import { useCudaInstall } from './behavior/useCudaInstall'
 import { useRemoteModels } from './behavior/useRemoteModels'
@@ -52,7 +53,8 @@ const AiModelPicker = () => {
     guard(async () => {
       const model = local.installed.find((m) => m.id === id)
       if (model?.active) throw new Error('This model is in use. Switch to another model before deleting it.')
-      if (!window.confirm(`Delete ${model?.label ?? id} from disk? This cannot be undone.`)) return
+      const ok = await askConfirm({ title: `Delete ${model?.label ?? id}?`, message: 'This removes the model from disk and cannot be undone.', confirmLabel: 'Delete', tone: 'danger' })
+      if (!ok) return
       await local.remove(id)
     })
   const selectLocal = (id: string) =>

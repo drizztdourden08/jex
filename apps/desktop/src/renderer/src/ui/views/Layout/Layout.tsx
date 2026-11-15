@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 import { type ReactNode } from 'react'
 import { TitleBar } from '@ui/views/TitleBar'
 import { CommandSurface } from '@ui/views/CommandSurface'
+import { ConfirmHost } from '@ui/views/ConfirmHost'
 import { StorePage } from '@ui/views/StorePage'
 import { Sidebar } from './sub-components/Sidebar'
 import { useSidebar } from '@/store/sidebar'
@@ -32,6 +33,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </Box>
       </Box>
       <CommandSurface />
+      <ConfirmHost />
     </Box>
   )
 }
