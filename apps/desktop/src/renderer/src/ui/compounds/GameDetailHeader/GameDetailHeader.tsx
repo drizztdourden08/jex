@@ -1,5 +1,6 @@
 import { Box } from '@ds/primitives/layout/Box'
 import { Button } from '@ds/primitives/actions/Button'
+import { StatusLine } from '@ds/primitives/text/StatusLine'
 import { statusFor } from './GameDetailHeader.helpers'
 import type { GameDetailHeaderProps } from './GameDetailHeader.type'
 import './GameDetailHeader.css'
@@ -10,7 +11,16 @@ import './GameDetailHeader.css'
  * the Library's detail pane. The wishlist button only shows when `onAddWishlist`
  * is given (and the game is not owned).
  */
-const GameDetailHeader = ({ game, wlBusy = false, wlMsg = null, onOpen, onOpenInStore, onAddWishlist }: GameDetailHeaderProps) => {
+const GameDetailHeader = ({
+  game,
+  wlBusy = false,
+  wlMsg = null,
+  launchBusy = false,
+  launchText = '',
+  onLaunch,
+  onOpenInStore,
+  onAddWishlist,
+}: GameDetailHeaderProps) => {
   return (
     <Box as="header" className="detail-header">
       <Box as="h1">{game.name}</Box>
@@ -23,9 +33,15 @@ const GameDetailHeader = ({ game, wlBusy = false, wlMsg = null, onOpen, onOpenIn
         </Box>
       </Box>
       <Box className="row detail-actions">
-        {game.installed && <Button onClick={() => onOpen(`steam://run/${game.appid}`)}>▶ Launch</Button>}
+        {game.installed && (
+          <Button busy={launchBusy} onClick={() => onLaunch('run')}>
+            ▶ Launch
+          </Button>
+        )}
         {!game.installed && game.owned && (
-          <Button onClick={() => onOpen(`steam://install/${game.appid}`)}>⬇ Install</Button>
+          <Button busy={launchBusy} onClick={() => onLaunch('install')}>
+            ⬇ Install
+          </Button>
         )}
         {!game.owned &&
           onAddWishlist &&
@@ -49,6 +65,7 @@ const GameDetailHeader = ({ game, wlBusy = false, wlMsg = null, onOpen, onOpenIn
           Discussions
         </Button>
       </Box>
+      <StatusLine text={launchText} className="detail-launch-status" />
       {wlMsg && (
         <Box as="p" className="muted detail-wl-msg">
           {wlMsg}

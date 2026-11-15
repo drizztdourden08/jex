@@ -3,6 +3,8 @@ import type { Game } from '@shared/library'
 import { useGameDetail } from '@/hooks/useGameDetail'
 import { useAutoplaySetting } from '@/hooks/useAutoplaySetting'
 import { useOpenInStore } from '@/hooks/useOpenInStore'
+import { useLaunchStatus } from '@/hooks/useLaunchStatus'
+import type { LaunchAction } from '@shared/launch'
 
 // Wait before loading so arrow-keying through the list does not fire a fetch per row.
 const DETAIL_DELAY_MS = 350
@@ -22,6 +24,10 @@ const useLibraryDetail = (selected: Game | null) => {
   })
   const autoplay = useAutoplaySetting()
   const openInStore = useOpenInStore()
+  const { launch, statusOf } = useLaunchStatus()
+  const appid = selected?.appid ?? 0
+  const { busy: launchBusy, text: launchText } = statusOf(appid)
+  const launchSelected = useCallback((action: LaunchAction) => launch(appid, action), [launch, appid])
   const open = useCallback((url: string) => {
     window.api.app.openExternal(url).catch(() => {})
   }, [])
@@ -38,6 +44,9 @@ const useLibraryDetail = (selected: Game | null) => {
     autoplay,
     open,
     openInStore,
+    launchBusy,
+    launchText,
+    launchSelected,
   }
 }
 
