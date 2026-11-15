@@ -48,6 +48,13 @@ const AiModelPicker = () => {
       setActionError(ipcErrorText(e))
     }
   }
+  const removeLocal = (id: string) =>
+    guard(async () => {
+      const model = local.installed.find((m) => m.id === id)
+      if (model?.active) throw new Error('This model is in use. Switch to another model before deleting it.')
+      if (!window.confirm(`Delete ${model?.label ?? id} from disk? This cannot be undone.`)) return
+      await local.remove(id)
+    })
   const selectLocal = (id: string) =>
     guard(async () => {
       await local.select(id)
@@ -134,7 +141,7 @@ const AiModelPicker = () => {
         downloading={local.downloading}
         inactiveCount={inactiveCount}
         onSelectLocal={(id) => void selectLocal(id)}
-        onRemoveLocal={(id) => void guard(() => local.remove(id))}
+        onRemoveLocal={(id) => void removeLocal(id)}
         onCleanLocal={() => void local.cleanInactive()}
         sections={sections}
         activeRef={remote.activeRef}

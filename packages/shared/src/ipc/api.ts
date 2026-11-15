@@ -118,6 +118,7 @@ interface IpcApi {
     engineStatus: () => Promise<AiEngineStatus>
     enginePlugins: () => Promise<EnginePluginInfo[]>
     installEngine: (ids: string[]) => Promise<void>
+    removePlugin: (id: string) => Promise<'removed' | 'after-restart'>
     onEngineProgress: (cb: (msg: string) => void) => () => void
     status: () => Promise<AiModelStatus>
     backend: () => Promise<AiBackendInfo>

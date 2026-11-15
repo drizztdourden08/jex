@@ -33,6 +33,7 @@ const aiApi = {
   engineStatus: (): Promise<AiEngineStatus> => ipcRenderer.invoke('ai:engineStatus'),
   enginePlugins: (): Promise<EnginePluginInfo[]> => ipcRenderer.invoke('ai:enginePlugins'),
   installEngine: (ids: string[]): Promise<void> => ipcRenderer.invoke('ai:installEngine', ids),
+  removePlugin: (id: string): Promise<'removed' | 'after-restart'> => ipcRenderer.invoke('ai:removePlugin', id),
   onEngineProgress: (cb: (msg: string) => void): (() => void) => {
     const listener = (_e: IpcRendererEvent, msg: string) => cb(msg)
     ipcRenderer.on('ai:engineProgress', listener)

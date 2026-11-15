@@ -17,6 +17,8 @@ import { enginePlugins as catalogPlugins, isInstallablePlugin, isManualId } from
 import { detectNvidia } from './detect'
 import { isCudaToolkitInstalled, installCudaToolkit } from './cuda-toolkit'
 import { getEngine } from './engine'
+import { removeAddOn } from './remove-plugin'
+import type { RemoveResult } from './remove-plugin'
 
 let sharedUi: UiDispatcher | null = null
 const ui = (): UiDispatcher => (sharedUi ??= createUiDispatcher())
@@ -82,4 +84,6 @@ const installEngine = (ids: string[], onProgress?: (msg: string) => void): Promi
   return Promise.all(tasks).then(() => undefined)
 }
 
-export { initEngine, engineStatus, enginePlugins, installEngine }
+const removePlugin = (id: string): RemoveResult => removeAddOn(id)
+
+export { removePlugin, initEngine, engineStatus, enginePlugins, installEngine }

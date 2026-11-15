@@ -10,6 +10,7 @@ import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
 import { checkOutdated } from './update-check'
 import { retryInBackground } from './background-retry'
 import { clearPending, hasPending } from './pending-update'
+import { applyPendingRemoval } from './remove-plugin'
 import { logAi } from './ai-log'
 import { clearStale, getLoadedId, markStale, setLoadedId, staleIds } from './engine-state'
 
@@ -43,6 +44,7 @@ const startEngine = async (
   ui: UiDispatcher,
   update: (ids: string[]) => Promise<void>,
 ): Promise<void> => {
+  applyPendingRemoval()
   // A pending marker (found by the background retry) earns the manifest a longer wait.
   const pending = hasPending()
   const { ok, ids: found } = await checkOutdated(pending ? PENDING_TIMEOUT_MS : STARTUP_TIMEOUT_MS)

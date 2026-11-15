@@ -67,4 +67,6 @@ const enginePlugins = (nvidiaGpu: boolean): EnginePluginInfo[] => {
 const isInstallablePlugin = (id: string): boolean => CATALOG[id] != null && !CATALOG[id].manual
 const isManualId = (id: string): boolean => CATALOG[id]?.manual === true
 
-export { enginePlugins, CUDA_TOOLKIT_ID, isInstallablePlugin, isManualId }
+const isAddOnId = (id: string): boolean => CATALOG[id]?.addOn === true
+
+export { enginePlugins, CUDA_TOOLKIT_ID, isInstallablePlugin, isManualId, isAddOnId }

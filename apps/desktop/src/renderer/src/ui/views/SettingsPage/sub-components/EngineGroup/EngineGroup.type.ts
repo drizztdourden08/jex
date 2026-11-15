@@ -11,6 +11,7 @@ interface EngineGroupProps {
   install: () => void
   loadError: string | null
   retry: () => void
+  remove: (id: string) => void
 }
 
 export type { EngineGroupProps }

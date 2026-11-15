@@ -22,6 +22,7 @@ const EngineGroup = ({
   install,
   loadError,
   retry,
+  remove,
 }: EngineGroupProps) => {
   if (!status && loadError) {
     return (
@@ -58,7 +59,16 @@ const EngineGroup = ({
       ),
       packages: <Text tone="muted">{p.packages}</Text>,
       size: <Text tone="muted">{p.updateAvailable ? `Update available (${fmtSize(p.sizeBytes)})` : p.installed ? 'Installed' : fmtSize(p.sizeBytes)}</Text>,
-      notes: <Text tone="muted">{p.notes}</Text>,
+      notes: (
+        <>
+          <Text tone="muted">{p.notes}</Text>
+          {p.addOn && p.installed && (
+            <Button variant="ghost" onClick={() => remove(p.id)} disabled={installing}>
+              Remove
+            </Button>
+          )}
+        </>
+      ),
     },
   }))
 
