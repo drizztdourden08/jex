@@ -2,10 +2,16 @@
    seek/volume sliders, settings menu). Migrated from styles/sections/detail.css
    (Phase 5). Tokens only. */
 .vp-root { width: 100%; min-width: 0; }
-.vp-scrim { position: fixed; inset: 0; background: var(--scrim-85); z-index: 59; display: none; }
-.vp-scrim.show { display: block; animation: ai-fade var(--dur-base) ease; }
-.vp-root.theater { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 3vh 3vw; }
-.vp-root.theater .vp-stage { width: min(94vw, 166vh); }
+.vp-slot { width: 100%; min-width: 0; }
+.vp-slot.theater { aspect-ratio: 16 / 9; } /* keeps the inline footprint while the root is lifted out */
+/* Body-level host (created by useTheaterHost): covers the whole window, titlebar included,
+   and doubles as the scrim. no-drag so the titlebar's drag region doesn't eat clicks. */
+.vp-theater-host {
+  position: fixed; inset: 0; z-index: 60; background: var(--scrim-85);
+  -webkit-app-region: no-drag; animation: ai-fade var(--dur-base) ease;
+}
+.vp-root.theater { position: absolute; inset: 0; display: grid; place-items: center; padding: 3vh 3vw; pointer-events: none; }
+.vp-root.theater .vp-stage { width: min(94vw, 166vh); pointer-events: auto; }
 
 .vp-stage {
   position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--media-bg);

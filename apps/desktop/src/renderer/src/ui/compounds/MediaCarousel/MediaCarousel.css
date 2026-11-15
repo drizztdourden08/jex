@@ -40,6 +40,7 @@
 .lightbox {
   position: fixed; inset: 0; z-index: 60; display: grid; place-items: center;
   background: var(--scrim-85); animation: ai-fade var(--dur-base) ease; cursor: zoom-out;
+  -webkit-app-region: no-drag; /* the titlebar drag region would otherwise swallow the close button's clicks */
 }
 .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: var(--r-md); box-shadow: var(--shadow-ambient); }
 

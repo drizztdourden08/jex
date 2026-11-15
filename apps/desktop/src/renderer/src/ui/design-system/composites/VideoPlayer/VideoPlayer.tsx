@@ -1,4 +1,6 @@
+import { useCallback } from 'react'
 import './VideoPlayer.css'
+import { useTheaterHost } from './behavior/useTheaterHost'
 import { Box } from '@ds/primitives/layout/Box'
 import { IconButton } from '@ds/primitives/actions/IconButton'
 import { I } from './VideoPlayer.icons'
@@ -48,6 +50,9 @@ const VideoPlayer = ({ src, poster, autoPlay }: Props) => {
     toggleFullscreen,
     qualityLabel,
   } = usePlaybackControls({ videoRef, hlsRef, levels })
+
+  const exitTheater = useCallback(() => setTheater(false), [setTheater])
+  const { slotRef, rootRef } = useTheaterHost({ theater, onExit: exitTheater })
 
   const stage = (
     <Box className="vp-stage" ref={stageRef}>
@@ -100,14 +105,14 @@ const VideoPlayer = ({ src, poster, autoPlay }: Props) => {
     </Box>
   )
 
-  // Same element position in both states (scrim always rendered) so toggling
-  // theater never remounts the <video> — playback continues seamlessly.
+  // The root only moves between the inline slot and a body-level host (see
+  // useTheaterHost), so toggling theater never remounts the <video>.
   return (
-    <>
-      <Box className={theater ? 'vp-scrim show' : 'vp-scrim'} onClick={() => setTheater(false)} />
-      <Box className={theater ? 'vp-root theater' : 'vp-root'}>{stage}</Box>
-    </>
-  )
+    <Box className={theater ? 'vp-slot theater' : 'vp-slot'} ref={slotRef}>
+      <Box className={theater ? 'vp-root theater' : 'vp-root'} ref={rootRef}>
+        {stage}
+      </Box>
+    </Box>
 }
 
 export { VideoPlayer }
