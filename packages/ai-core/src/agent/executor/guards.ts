@@ -1,3 +1,4 @@
+import { getTool } from '../../tools'
 import type { GuardVerdict, ToolExecLimits } from './executor.types'
 
 const sigOf = (name: string, args: Record<string, unknown>): string => {
@@ -31,7 +32,8 @@ const createGuards = (limits: ToolExecLimits) => {
     }
     const used = (toolCounts.get(name) ?? 0) + 1
     toolCounts.set(name, used)
-    if (used > limits.maxPerTool) {
+    const cap = getTool(name)?.category === 'store' ? limits.maxPerStoreTool : limits.maxPerTool
+    if (used > cap) {
       return {
         error: 'stopped — same tool used too many times',
         message: `I kept using "${name}" without getting closer to an answer, so I stopped. Repeating it won't surface a better result — could you rephrase, or tell me more specifically what you're looking for?`,

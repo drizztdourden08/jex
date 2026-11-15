@@ -14,6 +14,7 @@ const loadImage = (src: string) =>
 /** Capture the webview viewport, shrink so the longest side <= maxSide, encode as JPEG base64. */
 const captureWebview = async (wv: SteamWebview, maxSide: number): Promise<StoreCaptureResult> => {
   try {
+    const viewport = (await wv.executeJavaScript('({ width: innerWidth, height: innerHeight })')) as { width: number; height: number }
     const native = await wv.capturePage()
     const img = await loadImage(native.toDataURL())
     const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
@@ -24,7 +25,7 @@ const captureWebview = async (wv: SteamWebview, maxSide: number): Promise<StoreC
     if (!g) return { error: 'Canvas unavailable.' }
     g.drawImage(img, 0, 0, canvas.width, canvas.height)
     const base64 = canvas.toDataURL('image/jpeg', JPEG_QUALITY).split(',')[1]
-    return { base64, mime: 'image/jpeg', url: wv.getURL(), title: wv.getTitle() }
+    return { base64, mime: 'image/jpeg', url: wv.getURL(), title: wv.getTitle(), viewport, image: { width: canvas.width, height: canvas.height } }
   } catch (e) {
     return { error: `Could not capture the store page: ${e instanceof Error ? e.message : String(e)}` }
   }

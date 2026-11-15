@@ -30,7 +30,7 @@ const stateOp = String.raw`
 ops.state = () => {
   const acct = document.querySelector('#account_pulldown');
   const loginLink = document.querySelector('a.global_action_link[href*="login"], a[href*="/login/"]');
-  return { scrollY: Math.round(scrollY), scrollHeight: document.documentElement.scrollHeight, viewportHeight: innerHeight,
+  return { scrollY: Math.round(scrollY), scrollHeight: document.documentElement.scrollHeight, viewportHeight: innerHeight, viewportWidth: innerWidth,
     readyState: document.readyState, loggedIn: acct ? true : loginLink ? false : undefined, account: acct ? txt(acct).slice(0, 60) : undefined,
     restrictedPage: badUrl(location.href) || undefined };
 };

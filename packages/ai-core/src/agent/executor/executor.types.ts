@@ -7,6 +7,8 @@ interface ToolExecLimits {
   maxRepeats: number
   /** Same tool, any args: calls beyond this count are refused. */
   maxPerTool: number
+  /** Same cap for store-browsing tools (category "store"): browsing needs many small calls. */
+  maxPerStoreTool: number
   /** All tools: calls beyond this count are refused. */
   maxTotal: number
   /** Tries for a tool that throws. */

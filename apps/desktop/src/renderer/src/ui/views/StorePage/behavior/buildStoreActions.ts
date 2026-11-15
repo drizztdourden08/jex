@@ -2,13 +2,14 @@ import type { StoreActOp, StoreActResult, StoreNavControls } from '@/store/store
 import type { SteamWebview } from '../StorePage.type'
 import { buildActScript } from './guest/buildActScript'
 import { watchSettle } from './watchSettle'
+import { runClick, runHover, runSelect } from './runPointer'
 
 const LOAD_TIMEOUT_MS = 12_000
 const ACT_TIMEOUT_MS = 9_000
 const WAIT_CAP_MS = 10_000
 const POLL_MS = 250
 // How long to watch for a navigation after an op that may trigger one.
-const GRACE_MS: Record<StoreActOp, number> = { click: 800, type: 900, select: 500, key: 800, links: 0, state: 0, has: 0 }
+const GRACE_MS: Record<StoreActOp, number> = { click: 800, hover: 0, aim: 0, synth: 0, probe: 0, type: 900, select: 500, key: 800, links: 0, state: 0, has: 0 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -20,6 +21,15 @@ const snapshot = (wv: SteamWebview, extra: object = {}): StoreActResult => ({
 
 const runGuest = (wv: SteamWebview, op: StoreActOp, args: Record<string, unknown>) =>
   wv.executeJavaScript(buildActScript(op, args)) as Promise<StoreActResult>
+
+/** Pointer ops are orchestrated host-side (trusted input); the rest run as one guest script. */
+const perform = (wv: SteamWebview, op: StoreActOp, args: Record<string, unknown>): Promise<StoreActResult> => {
+  const guest = (o: StoreActOp, a: Record<string, unknown>) => runGuest(wv, o, a)
+  if (op === 'click') return runClick(wv, guest, args)
+  if (op === 'hover') return runHover(wv, guest, args)
+  if (op === 'select') return runSelect(wv, guest, args)
+  return runGuest(wv, op, args)
+}
 
 type ActionControls = Pick<StoreNavControls, 'navigateAndWait' | 'history' | 'pageState' | 'act' | 'waitFor'>
 
@@ -61,7 +71,7 @@ const buildStoreActions = (wv: SteamWebview): ActionControls => ({
     const watch = watchSettle(wv, ACT_TIMEOUT_MS)
     let result: StoreActResult
     try {
-      result = await runGuest(wv, op, args)
+      result = await perform(wv, op, args)
     } catch (e) {
       watch.dispose()
       return snapshot(wv, { error: `Could not run on the page: ${e instanceof Error ? e.message : String(e)}` })

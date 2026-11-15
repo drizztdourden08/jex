@@ -2,6 +2,7 @@ import { registerNavigationTools } from './navigation'
 import { registerFilterTools } from './filter'
 import { registerStoreTools } from './store'
 import { registerStoreBrowseTools } from './storeBrowse'
+import { registerStorePointerTools } from './storePointer'
 import { registerStoreScreenshotTool } from './storeScreenshot'
 
 /**
@@ -15,6 +16,7 @@ const registerUiTools = (): void => {
   registerFilterTools()
   registerStoreTools()
   registerStoreBrowseTools()
+  registerStorePointerTools()
   registerStoreScreenshotTool()
 }
 

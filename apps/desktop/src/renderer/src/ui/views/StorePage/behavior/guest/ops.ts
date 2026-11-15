@@ -1,16 +1,4 @@
-/** One guest-side script fragment per op; each defines `ops.<name> = (A) => result`. A = the tool's args. */
-const clickOp = String.raw`
-ops.click = (A) => {
-  const bad = refusePage(); if (bad) return bad;
-  if (!A.selector && !A.text) return { error: 'Provide text and/or selector.' };
-  const f = find({ selector: A.selector, text: A.text, index: A.index, kind: 'click' }); if (f.error) return f;
-  const g = refuseEl(f.el); if (g) return g;
-  f.el.scrollIntoView({ block: 'center' });
-  clickEl(f.el);
-  return { clicked: desc(f.el), matches: f.total, index: f.index, otherMatches: f.others };
-};
-`
-
+/** Guest-side type / key ops; each defines `ops.<name> = (A) => result`. A = the tool's args. Click / select live in clickOps.ts / selectOp.ts. */
 const typeOp = String.raw`
 ops.type = (A) => {
   const bad = refusePage(); if (bad) return bad;
@@ -31,29 +19,6 @@ ops.type = (A) => {
   el.dispatchEvent(keyEv('keyup', ['a', 65]));
   if (A.submit) { const s = submitEl(el); if (s) return s; }
   return { typed: desc(f.el), value: String(el.value != null ? el.value : el.textContent).slice(0, 120), submitted: !!A.submit };
-};
-`
-
-const selectOp = String.raw`
-ops.select = (A) => {
-  const bad = refusePage(); if (bad) return bad;
-  const f = find({ selector: A.selector, text: A.label, index: A.index, kind: 'control' }); if (f.error) return f;
-  const el = f.el;
-  const g = refuseField(el) || (el.tagName !== 'SELECT' ? refuseEl(el) : null); if (g) return g;
-  el.scrollIntoView({ block: 'center' });
-  if (el.tagName === 'SELECT') {
-    const want = String(A.value == null ? '' : A.value).toLowerCase().trim();
-    const opts = Array.from(el.options);
-    const opt = opts.find((o) => o.value.toLowerCase() === want || o.text.trim().toLowerCase() === want) || opts.find((o) => o.text.toLowerCase().includes(want));
-    if (!opt) return { error: 'No option matched "' + A.value + '".', options: opts.slice(0, 25).map((o) => o.text.trim() + ' (' + o.value + ')') };
-    setNative(el, opt.value);
-    fire(el, ['input', 'change']);
-    return { selected: opt.text.trim(), value: opt.value, control: desc(el) };
-  }
-  const isOn = () => (el.type === 'checkbox' || el.type === 'radio' ? !!el.checked : el.getAttribute('aria-checked') === 'true');
-  const want = A.checked !== false;
-  if (isOn() !== want) clickEl(el);
-  return { checked: isOn(), requested: want, control: desc(el) };
 };
 `
 
@@ -86,4 +51,4 @@ ops.key = (A) => {
 };
 `
 
-export { clickOp, typeOp, selectOp, keyOp }
+export { typeOp, keyOp }
