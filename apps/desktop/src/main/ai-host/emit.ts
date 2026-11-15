@@ -3,6 +3,7 @@
 // …). When AI_EVAL_LOG=1 it also taps ai:stream to stdout for the headless eval harness.
 import type { AiStreamEvent } from '@shared/agent'
 import { getMainWindow } from '../window/window-ref'
+import { tapAiStream } from './stream-tap'
 
 const logEvalEvent = (ev: AiStreamEvent): void => {
   if (ev.type === 'thinking') process.stdout.write(`[agent:thinking] ${ev.text.slice(-120).replace(/\n/g, ' ')}\n`)
@@ -17,6 +18,7 @@ const createEmit = () => {
   const evalLog = process.env.AI_EVAL_LOG === '1'
   return (channel: string, ...args: unknown[]): void => {
     getMainWindow()?.webContents.send(channel, ...args)
+    if (channel === 'ai:stream') tapAiStream(args[0] as AiStreamEvent)
     if (evalLog && channel === 'ai:stream') logEvalEvent(args[0] as AiStreamEvent)
   }
 }

@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { getMainWindow } from '../window/window-ref'
 import { smokeScan, smokeSync, smokeDrop, smokeCancel } from './smoke-probes'
+import { smokeRemote } from './smoke-remote'
 import { smokeAi, smokeEngine, smokeDiag, smokeMeta, smokeRefresh } from './smoke-inspect'
 
 /**
@@ -15,6 +16,7 @@ const PROBES: Record<string, () => void> = {
   SMOKE_SYNC: smokeSync,
   SMOKE_AI: smokeAi,
   SMOKE_ENGINE: smokeEngine,
+  SMOKE_REMOTE: smokeRemote,
   SMOKE_DIAG: smokeDiag,
   SMOKE_META: smokeMeta,
   SMOKE_REFRESH: smokeRefresh,
