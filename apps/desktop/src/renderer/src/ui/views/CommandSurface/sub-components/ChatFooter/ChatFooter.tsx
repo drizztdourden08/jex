@@ -71,16 +71,19 @@ const ChatFooter = ({
           align="end"
         />
       )}
-      <Select
-        value={ctxLevel}
-        options={CTX_OPTIONS}
-        onChange={(l) => void changeContextLevel(l)}
-        disabled={busy}
-        title="Context window size for this session (larger = more memory + history, slower; clears the chat)"
-        variant="ghost"
-        placement="top"
-        align="end"
-      />
+      {/* Context size sizes the local llama context only; a cloud model's window is fixed. */}
+      {!activeModel?.remote && (
+        <Select
+          value={ctxLevel}
+          options={CTX_OPTIONS}
+          onChange={(l) => void changeContextLevel(l)}
+          disabled={busy}
+          title="Context window size for this session (larger = more memory + history, slower; clears the chat)"
+          variant="ghost"
+          placement="top"
+          align="end"
+        />
+      )}
     </Box>
   </Box>
 )

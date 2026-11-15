@@ -8,9 +8,9 @@ const PERM_OPTIONS: SelectOption<PermissionMode>[] = [
   { value: 'allow', label: 'Allow all', triggerClass: 'perm-allow' },
 ]
 const CTX_OPTIONS: SelectOption<ContextLevel>[] = [
-  { value: 'low', label: 'Low' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'high', label: 'High' },
+  { value: 'low', label: 'Context: low' },
+  { value: 'medium', label: 'Context: medium' },
+  { value: 'high', label: 'Context: high' },
 ]
 // Labelled so it reads apart from the context-size select beside it.
 const EFFORT_OPTIONS: SelectOption<RemoteEffort>[] = [
