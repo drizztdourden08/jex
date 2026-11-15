@@ -59,6 +59,12 @@ interface StoreScrollResult {
   matched?: string
 }
 
+/** Guest-side operations the AI browse tools run inside the store webview. */
+type StoreActOp = 'click' | 'type' | 'select' | 'key' | 'links' | 'state' | 'has'
+
+/** Loose result of a browse op: url/title (+ navigated/timedOut) plus op-specific fields, or `error`. */
+type StoreActResult = Record<string, unknown> & { error?: string }
+
 /** Imperative handles the StorePage wires up to drive its <webview>. */
 interface StoreNavControls {
   back: () => void
@@ -71,6 +77,16 @@ interface StoreNavControls {
   readContent: (query?: StoreReadQuery) => Promise<StoreReadResult>
   /** Scroll the page to top/bottom or to the first element matching `text`. */
   scrollTo: (opts: { to?: 'top' | 'bottom'; text?: string }) => Promise<StoreScrollResult>
+  /** Load a URL and resolve once the load settles (or times out) with the new url + title. */
+  navigateAndWait: (url: string) => Promise<StoreActResult>
+  /** Back / forward / reload, resolving once the load settles. */
+  history: (kind: 'back' | 'forward' | 'reload') => Promise<StoreActResult>
+  /** Url, title, history + loading flags, scroll position, logged-in hint. */
+  pageState: () => Promise<StoreActResult>
+  /** Run a guarded click/type/select/key/links op in the guest, then wait for any resulting navigation. */
+  act: (op: StoreActOp, args: Record<string, unknown>) => Promise<StoreActResult>
+  /** Wait (capped ~10 s) until text or a selector appears on the page. */
+  waitFor: (opts: { text?: string; selector?: string; timeoutMs?: number }) => Promise<StoreActResult>
 }
 
 interface StoreNavState {
@@ -106,4 +122,6 @@ export type {
   StoreReadResult,
   StoreScrollResult,
   StoreNavControls,
+  StoreActOp,
+  StoreActResult,
 }

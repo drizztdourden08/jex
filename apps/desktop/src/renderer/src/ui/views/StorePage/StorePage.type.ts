@@ -7,6 +7,9 @@ interface SteamWebview extends HTMLElement {
   goForward(): void
   reload(): void
   stop(): void
+  isLoading(): boolean
+  getURL(): string
+  getTitle(): string
   loadURL(url: string): Promise<void>
   /** Run JS in the guest page and resolve with its (serializable) return value. */
   executeJavaScript(code: string): Promise<unknown>
