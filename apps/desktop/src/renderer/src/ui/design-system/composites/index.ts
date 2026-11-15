@@ -1,5 +1,7 @@
 // Design-system composites — generic structural combos of primitives.
 // (Popover + Select moved to primitives/: overlay/Popover, form/Select.)
+export { Dialog } from './Dialog'
+export type { DialogProps } from './Dialog'
 export { FilterPanel } from './FilterPanel'
 export type { FilterPanelProps } from './FilterPanel'
 export { LazyGrid } from './LazyGrid'

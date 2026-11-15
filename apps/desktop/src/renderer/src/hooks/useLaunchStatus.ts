@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isFinalPhase } from '@shared/launch'
+import { askConfirm } from '@/store/confirm'
 import type { LaunchAction, LaunchStatus } from '@shared/launch'
 
 // A settled "Running" / "Sent to Steam" line fades out after this long.
@@ -63,8 +64,9 @@ const useLaunchStatus = (watchAppid?: number) => {
     window.api.game.launch(appid, action).catch(() => {})
   }, [])
 
-  const stop = useCallback((appid: number, name: string) => {
-    if (!window.confirm(`Stop ${name}? Unsaved progress may be lost.`)) return
+  const stop = useCallback(async (appid: number, name: string) => {
+    const ok = await askConfirm({ title: `Stop ${name}?`, message: 'Unsaved progress may be lost.', confirmLabel: 'Stop', tone: 'danger' })
+    if (!ok) return
     window.api.game.stop(appid).catch(() => {})
   }, [])
 

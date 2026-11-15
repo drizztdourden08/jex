@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AiEngineStatus, EnginePluginInfo } from '@shared/ai'
 import { ipcErrorText } from '@/lib/ipc/ipcErrorText'
+import { askConfirm } from '@/store/confirm'
 
 // Drives the AI-engine setup: status + the per-machine checklist (with installed state),
 // install progress, and installing the selected set. Already-installed items show as
@@ -67,7 +68,8 @@ const useAiEngine = () => {
 
   const remove = useCallback(
     async (id: string) => {
-      if (!window.confirm('Remove this add-on from disk? You can install it again later.')) return
+      const ok = await askConfirm({ title: 'Remove this add-on?', message: 'It is deleted from disk. You can install it again later.', confirmLabel: 'Remove', tone: 'danger' })
+      if (!ok) return
       setError(null)
       try {
         const result = await window.api.ai.removePlugin(id)
