@@ -22,6 +22,7 @@
 }
 .filter-collapse-wrap > .filter-body { min-height: 0; }
 .filter-collapse-wrap:has(> .filter-body:empty) { display: none; }
+
 .filter-collapse-wrap.is-collapsed {
   grid-template-rows: 0fr; opacity: 0; visibility: hidden;
   transition: grid-template-rows var(--dur-base) var(--ease-standard), opacity var(--dur-base) var(--ease-standard),
