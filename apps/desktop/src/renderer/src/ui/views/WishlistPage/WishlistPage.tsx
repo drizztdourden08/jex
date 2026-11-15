@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Box } from '@ds/primitives/layout/Box'
 import { useLibrary } from '@/hooks/useLibrary'
 import { useFilterState } from '@/hooks/useFilterState'
+import { useFiltersCollapsed } from '@/hooks/useFiltersCollapsed'
 import { useWishlistGroups } from '@/hooks/useWishlistGroups'
 import { groupMembers } from '@/lib/query/wishlist'
 import { WishlistRail } from './sub-components/WishlistRail'
@@ -15,6 +16,7 @@ import './WishlistPage.css'
 import type { WishlistGroup } from '@shared/wishlist'
 
 const WishlistPage = () => {
+  const { collapsed: filtersCollapsed, toggle: toggleFilters } = useFiltersCollapsed('wishlist')
   const { games, loading, reload } = useLibrary()
   const flt = useFilterState()
   const wl = useWishlistGroups()
@@ -93,6 +95,8 @@ const WishlistPage = () => {
       />
 
       <WishlistMain
+        filtersCollapsed={filtersCollapsed}
+        onToggleFilters={toggleFilters}
         selected={selected}
         activeGroup={activeGroup}
         base={base}

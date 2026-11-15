@@ -24,6 +24,8 @@ const WishlistMain = ({
   flt,
   groups,
   canSaveFilter,
+  filtersCollapsed,
+  onToggleFilters,
   onSync,
   onCreateAndEdit,
   onSaveFilterToGroup,
@@ -84,6 +86,8 @@ const WishlistMain = ({
       setQuery={flt.setQuery}
       dirty={flt.dirty}
       reset={flt.reset}
+      collapsed={filtersCollapsed}
+      onToggleCollapsed={onToggleFilters}
       omit={['installed', 'unplayed']}
     />
 

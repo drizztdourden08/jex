@@ -5,8 +5,10 @@ import { useRandomizer } from './behavior/useRandomizer'
 import { RollControls } from './sub-components/RollControls'
 import { PickCard } from './sub-components/PickCard'
 import { Box } from '@ds/primitives/layout/Box'
+import { useFiltersCollapsed } from '@/hooks/useFiltersCollapsed'
 
 const RandomizerPage = () => {
+  const { collapsed, toggle } = useFiltersCollapsed('randomizer')
   const {
     games,
     flt,
@@ -55,6 +57,8 @@ const RandomizerPage = () => {
         setQuery={flt.setQuery}
         dirty={flt.dirty}
         reset={flt.reset}
+        collapsed={collapsed}
+        onToggleCollapsed={toggle}
         facets={source === 'store' ? storeFacets : undefined}
       />
 

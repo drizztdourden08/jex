@@ -9,6 +9,7 @@ import { GameFilters } from '@ui/compounds/GameFilters'
 import { LibraryGameList } from '@ui/compounds/LibraryGameList'
 import type { FilterSpec } from '@shared/filter'
 import type { Game } from '@shared/library'
+import { useFiltersCollapsed } from '@/hooks/useFiltersCollapsed'
 import { useAgentLibraryActions } from './behavior/useAgentLibraryActions'
 import { useLibrarySync } from './behavior/useLibrarySync'
 import { useLibrarySelection } from './behavior/useLibrarySelection'
@@ -30,6 +31,7 @@ const LibraryPage = () => {
   const games = useMemo(() => allGames.filter((g) => g.owned || g.installed), [allGames])
   const flt = useFilterState(getInitialLibrarySort())
   const { saveSort } = useLibrarySort(flt.setSpec)
+  const { collapsed, toggle } = useFiltersCollapsed('library')
   useAgentLibraryActions(flt)
   const { scanInfo, keySet, syncing, cancelling, stats, startSync, cancelSync, rescan } =
     useLibrarySync({ games, loading, scanning, scan, reload })
@@ -86,6 +88,8 @@ const LibraryPage = () => {
         setQuery={flt.setQuery}
         dirty={flt.dirty}
         reset={flt.reset}
+        collapsed={collapsed}
+        onToggleCollapsed={toggle}
         headerRight={
           <LibraryToolbar
             shown={filtered.length}

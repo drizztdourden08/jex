@@ -27,6 +27,9 @@ interface Props {
   modes?: FilterMode[]
   /** Hide the Metacritic / review-% selects (catalog Search can't filter on them). */
   hideScores?: boolean
+  /** Collapse the filter body to a summary line (Normal/Advanced only). */
+  collapsed?: boolean
+  onToggleCollapsed?: () => void
 }
 
 interface ExplicitFacets {
