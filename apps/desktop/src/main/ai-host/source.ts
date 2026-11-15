@@ -31,10 +31,10 @@ const checkApiVersion = (manifest: PluginManifest): PluginManifest => {
   return manifest
 }
 
-const fetchManifest = async (): Promise<PluginManifest> => {
+const fetchManifest = async (timeoutMs?: number): Promise<PluginManifest> => {
   const dist = localDist()
   if (dist) return checkApiVersion(JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8')) as PluginManifest)
-  const res = await fetch(`${RELEASE_BASE}/manifest.json`)
+  const res = await fetch(`${RELEASE_BASE}/manifest.json`, timeoutMs ? { signal: AbortSignal.timeout(timeoutMs) } : undefined)
   if (!res.ok) throw new Error(`Could not fetch the plugin manifest (HTTP ${res.status}).`)
   return checkApiVersion((await res.json()) as PluginManifest)
 }

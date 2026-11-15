@@ -126,7 +126,7 @@ const replaceOne = async (id, entry) => {
   }
   mkdirSync(dest, { recursive: true })
   await extract(join(DIST_DIR, entry.file), { dir: dest })
-  writeFileSync(markerPath(id), JSON.stringify({ sha256: entry.sha256 }))
+  writeFileSync(markerPath(id), JSON.stringify({ id, sha256: entry.sha256 }))
 }
 
 /** Re-merge a CUDA add-on's backend into its base (host's mergeAddOnInto). */
