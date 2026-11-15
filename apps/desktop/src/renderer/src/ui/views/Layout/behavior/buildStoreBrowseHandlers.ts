@@ -6,6 +6,14 @@ import type { UiHandler } from '@/lib/ai/uiToolHost'
 const str = (v: unknown): string | undefined => (v != null && String(v).trim() !== '' ? String(v) : undefined)
 const num = (v: unknown): number | undefined => (v != null && Number.isFinite(Number(v)) ? Number(v) : undefined)
 
+const pickTarget = (p: Record<string, unknown>) => ({
+  label: str(p.label),
+  selector: str(p.selector),
+  index: num(p.index),
+  value: str(p.value),
+  checked: typeof p.checked === 'boolean' ? p.checked : undefined,
+})
+
 /** AI browse handlers: show the Store tab, then drive the webview through its controls. */
 const buildStoreBrowseHandlers = (deps: { navigate: NavigateFunction }): Record<string, UiHandler> => {
   const withControls = <T>(fn: (c: StoreNavControls, p: Record<string, unknown>) => Promise<T>): UiHandler => {
@@ -31,7 +39,8 @@ const buildStoreBrowseHandlers = (deps: { navigate: NavigateFunction }): Record<
       pageSize: num(p.pageSize),
       inViewport: p.inViewport === true,
     })),
-    storeClick: act('click', (p) => ({ text: str(p.text), selector: str(p.selector), index: num(p.index) })),
+    storeClick: act('click', (p) => ({ text: str(p.text), selector: str(p.selector), index: num(p.index), x: num(p.x), y: num(p.y) })),
+    storeHover: act('hover', (p) => ({ text: str(p.text), selector: str(p.selector), index: num(p.index), x: num(p.x), y: num(p.y) })),
     storeType: act('type', (p) => ({
       value: p.value != null ? String(p.value) : '',
       label: str(p.label),
@@ -41,11 +50,8 @@ const buildStoreBrowseHandlers = (deps: { navigate: NavigateFunction }): Record<
       append: p.append === true,
     })),
     storeSelect: act('select', (p) => ({
-      label: str(p.label),
-      selector: str(p.selector),
-      index: num(p.index),
-      value: str(p.value),
-      checked: typeof p.checked === 'boolean' ? p.checked : undefined,
+      ...pickTarget(p),
+      targets: Array.isArray(p.targets) ? p.targets.slice(0, 30).map((t) => pickTarget((t ?? {}) as Record<string, unknown>)) : undefined,
     })),
     storePressKey: act('key', (p) => ({
       key: str(p.key),

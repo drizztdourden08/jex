@@ -60,7 +60,7 @@ interface StoreScrollResult {
 }
 
 /** Guest-side operations the AI browse tools run inside the store webview. */
-type StoreActOp = 'click' | 'type' | 'select' | 'key' | 'links' | 'state' | 'has'
+type StoreActOp = 'click' | 'hover' | 'aim' | 'synth' | 'probe' | 'type' | 'select' | 'key' | 'links' | 'state' | 'has'
 
 /** Loose result of a browse op: url/title (+ navigated/timedOut) plus op-specific fields, or `error`. */
 type StoreActResult = Record<string, unknown> & { error?: string }
@@ -97,6 +97,10 @@ interface StoreCaptureResult {
   mime?: string
   url?: string
   title?: string
+  /** Page viewport in CSS pixels (what store_click x,y use). */
+  viewport?: { width: number; height: number }
+  /** Size of the returned image in pixels. */
+  image?: { width: number; height: number }
   error?: string
 }
 
