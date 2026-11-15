@@ -6,9 +6,8 @@ const registerWindowHandlers = (): void => {
   ipcMain.handle('window:minimize', () => getMainWindow()?.minimize())
   ipcMain.handle('window:maximize', () => {
     const win = getMainWindow()
-    if (!win) return false
+    if (!win) return
     win.isMaximized() ? win.unmaximize() : win.maximize()
-    return win.isMaximized()
   })
   ipcMain.handle('window:close', () => getMainWindow()?.close())
   ipcMain.handle('window:isMaximized', () => getMainWindow()?.isMaximized() ?? false)

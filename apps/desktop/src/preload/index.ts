@@ -22,9 +22,14 @@ import { aiApi } from './ai-api'
 const api = {
   window: {
     minimize: (): Promise<void> => ipcRenderer.invoke('window:minimize'),
-    maximize: (): Promise<boolean> => ipcRenderer.invoke('window:maximize'),
+    maximize: (): Promise<void> => ipcRenderer.invoke('window:maximize'),
     close: (): Promise<void> => ipcRenderer.invoke('window:close'),
     isMaximized: (): Promise<boolean> => ipcRenderer.invoke('window:isMaximized'),
+    onMaximizedChange: (cb: (maximized: boolean) => void): (() => void) => {
+      const listener = (_e: IpcRendererEvent, maximized: boolean) => cb(maximized)
+      ipcRenderer.on('window:maximized-changed', listener)
+      return () => ipcRenderer.removeListener('window:maximized-changed', listener)
+    },
   },
   settings: {
     getAll: (): Promise<Record<string, unknown>> => ipcRenderer.invoke('settings:getAll'),

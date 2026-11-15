@@ -43,9 +43,10 @@ import type { WishlistGroup, WishlistGroupPatch, WishlistSyncResult } from '../w
 interface IpcApi {
   window: {
     minimize: () => Promise<void>
-    maximize: () => Promise<boolean>
+    maximize: () => Promise<void>
     close: () => Promise<void>
     isMaximized: () => Promise<boolean>
+    onMaximizedChange: (cb: (maximized: boolean) => void) => () => void
   }
   settings: {
     getAll: () => Promise<Record<string, unknown>>

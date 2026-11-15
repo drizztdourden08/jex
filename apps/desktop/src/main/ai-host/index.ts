@@ -21,10 +21,12 @@ let sharedUi: UiDispatcher | null = null
 const ui = (): UiDispatcher => (sharedUi ??= createUiDispatcher())
 
 // Progress of the background update goes out on ai:engineProgress, which Settings listens to.
+// Memoized: the launch's single load, which dev probes await instead of starting another.
+let initPromise: Promise<void> | null = null
 const initEngine = (): Promise<void> =>
-  startEngine(ui(), (ids) =>
+  (initPromise ??= startEngine(ui(), (ids) =>
     runInstall(ids, ui(), (m) => getMainWindow()?.webContents.send('ai:engineProgress', m)),
-  )
+  ))
 
 const engineStatus = async (): Promise<AiEngineStatus> => {
   const { name: gpu, vramMb } = await detectNvidia()

@@ -59,8 +59,13 @@ const useRemoteModels = () => {
   )
 
   const add = useCallback(
-    (ref: string) => run(ref, async () => setAdded(await window.api.ai.remote.add(ref))),
-    [run],
+    (ref: string) =>
+      run(ref, async () => {
+        setAdded(await window.api.ai.remote.add(ref))
+        // Main activates it when no usable model was active; pick that up.
+        await reload()
+      }),
+    [run, reload],
   )
 
   const remove = useCallback(
