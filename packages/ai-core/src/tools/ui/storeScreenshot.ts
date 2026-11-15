@@ -1,10 +1,11 @@
+import type { LlmImagePart } from '@jex/ai-contract'
 import { registerTool } from '../registry'
 import { withImages } from '../media'
 
 /** Longest side sent to the model; images cost tokens. */
 const MAX_SIDE = 1024
 
-type Capture = { base64?: string; mime?: string; url?: string; title?: string; error?: string }
+type Capture = { base64?: string; mime?: LlmImagePart['mime']; url?: string; title?: string; error?: string }
 
 const registerStoreScreenshotTool = (): void => {
   registerTool({
