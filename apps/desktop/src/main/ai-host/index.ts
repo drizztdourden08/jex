@@ -5,11 +5,13 @@
 import type { UiDispatcher } from '@jex/ai-contract'
 import type { AiEngineStatus, EnginePluginInfo } from '@shared/ai'
 import { createUiDispatcher } from './ui-dispatch'
-import { loadPluginFrom } from './loader'
+import { startEngine } from './start'
+import { getLoadedId, isStale } from './engine-state'
+import { getMainWindow } from '../window/window-ref'
 import { installEngine as runInstall } from './install'
-import { isInstalled, installedDir, fetchManifest } from './source'
+import { isInstalled, fetchManifest } from './source'
 import { cpus, totalmem, version } from 'node:os'
-import { basePluginId, cudaPluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { basePluginId, cudaPluginId } from './resolve'
 import { enginePlugins as catalogPlugins, isInstallablePlugin, isManualId } from './catalog'
 import { detectNvidia } from './detect'
 import { isCudaToolkitInstalled, installCudaToolkit } from './cuda-toolkit'
@@ -18,16 +20,11 @@ import { getEngine } from './engine'
 let sharedUi: UiDispatcher | null = null
 const ui = (): UiDispatcher => (sharedUi ??= createUiDispatcher())
 
-const initEngine = async (): Promise<void> => {
-  const id = [basePluginId(), ENGINE_PLUGIN_ID].find(isInstalled)
-  if (!id) return
-  try {
-    await loadPluginFrom(installedDir(id), ui())
-    console.log(`[ai-host] loaded engine: ${id}`)
-  } catch (e) {
-    console.error('[ai-host] failed to load installed engine:', e)
-  }
-}
+// Progress of the background update goes out on ai:engineProgress, which Settings listens to.
+const initEngine = (): Promise<void> =>
+  startEngine(ui(), (ids) =>
+    runInstall(ids, ui(), (m) => getMainWindow()?.webContents.send('ai:engineProgress', m)),
+  )
 
 const engineStatus = async (): Promise<AiEngineStatus> => {
   const { name: gpu, vramMb } = await detectNvidia()
@@ -42,7 +39,7 @@ const engineStatus = async (): Promise<AiEngineStatus> => {
     gpu,
     vramGb: vramMb != null ? Math.round(vramMb / 1024) : null,
     nvidiaGpu: gpu != null,
-    localRuntime: getEngine() != null && isInstalled(basePluginId()),
+    localRuntime: getEngine() != null && getLoadedId() === basePluginId(),
   }
 }
 
@@ -53,7 +50,7 @@ const enginePlugins = async (): Promise<EnginePluginInfo[]> => {
   const { name } = await detectNvidia()
   const rows = catalogPlugins(name != null).map((r) => ({
     ...r,
-    installed: r.manual ? isCudaToolkitInstalled() : isInstalled(r.id),
+    installed: r.manual ? isCudaToolkitInstalled() : isInstalled(r.id) && !isStale(r.id),
   }))
   try {
     const manifest = await fetchManifest()

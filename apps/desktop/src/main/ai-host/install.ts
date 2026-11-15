@@ -11,6 +11,7 @@ import { fetchManifest, fetchZip, installedDir, isInstalled } from './source'
 import { verifyPluginZip } from './verify'
 import { loadPluginFrom } from './loader'
 import { basePluginId, ENGINE_PLUGIN_ID } from './resolve'
+import { clearStale, setLoadedId } from './engine-state'
 
 const installOne = async (
   id: string,
@@ -65,6 +66,8 @@ const installEngine = async (
   // The native base (local models) wins when present; otherwise the JS-only engine.
   const best = isInstalled(basePluginId()) ? basePluginId() : ENGINE_PLUGIN_ID
   await loadPluginFrom(installedDir(best), ui)
+  setLoadedId(best)
+  clearStale(ids)
 }
 
 export { installEngine }
