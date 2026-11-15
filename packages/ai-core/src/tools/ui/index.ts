@@ -1,6 +1,7 @@
 import { registerNavigationTools } from './navigation'
 import { registerFilterTools } from './filter'
 import { registerStoreTools } from './store'
+import { registerStoreBrowseTools } from './storeBrowse'
 
 /**
  * UI-surface tools: they run in main but act on renderer state, so each `run`
@@ -12,6 +13,7 @@ const registerUiTools = (): void => {
   registerNavigationTools()
   registerFilterTools()
   registerStoreTools()
+  registerStoreBrowseTools()
 }
 
 export { registerUiTools }

@@ -1,20 +1,20 @@
 import type { NavigateFunction } from 'react-router-dom'
 import { useStoreNav } from '@/store/storeNav'
 import type { UiHandler } from '@/lib/ai/uiToolHost'
+import { buildStoreBrowseHandlers } from './buildStoreBrowseHandlers'
 
 interface StoreDeps {
   navigate: NavigateFunction
 }
 
 const buildStoreHandlers = (deps: StoreDeps): Record<string, UiHandler> => ({
-  navigateStore: (payload) => {
+  navigateStore: async (payload) => {
     const url = String(payload.url ?? '')
     if (!/^https?:\/\//.test(url)) throw new Error(`Invalid store URL: ${url}`)
     deps.navigate('/store')
     const controls = useStoreNav.getState().controls
     if (!controls) throw new Error('The store view is not ready yet.')
-    controls.loadURL(url)
-    return { opened: url }
+    return { opened: url, ...(await controls.navigateAndWait(url)) }
   },
   readStorePage: async (payload) => {
     deps.navigate('/store')
@@ -39,6 +39,7 @@ const buildStoreHandlers = (deps: StoreDeps): Record<string, UiHandler> => ({
     const text = payload.text != null ? String(payload.text) : undefined
     return controls.scrollTo({ to, text })
   },
+  ...buildStoreBrowseHandlers(deps),
 })
 
 export { buildStoreHandlers }
